@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // One finished practice session. Only these fields, with sane types and ranges.
+    function valid(d, id) {
+      return d.keys().hasOnly(['id','ts','mode','home','correct','total','secs','stars','items'])
+        && d.keys().hasAll(['id','ts','mode','home','correct','total','secs','stars','items'])
+        && d.id is string && d.id == id && d.id.size() <= 24
+        && d.ts is number && d.ts > 1700000000000
+        && d.ts < request.time.toMillis() + 86400000
+        && d.mode in ['smart','guided','exam','nfl']
+        && d.home is string && d.home.size() <= 20
+        && d.total is int && d.total >= 1 && d.total <= 20
+        && d.correct is int && d.correct >= 0 && d.correct <= d.total
+        && d.secs is number && d.secs >= 0 && d.secs <= 7200
+        && d.stars is int && d.stars >= 0 && d.stars <= 100
+        && d.items is list && d.items.size() == d.total;
+    }
+
+    // Sessions are add-only: no edits, no deletes.
+    match /sessions/{id} {
+      allow read: if true;
+      allow create: if valid(request.resource.data, id);
+      allow update, delete: if false;
+    }
+
+    // The avatar/closet look and the math topics follow Emmett between homes.
+    function validProfile(d) {
+      return d.keys().hasOnly(['avatar','topics','updated'])
+        && d.keys().hasAll(['avatar','topics','updated'])
+        && d.avatar is map
+        && d.topics is list && d.topics.size() >= 1 && d.topics.size() <= 5
+        && d.updated is number;
+    }
+
+    match /profile/{id} {
+      allow read: if true;
+      allow create, update: if id == 'emmett' && validProfile(request.resource.data);
+      allow delete: if false;
+    }
+
+    match /{other=**} { allow read, write: if false; }
+  }
+}
