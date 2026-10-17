@@ -583,8 +583,8 @@ function mergedSessions(){
 function refreshSessions(){S.sessions=mergedSessions()}
 function saveLocalCopy(){store.set('bl.sessions',S.sessions.slice(0,300));store.set('bl.pending',[...pending])}
 
-/* Firebase web config: filled in once the Firebase project exists (see README). Until then the site keeps everything on this device. */
-const FB_CONFIG={apiKey:"REPLACE_ME",authDomain:"REPLACE_ME",projectId:"REPLACE_ME",storageBucket:"REPLACE_ME",messagingSenderId:"REPLACE_ME",appId:"REPLACE_ME"};
+/* Firebase web config (public by design; the API key is restricted to this site in Google Cloud Console). */
+const FB_CONFIG={apiKey:"AIzaSyD6D8wWi_da8IdeQ7FVxvdoNC0n5Ezm3wQ",authDomain:"brain-lab-b0e8c.firebaseapp.com",projectId:"brain-lab-b0e8c",storageBucket:"brain-lab-b0e8c.firebasestorage.app",messagingSenderId:"866143565838",appId:"1:866143565838:web:bcd2ee26cb82241e55a45f"};
 async function loadFirestore(){
   const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
   const [A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-firestore.js')]);
