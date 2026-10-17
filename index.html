@@ -2371,7 +2371,7 @@ function geoProgress(){
 
 
 /* ---------- My Room: a bedroom Emmett decorates with prizes. The closet door opens the wardrobe. ---------- */
-const ROOM_DEFAULT={wall:'cloud',sheets:'teal',pillow:'classic',rug:'round',curtains:'blue',lamp:'basic',deskA:'books',deskB:'none',laundry:'gray',dresser:'wood',pack:'teal',p1:'rex',p2:'none',p3:'none',globe:'none',telescope:'none',beanbag:'none',shelf:'none',lights:'none',hoop:'none'};
+const ROOM_DEFAULT={wall:'cloud',sheets:'teal',pillow:'classic',rug:'round',curtains:'blue',lamp:'basic',deskA:'books',deskB:'none',laundry:'gray',dresser:'wood',pack:'teal',p1:'rex',p2:'none',p3:'none',p4:'none',globe:'none',telescope:'none',beanbag:'none',shelf:'none',lights:'none',hoop:'none'};
 const NEEDLAB={any:'',math:'math ',spell:'spelling ',geo:'geography ',nfl:'football '};
 const SUBMODES={math:['smart','guided','exam'],spell:['spell'],geo:['geo'],nfl:['nfl']};
 function subStars(sub){
@@ -2391,7 +2391,7 @@ const ROOMSLOTS={
   laundry:['Laundry bin',[o('gray','Gray','',0,'#9AA3AB'),o('teal','Teal','any',15,'#0A7E8C'),o('ball','Football hamper','nfl',10,'#9A5B33'),o('striped','Gold stripes','any',60,'#D7A22A')]],
   beanbag:['Bean bag chair',[NONE,o('on','Teal bean bag','any',40,'#0A7E8C')]],
   wall:['Wall paint',[o('cloud','Cloud','',0,'#E4ECF2'),o('sky','Sky','',0,'#BFE3F7'),o('teal','Teal','any',20,'#9ED4D8'),o('sand','Sand','any',35,'#F2E2B0'),o('green','Field green','nfl',25,'#B5DDB0'),om('night','Night','exam',1,'#3A4F7A')]],
-  p1:['Poster 1',[NONE,...POSTERS]],p2:['Poster 2',[NONE,...POSTERS]],p3:['Poster 3',[NONE,...POSTERS]],
+  p1:['Poster 1',[NONE,...POSTERS]],p2:['Poster 2',[NONE,...POSTERS]],p3:['Poster 3',[NONE,...POSTERS]],p4:['Poster 4',[NONE,...POSTERS]],
   pack:['Backpack on the hook',[NONE,o('teal','Teal','',0,'#0A7E8C'),o('black','Black','any',12,'#232B33'),o('gold','Gold','any',28,'#D7A22A'),o('camo','Camo','any',75,'#5B7B3A'),o('space','Space','math',70,'#1B2A55')]],
   lights:['String lights',[NONE,o('on','String lights','any',65)]],
   hoop:['Over-the-door hoop',[NONE,o('on','Basketball hoop','nfl',45)]],
@@ -2404,7 +2404,7 @@ const ROOMSLOTS={
   dresser:['Dresser',[o('wood','Wood','',0,'#B9854F'),o('white','White','any',20,'#F4F7FA'),o('teal','Teal','any',55,'#1E8C97'),o('black','Black','any',110,'#232B33')]],
   globe:['Globe',[NONE,om('on','Globe','caps',5)]]
 };
-const ROOMGROUPS=[['bed','Bed',['sheets','pillow']],['floor','Floor',['rug','laundry','beanbag']],['walls','Walls',['wall','p1','p2','p3','pack','lights','hoop']],['window','Window',['curtains','telescope']],['desk','Desk',['lamp','deskA','deskB','shelf']],['dresser','Dresser',['dresser','globe']]];
+const ROOMGROUPS=[['bed','Bed',['sheets','pillow']],['floor','Floor',['rug','laundry','beanbag']],['walls','Walls',['wall','p1','p2','p3','p4','pack','lights','hoop']],['window','Window',['curtains','telescope']],['desk','Desk',['lamp','deskA','deskB','shelf']],['dresser','Dresser',['dresser','globe']]];
 function roomOpt(slot,id){return ROOMSLOTS[slot][1].find(x=>x.id===id)||ROOMSLOTS[slot][1][0]}
 const dayNo=ts=>Math.floor((ts-new Date(ts).getTimezoneOffset()*60000)/86400000);
 function capDay(list,cap){const d={};list.forEach(s=>{const k=dayNo(s.ts);d[k]=(d[k]||0)+(s.stars||0)});return Object.values(d).reduce((n,v)=>n+Math.min(v,cap),0)}
@@ -2479,17 +2479,17 @@ function rugArt(id){
 }
 function curtainArt(id){
   const panel=(x)=>{
-    const d=`M${x} 34H${x+22}V136Q${x+11} 144 ${x} 136Z`;
+    const d=`M${x} 34H${x+26}V218Q${x+13} 226 ${x} 218Z`;
     let f='#3A7BD5',x2='';
     if(id==='teal')f='#2A9D8F';
-    if(id==='stripe'){f='#D7A22A';x2=[4,12,20].map(k=>`<path d="M${x+k-2} 34V140" stroke="#232B33" stroke-width="4"/>`).join('')}
-    if(id==='stars'){f='#1B2A55';x2=[[5,50],[15,70],[8,96],[17,118],[12,42]].map(([a,b])=>`<circle cx="${x+a}" cy="${b}" r="1.6" fill="#fff"/>`).join('')}
-    if(id==='camo'){f='#5B7B3A';x2=[[6,56,7],[16,86,8],[8,116,6]].map(([a,b,r],i)=>EL(x+a,b,r,r*.7,i%2?'#8BA05A':'#3E5A2A')).join('')}
+    if(id==='stripe'){f='#D7A22A';x2=[4,12,20].map(k=>`<path d="M${x+k*1.2-2} 34V222" stroke="#232B33" stroke-width="4"/>`).join('')}
+    if(id==='stars'){f='#1B2A55';x2=[[5,50],[15,70],[8,96],[17,118],[12,42],[6,142],[19,160],[11,184],[20,200],[5,212]].map(([a,b])=>`<circle cx="${x+a}" cy="${b}" r="1.6" fill="#fff"/>`).join('')}
+    if(id==='camo'){f='#5B7B3A';x2=[[6,56,7],[16,86,8],[8,116,6],[17,150,8],[7,182,7],[16,208,6]].map(([a,b,r],i)=>EL(x+a,b,r,r*.7,i%2?'#8BA05A':'#3E5A2A')).join('')}
     if(id==='palm'){f='#F7E8C8';x2=`<path d="M${x+11} 130V82" stroke="#8A5A33" stroke-width="2.4"/><path d="M${x+11} 82Q${x+2} 78 ${x+1} 88M${x+11} 82Q${x+20} 78 ${x+21} 88M${x+11} 82Q${x+5} 70 ${x+2} 72M${x+11} 82Q${x+17} 70 ${x+20} 72M${x+11} 82V70" fill="none" stroke="#3CB878" stroke-width="2.4" stroke-linecap="round"/>`}
     {const e=curt2(id,x);if(e){f=e.f;x2=e.x2}}
-    return PP(d,f)+x2+`<path d="M${x+4} 40V132M${x+11} 40V136M${x+18} 40V132" stroke="rgba(0,0,0,.14)" stroke-width="1.2"/>`;
+    return PP(d,f)+x2+`<path d="M${x+4} 40V212M${x+13} 40V218M${x+22} 40V212" stroke="rgba(0,0,0,.14)" stroke-width="1.2"/><path d="M${x} 112Q${x+13} 120 ${x+26} 112" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="3"/>`;
   };
-  return`<path d="M310 34H404" stroke="#8A5A33" stroke-width="4" stroke-linecap="round"/>`+panel(318)+panel(376);
+  return`<path d="M296 34H418" stroke="#8A5A33" stroke-width="4" stroke-linecap="round"/><circle cx="296" cy="34" r="3.4" fill="#6B4423"/><circle cx="418" cy="34" r="3.4" fill="#6B4423"/>`+panel(298)+panel(390);
 }
 function lampArt(id){
   const x=452,y=178;
@@ -2571,7 +2571,7 @@ function closetView(){
 /* ---------- My Room, part 2: things from Emmett's own world (dinosaurs, kung fu, frisbee, bricks, blasters, football, running, arcade, comics, sports on TV) ---------- */
 Object.assign(ROOM_DEFAULT,{tv:'none',arcade:'none',floorA:'none',rack2:'none'});
 const MORE_POSTERS=[o('bricks','Building bricks','math',25),o('comic','Comic book','spell',30),o('fossil','Dino skeleton','spell',35),o('arcade','Racing game','any',40),o('kungfu','Kung fu','math',55),o('disc','Ultimate frisbee','any',50),o('hurricane','Hurricane','geo',45),o('laser','Laser blaster','math',65),om('raptor','Raptor','words',25),o('turtle','Ninja turtle','any',85),o('creature','Creature ball','any',95)];
-['p1','p2','p3'].forEach(k=>ROOMSLOTS[k][1].push(...MORE_POSTERS));
+['p1','p2','p3','p4'].forEach(k=>ROOMSLOTS[k][1].push(...MORE_POSTERS));
 ROOMSLOTS.sheets[1].push(om('bricks','Brick yellow','exam',2,'#F2C300'),om('jungle','Jungle','words',50,'#2F7D4F'),om('ninja','Ninja night','streak',14,'#101820'));
 ROOMSLOTS.pillow[1].push(o('turtle','Turtle shell','any',55,'#3CB878'),o('brick','Brick','math',55,'#C8102E'));
 ROOMSLOTS.rug[1].push(o('track','Race track','any',60,'#4A525A'),o('dojo','Dojo mat','any',70,'#C9B27A'),om('plate','Brick baseplate','exam',2,'#3CB878'));
@@ -2706,7 +2706,7 @@ function avatarFigure(av){
   const sd=shade(shirt,.7),sl=shade(shirt,1.2);
   /* arm: shoulder -> elbow -> wrist, tucked under the bust at the top so the shoulder reads as one piece */
   const arm=sx=>{
-    const S=[sx*15,-67],E=[sx*21.5,-52],W=[sx*24.5,-41],H=[sx*25.2,-37.2];
+    const S=[sx*16,-62.5],E=[sx*21.5,-47],W=[sx*23.8,-35],H=[sx*24.4,-31.2];
     const seg=(a,b,w,c)=>`<path d="M${a[0]} ${a[1]}L${b[0]} ${b[1]}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
     const sleeveW=white?13:10.4,foreW=white?11.5:8;
     let g='';
@@ -2724,14 +2724,15 @@ function avatarFigure(av){
     g+=`<path d="M${S[0]-sx*2.4} ${S[1]+1}L${E[0]-sx*2.6} ${E[1]-.5}" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".16"/>`;
     return g;
   };
-  const legY=-46,shortsEnd=-31,L=sx=>{const x=sx<0?-16:.6,w=15.4;
-    let g=`<rect x="${x}" y="${legY}" width="${w}" height="${bare?shortsEnd-legY:39}" rx="3" fill="${bare?'#101820':pants}"/>`;
+  const legY=-40,shortsEnd=-26,L=sx=>{const x=sx<0?-16:.6,w=15.4;
+    let g=`<rect x="${x}" y="${legY}" width="${w}" height="${bare?shortsEnd-legY:33}" rx="3" fill="${bare?'#101820':pants}"/>`;
     if(bare)g+=`<rect x="${x+1.2}" y="${shortsEnd-3}" width="${w-2.4}" height="${-7-(shortsEnd-3)}" rx="3" fill="${skin}"/><path d="M${x+2.6} ${shortsEnd+3}Q${x+w/2} ${shortsEnd+6} ${x+w-2.6} ${shortsEnd+3}" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="1"/>`;
-    else g+=`<rect x="${x}" y="${legY}" width="4" height="39" rx="2" fill="${pl}" opacity=".35"/><rect x="${x+w-4.4}" y="${legY}" width="4.4" height="39" rx="2" fill="${pd}" opacity=".5"/><path d="M${x+2} -26Q${x+w/2} -23 ${x+w-2} -26M${x+2} -33Q${x+w/2} -30 ${x+w-2} -33" fill="none" stroke="${pd}" stroke-width=".8" opacity=".5"/><rect x="${x}" y="-12" width="${w}" height="5" rx="2" fill="${pd}" opacity=".55"/>`;
+    else g+=`<rect x="${x}" y="${legY}" width="4" height="33" rx="2" fill="${pl}" opacity=".35"/><rect x="${x+w-4.4}" y="${legY}" width="4.4" height="33" rx="2" fill="${pd}" opacity=".5"/><path d="M${x+2} -19Q${x+w/2} -16 ${x+w-2} -19M${x+2} -27Q${x+w/2} -24 ${x+w-2} -27" fill="none" stroke="${pd}" stroke-width=".8" opacity=".5"/><rect x="${x}" y="-12" width="${w}" height="5" rx="2" fill="${pd}" opacity=".55"/>`;
     return g;};
   const shoeP=sx=>{const d=sx<0?-1:1;return`<path d="M${d*1.4} -8H${d*13}Q${d*20.4} -8 ${d*21.4} 0H${d*1.4}Z" fill="#F4F7FA" stroke="#9AA3AB" stroke-width=".9"/><path d="M${d*1.4} -2.4H${d*21.4}V0H${d*1.4}Z" fill="${shoe}"/><path d="M${d*3} -8H${d*12}" stroke="#fff" stroke-width="1.4" opacity=".7"/><path d="M${d*6.6} -7L${d*10.4} -4.8M${d*4.6} -5.4L${d*8.4} -3.2" stroke="#9AA3AB" stroke-width=".7"/>`};
-  const hip=`<rect x="-17" y="-62" width="34" height="19" rx="5" fill="${pants}"/>`;
-  return`<ellipse cx="0" cy="2" rx="31" ry="5" fill="rgba(0,0,0,.28)"/>`+L(-1)+L(1)+shoeP(-1)+shoeP(1)+(bare?`<rect x="-17" y="-62" width="34" height="19" rx="5" fill="#101820"/>`:hip)+
+  const hip=`<rect x="-17" y="-50" width="34" height="14" rx="4" fill="${pants}"/>`;
+  const tail=`<path d="M-19.6 -60L-18.6 -37Q0 -31 18.6 -37L19.6 -60Z" fill="${shirt}"/><path d="M19.6 -60L18.6 -37Q14 -35.6 11 -35.2L12 -60Z" fill="#000" opacity=".14"/><path d="M-19.6 -60L-18.6 -37Q-15 -35.8 -12 -35.2L-13 -60Z" fill="#fff" opacity=".1"/><path d="M-18.6 -37Q0 -31 18.6 -37" fill="none" stroke="#000" stroke-width="1.4" opacity=".22"/><path d="M-4 -58Q-2 -46 -5 -36M5 -58Q4 -46 7 -36" fill="none" stroke="#000" stroke-width="1.2" opacity=".08"/>`;
+  return`<ellipse cx="0" cy="2" rx="31" ry="5" fill="rgba(0,0,0,.28)"/>`+L(-1)+L(1)+shoeP(-1)+shoeP(1)+(bare?`<rect x="-17" y="-50" width="34" height="14" rx="4" fill="#101820"/>`:hip)+tail+
     arm(-1)+arm(1)+`<svg x="${-bw/2}" y="${top}" width="${bw}" height="${bh}">${avatarSvg(av)}</svg>`;
 }
 const bcLike=av=>OUTFIT[av.bandc]||'#D7A22A';
@@ -2774,7 +2775,7 @@ function roomSvg(c){
   s+=`<path d="M357 36V132M322 84H392" stroke="#fff" stroke-width="3"/>`+RR(312,132,90,7,'#fff',2,'filter="url(#f-sh)"')+PP('M330 138L398 138L470 330L360 330Z',G('g-beam',[[0,'rgba(255,255,255,.28)'],[1,'rgba(255,255,255,0)']]));
   s+=curtainArt(c.curtains);
   /* posters */
-  [['p1',138],['p2',190],['p3',242]].forEach(([k,x])=>{if(c[k]&&c[k]!=='none')s+=`<g transform="translate(${x} 28)" filter="url(#f-sh)">${RR(-3,-3,50,62,'#fff',3,'stroke="rgba(0,0,0,.2)"')}${posterArt(c[k])}${RR(0,0,44,56,G('g-pg'+k,[[0,'rgba(255,255,255,.22)'],[.5,'rgba(255,255,255,0)']],1,1))}</g>`});
+  [['p4',86],['p1',138],['p2',190],['p3',242]].forEach(([k,x])=>{if(c[k]&&c[k]!=='none')s+=`<g transform="translate(${x} 28)" filter="url(#f-sh)">${RR(-3,-3,50,62,'#fff',3,'stroke="rgba(0,0,0,.2)"')}${posterArt(c[k])}${RR(0,0,44,56,G('g-pg'+k,[[0,'rgba(255,255,255,.22)'],[.5,'rgba(255,255,255,0)']],1,1))}</g>`});
   if(c.shelf&&c.shelf!=='none')s+=shelfArt(c.shelf);
   /* left wall pieces stay on the left edge: closet, hook rack, laundry, bean bag, blaster rack */
   s+=`<g transform="translate(${-SH} 0)">`;
@@ -2817,7 +2818,7 @@ function roomSvg(c){
   s+=`<g transform="translate(-4 ${T-178})">${lampArt(c.lamp)}</g><g transform="translate(-2 ${T-178})">${deskAArt(c.deskA)}</g><g transform="translate(8 ${T-178})">${deskBArt(c.deskB)}</g>`;
   s+='</g>';
   /* Emmett, standing in the room at room scale */
-  s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(210 224)">${avatarFigure(av)}</g>`;
+  s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(206 294) scale(1.22)">${avatarFigure(av)}</g>`;
   if(halloween()){
     const pk=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})">${pumpkinSvg(40).replace(/^<svg[^>]*>/,'').replace('</svg>','')}</g>`;
     s+=`<g opacity=".85" stroke="#fff" stroke-width=".9" fill="none"><path d="M0 0L52 52M0 0L26 66M0 0L66 24M0 0L8 70M0 0L70 6"/><path d="M12 0Q10 10 0 12M26 0Q22 22 0 26M42 0Q36 36 0 42M58 0Q50 50 0 58"/></g>`;
