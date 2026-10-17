@@ -798,11 +798,35 @@ const ITEMS=[
   {id:'fbjersey',slot:'top',name:'Pro jersey',at:null,nfl:'Complete a division'},
   {id:'champ',slot:'head',name:'Champion headband',at:null,nfl:'Complete a conference'}
 ];
-/* the season: 400 stars is one 100-yard drive. Each stage covers 25 yards; the end zone is a touchdown. */
-const STOPS=[{n:'Preseason',at:0},{n:'Regular Season',at:100},{n:'Playoffs',at:200},{n:'Super Bowl',at:300},{n:'Touchdown',at:400}];
-function drive(stars){
-  const td=Math.floor(stars/400),s=stars%400;let idx=0;STOPS.forEach((p,i)=>{if(i<4&&s>=p.at)idx=i});
-  return{td,s,yards:Math.floor(s/4),idx,stage:STOPS[idx].n,next:STOPS[idx+1],toNext:STOPS[idx+1].at-s};
+/* The real 2026-27 NFL calendar (Wikipedia "2026 NFL season", checked October 2026):
+   Hall of Fame Game Aug 6; regular season Sep 9 to Jan 10 (18 weeks); Wild Card Jan 16-18; Divisional Jan 23-24;
+   Conference Championships Jan 31; Super Bowl LXI Feb 14, 2027 at SoFi Stadium. Each stage covers 25 yards of the field. */
+const SEASON={hof:new Date(2026,7,6),kick:new Date(2026,8,9),wk1:new Date(2026,8,8),wc:new Date(2027,0,16),sbw:new Date(2027,1,1),sb:new Date(2027,1,14),end:new Date(2027,1,15)};
+const STOPS=[{n:'Preseason',at:0},{n:'Regular Season',at:25},{n:'Playoffs',at:50},{n:'Super Bowl',at:75},{n:'Touchdown',at:100}];
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function season(now){
+  const D=now||new Date(),t=D.getTime(),S=SEASON,DAY=86400000;
+  const seg=(a,b,y0)=>y0+25*Math.min(1,Math.max(0,(t-a.getTime())/(b.getTime()-a.getTime())));
+  const day=new Date(D.getFullYear(),D.getMonth(),D.getDate());
+  const md=d=>`${MON[d.getMonth()]} ${d.getDate()}`,n=Math.round((new Date(2027,1,14)-day)/DAY);
+  const r={idx:0,stage:'Preseason',yards:0,week:0,line:'',sbDays:Math.max(0,n)};
+  if(t<S.hof){r.line=`Offseason. The preseason starts ${md(S.hof)}.`}
+  else if(t<S.kick){r.yards=seg(S.hof,S.kick,0);r.line=`Preseason games are on. The regular season kicks off ${md(S.kick)}.`}
+  else if(t<S.wc){
+    r.idx=1;r.stage='Regular Season';r.yards=seg(S.kick,S.wc,25);
+    const wk=Math.floor(Math.round((day-S.wk1)/DAY)/7)+1;
+    if(wk<=18){r.week=wk;r.line=`Week ${wk} of 18 in the NFL regular season. The playoffs start ${md(S.wc)}.`}
+    else r.line=`The regular season is over. The playoffs start ${md(S.wc)}.`;
+  }else if(t<S.sbw){
+    r.idx=2;r.stage='Playoffs';r.yards=seg(S.wc,S.sbw,50);
+    const d=day.getDate();
+    r.line=d<=18?'It is the Wild Card round.':d<=22?'The Divisional round is next, Jan 23-24.':d<=24?'It is the Divisional round.':d<=30?'The Conference Championships are Jan 31.':'It is Conference Championship day.';
+  }else if(t<S.end){
+    r.idx=3;r.stage='Super Bowl';r.yards=seg(S.sbw,S.end,75);
+    r.line=n>0?`Super Bowl LXI is in ${n} day${n===1?'':'s'}: ${md(S.sb)} at SoFi Stadium.`:'Super Bowl LXI is today!';
+  }else{r.idx=4;r.stage='Touchdown';r.yards=100;r.line='The season is complete and a champion has been crowned. See you next season!'}
+  r.yards=Math.round(r.yards);
+  return r;
 }
 /* Halloween: automatic seasonal theme, nothing to earn. Runs October 1 to November 2. */
 function halloween(){const d=new Date(),m=d.getMonth();return m===9||(m===10&&d.getDate()<=2)}
@@ -815,7 +839,7 @@ const BAT_PATH='M20 6C16 0 10 0 2 4C6 6 6 12 10 14C12 11 14 11 16 14L20 17L24 14
 const batSvg=w=>`<svg viewBox="0 0 40 20" width="${w||34}" aria-hidden="true"><path d="${BAT_PATH}" fill="#1B1230"/><circle cx="18" cy="6" r="1" fill="#FF9A3C"/><circle cx="22" cy="6" r="1" fill="#FF9A3C"/></svg>`;
 const cheerPick=()=>pick(halloween()?CHEERS.concat(['Spooktacular!','Boo-yah!','Fang-tastic!']):CHEERS);
 const CHEERS=['Touchdown!','What a catch!','First down!','Out of this world!','Nice throw!','Big play!'];
-/* every fact below was checked against a source (listed in the README) */
+/* every fact below was checked against a source (listed in the README). The home screen shows a different one each day. */
 const FACTS=[
   '🦖 Tyrannosaurus rex means “tyrant lizard king.”',
   '🏈 An NFL field is 100 yards between the goal lines. Add two 10-yard end zones and the whole field is 120 yards long.',
@@ -826,8 +850,71 @@ const FACTS=[
   '⚡ The original Pokémon games, Red and Green, came out in Japan on February 27, 1996, and introduced 151 Pokémon.',
   '🚀 Sunlight takes about 8 minutes and 20 seconds to reach Earth.',
   '🪐 Venus is the hottest planet. Its average surface temperature is about 462 °C (864 °F), hotter than Mercury even though Venus is farther from the Sun.',
-  '🪐 Jupiter is the largest planet in our solar system, with a mass about 317 times Earth’s.'
+  '🪐 Jupiter is the largest planet in our solar system, with a mass about 317 times Earth’s.',
+  '🏆 Super Bowl LXI is on February 14, 2027, at SoFi Stadium in Inglewood, California.',
+  '🏈 The first Super Bowl was played on January 15, 1967. The Green Bay Packers beat the Kansas City Chiefs 35 to 10.',
+  '🏈 A touchdown is worth 6 points, a field goal is worth 3, and a safety is worth 2.',
+  '🏆 The Lombardi Trophy is made by Tiffany & Co. out of sterling silver. It is about 22 inches tall.',
+  '🏈 There are 32 teams in the NFL. Since 2021 each team plays 17 regular-season games over 18 weeks, with one bye week.',
+  '🏛️ The Pro Football Hall of Fame is in Canton, Ohio. The Hall of Fame Game there kicks off the preseason every year.',
+  '🐆 The Jacksonville Jaguars played their first season in 1995. Their mascot is named Jaxson de Ville.',
+  '🗺️ Jacksonville, Florida, is the largest city by land area in the lower 48 states.',
+  '🦃 The Detroit Lions have played on Thanksgiving Day almost every year since 1934.',
+  '🏈 An official NFL football is nicknamed “The Duke,” after Wellington “Duke” Mara, the longtime owner of the New York Giants.',
+  '🦖 Dinosaur means “terrible lizard.” The scientist Richard Owen came up with the name in 1842.',
+  '🦖 In the Jurassic Park movies, T. rex is the star, but T. rex lived in the Cretaceous Period, which came after the Jurassic.',
+  '🦖 Velociraptor was only about the size of a turkey, and scientists think it had feathers.',
+  '🦖 Birds are living dinosaurs. They are the descendants of small, feathered dinosaurs.',
+  '🦖 Triceratops means “three-horned face.”',
+  '🦖 Sue, a T. rex skeleton at the Field Museum in Chicago, is about 90 percent complete. It was found in South Dakota in 1990.',
+  '🥋 Karate means “empty hand.” It began on the island of Okinawa, Japan.',
+  '🥋 Karate was added to the Olympic Games for the first time at Tokyo 2020, which was held in 2021.',
+  '🎬 Jackie Chan was born in Hong Kong in 1954 and started training in martial arts and acrobatics as a young child.',
+  '🥏 Ultimate was invented by students at Columbia High School in Maplewood, New Jersey, in 1968.',
+  '🥏 The word Frisbee comes from the Frisbie Pie Company. College students used to toss its empty pie tins.',
+  '🧱 LEGO comes from the Danish words “leg godt,” which mean “play well.” The company started in Denmark in 1932.',
+  '🧱 LEGO bricks from 1958 still snap together with the bricks made today.',
+  '⛏️ A Minecraft Creeper started as a mistake. The creator was making a pig, mixed up some numbers, and it came out tall and long.',
+  '⛏️ Minecraft is the best-selling video game of all time.',
+  '⚡ Pikachu is number 25 in the Pokédex.',
+  '⚡ Satoshi Tajiri created Pokémon. He loved collecting bugs when he was a kid.',
+  '🎮 The first Xbox came out on November 15, 2001, in North America.',
+  '🎮 The Nintendo Switch came out on March 3, 2017.',
+  '🎮 Mario first appeared in the 1981 arcade game Donkey Kong. His first name was Jumpman.',
+  '🐢 The Teenage Mutant Ninja Turtles are named after four famous artists: Leonardo, Donatello, Michelangelo and Raphael.',
+  '🐢 The Teenage Mutant Ninja Turtles started as a comic book in 1984, drawn by Kevin Eastman and Peter Laird.',
+  '📚 Dav Pilkey, the author of Dog Man and Captain Underpants, made his first comic books when he was a kid in elementary school.',
+  '🌀 The Galveston hurricane of 1900 is the deadliest natural disaster in United States history. After it, the city built a seawall and raised the ground.',
+  '📺 ESPN went on the air on September 7, 1979, from Bristol, Connecticut.',
+  '🕹️ Skee-Ball is more than 100 years old. The first patent for it was in 1908.',
+  '🪐 Mars has the tallest volcano in the solar system, Olympus Mons. It is about two and a half times as tall as Mount Everest.',
+  '🪐 A day on Venus is longer than its year. Venus takes about 243 Earth days to spin once and about 225 Earth days to circle the Sun.',
+  '🪐 Saturn is so light for its size that it would float in a giant bathtub of water.',
+  '🐙 An octopus has three hearts.',
+  '🍯 Honey almost never spoils, because it has very little water and is very acidic.',
+  '🍌 A banana is a berry, but a strawberry is not.',
+  '⚡ A bolt of lightning is hotter than the surface of the Sun.',
+  '🦈 Sharks are older than trees. Sharks have lived on Earth for more than 400 million years.',
+  '🦩 A group of flamingos is called a flamboyance.',
+  '🐆 A cheetah can run about 60 miles per hour in short sprints. It is the fastest land animal.',
+  '🦴 A grown-up has 206 bones, but a baby has about 300.',
+  '👂 The smallest bone in your body is the stirrup, deep inside your ear.',
+  '❤️ Your heart beats about 100,000 times every day.',
+  '💪 Muscles get stronger while you rest. Sleep is part of training.'
 ];
+const FACTS_HW=[
+  '🦇 Bats are the only mammals that can truly fly.',
+  '🎃 People first carved jack-o’-lanterns out of turnips in Ireland. Pumpkins came later.',
+  '🎃 A pumpkin is a fruit, because it grows from a flower and holds seeds.'
+];
+/* one fact per day, in a scrambled order that does not repeat until the whole pool has been shown */
+function factPool(){return(halloween()?FACTS_HW.concat(FACTS):FACTS).concat(typeof FL_FACTS!=='undefined'?FL_FACTS.map(f=>f[0]+' '+f[1]):[])}
+function factOfDay(offset){
+  const P=factPool(),N=P.length,d=new Date();
+  const n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000)+(offset||0);
+  let k=7;const gcd=(a,b)=>b?gcd(b,a%b):a;while(gcd(k,N)!==1)k++;
+  return P[((n*k)%N+N)%N];
+}
 const star=(cx,cy,r,fill)=>{const p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.45:r;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(' ')}" fill="${fill}"/>`};
 const cloud=(cx,cy,R,n,r,f)=>{let t=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="${f}"/>`;for(let i=0;i<n;i++){const a=i*2*Math.PI/n;t+=`<circle cx="${(cx+R*Math.cos(a)).toFixed(1)}" cy="${(cy+R*Math.sin(a)).toFixed(1)}" r="${r}" fill="${f}"/>`}return t};
 const chain=(x1,y1,x2,y2,n,r,f)=>{let t='';for(let i=0;i<n;i++){const k=i/(n-1);t+=`<circle cx="${(x1+(x2-x1)*k).toFixed(1)}" cy="${(y1+(y2-y1)*k).toFixed(1)}" r="${r}" fill="${f}"/>`}return t};
@@ -918,27 +1005,27 @@ function kartSvg(){
   return`<svg viewBox="0 0 64 40" width="56" aria-hidden="true"><ellipse cx="32" cy="20" rx="26" ry="14" fill="#9A5B33" stroke="#0B2233" stroke-width="2"/><path d="M18 20H46M24 15V25M30 14V26M36 14V26M42 15V25" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
 
-/* football field progress: yards gained toward the end zone, with a scoreboard */
-function fieldSvg(stars){
-  const d=drive(stars),X=y=>24+y*2.52;let g='';
+/* football field: where the real NFL season is today, with a scoreboard */
+function fieldSvg(){
+  const d=season(),X=y=>24+y*2.52;let g='';
   g+=`<rect x="2" y="22" width="296" height="48" rx="8" fill="#2E8B4E"/><rect x="2" y="22" width="22" height="48" rx="6" fill="#0A4F5C"/><rect x="276" y="22" width="22" height="48" rx="6" fill="#B8860B"/>`;
   for(let i=0;i<10;i++)g+=`<rect x="${X(i*10)}" y="22" width="25.2" height="48" fill="${i%2?'#2A8049':'#339A57'}"/>`;
   for(let i=0;i<=100;i+=10)g+=`<line x1="${X(i)}" x2="${X(i)}" y1="22" y2="70" stroke="#fff" stroke-width="${i%50?1:1.8}" opacity=".75"/>`;
   for(let i=1;i<10;i++){const n=i<=5?i*10:(10-i)*10;g+=`<text x="${X(i*10)}" y="50" text-anchor="middle" style="font-size:8px;opacity:.8">${n}</text>`}
   g+=`<text x="13" y="50" text-anchor="middle" transform="rotate(-90 13 46)" style="font-size:7px;letter-spacing:1px">START</text><text x="287" y="50" text-anchor="middle" transform="rotate(90 287 46)" style="font-size:7px;letter-spacing:1px">END ZONE</text>`;
   STOPS.slice(0,4).forEach((p,i)=>{
-    const x=X(i*25),on=d.s>=p.at,w=p.n.split(' ');
+    const x=X(i*25),on=d.idx>=i,w=p.n.split(' ');
     g+=`<g opacity="${on?1:.8}"><path d="M${x} 21V6" stroke="#fff" stroke-width="1.5"/><path d="M${x} 6H${x+9}L${x+6} 9L${x+9} 12H${x}Z" fill="${on?'#FFB400':'#C9D1D6'}"/>${w.map((t,j)=>`<text x="${x+12}" y="${9+j*8.5}" style="font-size:7.5px">${t}</text>`).join('')}</g>`;
   });
   const mx=X(d.yards);
   g+=`<line x1="${X(0)}" x2="${mx.toFixed(1)}" y1="62" y2="62" stroke="#FFD84D" stroke-width="3" stroke-linecap="round"/>`;
   g+=`<g transform="translate(${mx.toFixed(1)} 50) rotate(-20)"><ellipse rx="9" ry="5.6" fill="#9A5B33" stroke="#fff" stroke-width="1.4"/><path d="M-3 0H3M-1.8 -2V2M0 -2V2M1.8 -2V2" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g>`;
-  return`<svg viewBox="0 0 300 72" role="img" aria-label="Football field: ${d.yards} yards gained toward the end zone">${g}</svg>`;
+  return`<svg viewBox="0 0 300 72" role="img" aria-label="NFL season progress: ${d.stage}, ${d.line}">${g}</svg>`;
 }
 function scoreboardHtml(stars){
-  const d=drive(stars),pad=n=>String(n).padStart(2,'0');
-  return`<div class="sboard" role="group" aria-label="Scoreboard"><div class="sbt">BRAIN LAB BOWL</div>
-  <div class="sbr"><div><small>EMMETT</small><b>${stars}</b></div><div class="wide"><small>${esc(d.stage.toUpperCase())}</small><b>${pad(d.yards)} YDS</b></div><div><small>TO GO</small><b>${pad(100-d.yards)}</b></div><div><small>TD</small><b>${d.td}</b></div></div></div>`;
+  const d=season(),pad=n=>String(n).padStart(2,'0');
+  return`<div class="sboard" role="group" aria-label="Scoreboard"><div class="sbt">NFL SEASON 2026-27</div>
+  <div class="sbr"><div><small>EMMETT</small><b>${stars}</b></div><div class="wide"><small>${esc(d.stage.toUpperCase())}</small><b>${d.week?'WEEK '+pad(d.week):pad(d.yards)+' YDS'}</b></div><div><small>YARD LINE</small><b>${pad(d.yards)}</b></div><div><small>TO SB</small><b>${d.idx>=4?'--':pad(d.sbDays)}</b></div></div></div>`;
 }
 
 
@@ -1381,7 +1468,7 @@ function finishSpell(){
   saveSession(sess);
   const now=stats().stars;
   const unlocked=ITEMS.filter(it=>it.at>before&&it.at<=now).map(it=>it.name);
-  const stop=STOPS.filter(p=>p.at>0&&p.at>before&&p.at<=now).map(p=>p.n);
+  const stop=[];
   sp.result=Object.assign({},sess,{items,unlocked,stop,room:roomWins(sess)});
   S.view='spresults';render();
 }
@@ -1627,7 +1714,7 @@ function finishNfl(game,items,missed){
     allNow:infoA.all&&!infoB.all,rulesNew:infoA.rulesM.length-infoB.rulesM.length,
     milestone:infoA.bonus-infoB.bonus,
     items:ITEMS.filter(x=>x.nfl&&nflHas(x.id,infoA)&&!hadItems.includes(x.id)).map(x=>x.name).concat(ITEMS.filter(x=>!x.nfl&&x.at>before&&x.at<=now).map(x=>x.name)),
-    stops:STOPS.filter(p=>p.at>0&&p.at>before&&p.at<=now).map(p=>p.n),room:roomWins(sess)};
+    stops:[],room:roomWins(sess)};
   S.view='fbres';render();
 }
 function finishQuiz(){
@@ -1731,10 +1818,9 @@ function homeView(){
   const home=nav('Brain Lab',S.home?`<button class="pill" data-act="rehome">${esc(S.home)}</button>`:'');
   if(!S.home||S.view==='pickhome')return home+homePicker()+tabbar('home');
   const st=stats(),av=getAv(),last=S.sessions[0];
-  const dr=drive(st.stars);
-  const nextTxt=`${dr.td?`Touchdowns: ${dr.td}. `:''}${dr.next.n==='Touchdown'?`Only ${dr.toNext} more stars to score a touchdown!`:`Next: ${dr.next.n}, only ${dr.toNext} more stars.`}`;
+  const nextTxt=esc(season().line);
   const m=(k,ic,t,d,lead)=>`<button class="mode ${lead?'lead':''}" data-act="nav" data-v="${k}"><span class="ic">${ICON[ic]}</span><span><h3>${t}</h3><span class="d">${d}</span></span>${ICON.next}</button>`;
-  const fact=FACTS[Math.floor(Date.now()/86400000)%FACTS.length];
+  const fact=factOfDay();
   const lastMath=mathSess()[0];
   const wst=wordStats(),cur=spLists().find(l=>l.id===S.splist)||LESSONS[0];
   const mastered=cur.words.filter(w=>wordLevel(wst[w])==='m').length;
@@ -1742,7 +1828,7 @@ function homeView(){
   <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${avatarSvg(av)}</div>
     <div class="who"><h2>${halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
     <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${st.sessions}</b><span>sessions</span></div></div>
-    <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p></div></section>
+    <div class="journey">${fieldSvg()}${scoreboardHtml(st.stars)}<p>${nextTxt}</p></div></section>
   ${halloween()?`<section class="hwcard">${pumpkinSvg(46)}<div><b>Halloween season!</b><span>${hwMessage()}</span></div>${batSvg(34)}</section>`:''}
   <div class="sect">Pick a subject</div>
   <section class="modes">
@@ -1845,7 +1931,7 @@ function resultsView(){
   const s=run.result,p=pct(s),exam=s.mode==='exam';
   const msg=p>=90?'Amazing work! You really know this.':p>=75?'Strong work. A little more practice and it will be even better.':'Good effort. Every try builds the skill. Keep going.';
   const missed=run.qs.map((q,i)=>({q,it:s.items[i]})).filter(x=>!x.it.ok);
-  const fact=FACTS[Math.floor(Math.random()*FACTS.length)];
+  const fact=factOfDay(1+Math.floor(Math.random()*30));
   const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`Moving up: ${n}!`),...(s.hi?['New high score! Your best stars in one session.']:[])];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Full time!</span><span style="min-width:64px"></span></div>`+`
   <section class="card"><h2>${exam?'Final whistle!':'Great session!'}</h2>
@@ -2267,7 +2353,7 @@ function geoFinish(){
     missed:geo.qs.map((q,i)=>({q,st:geo.st[i]})).filter(x=>!x.st.ok),
     newly:geoMastered().filter(s=>!mBefore.includes(s.ab)).map(s=>s.name),
     unlocked:ITEMS.filter(it=>it.at!==null&&it.at>before&&it.at<=now).map(it=>it.name),
-    stop:STOPS.filter(p=>p.at>0&&p.at>before&&p.at<=now).map(p=>p.n),
+    stop:[],
     room:roomWins(sess)});
   S.view='gres';render();
 }
@@ -2997,7 +3083,7 @@ function finish(){
   saveSession(sess);
   const now=stats().stars;
   const unlocked=ITEMS.filter(it=>it.at!==null&&it.at>before&&it.at<=now).map(it=>it.name);
-  const stop=STOPS.filter(p=>p.at>0&&p.at>before&&p.at<=now).map(p=>p.n);
+  const stop=[];
   run.result=Object.assign({},sess,{items,unlocked,stop,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
 }
 function guidedSubmit(val){

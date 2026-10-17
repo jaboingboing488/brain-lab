@@ -57,3 +57,7 @@ Check that the site loads and says Synced, Firebase usage is inside the free Spa
 - Minecraft release: Rolling Stone; Minecraft release history
 - Pokémon: Bulbapedia; Serebii (generation I)
 - Sunlight and Venus: NASA Astrobiology quick facts; Jupiter: Caltech/IPAC solar system brochure
+
+## The football field and fun facts
+- The field on the home screen follows the real 2026-27 NFL calendar, not Emmett's stars. Dates are from Wikipedia's "2026 NFL season" article, checked in October 2026: Hall of Fame Game Aug 6, regular season Sep 9 to Jan 10 (18 weeks), Wild Card Jan 16-18, Divisional Jan 23-24, Conference Championships Jan 31, Super Bowl LXI Feb 14, 2027 at SoFi Stadium. Update `SEASON` in the page script each year.
+- The home screen shows one fun fact per day, from a pool that does not repeat until every fact has been shown.
