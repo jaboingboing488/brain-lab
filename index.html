@@ -249,6 +249,14 @@ textarea.txt{font:inherit;padding:12px 14px;border:0;border-radius:14px;backgrou
 @media(max-width:480px){.card{padding:16px}.bar{grid-template-columns:1fr 1fr 44px}.hero{grid-template-columns:96px 1fr}.hero .av{width:96px;height:104px}}
 
 .sboard{background:#0B1620;border-radius:14px;padding:8px 10px 10px;margin-top:8px;box-shadow:inset 0 0 0 2px #1d2b38}
+.szn{margin-top:8px;background:#0B1620;border-radius:14px;padding:8px 10px 8px;box-shadow:inset 0 0 0 2px #1d2b38}
+.szn p{margin-top:6px;text-align:center}
+.szr{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.sz{border-top:4px solid #26384a;padding-top:4px;text-align:center;min-width:0}
+.sz b{display:block;font:800 .7rem var(--f-ui);color:#7F95A6}
+.sz small{display:block;font-size:.62rem;color:#6F8597;font-weight:700;white-space:nowrap}
+.sz.done{border-color:#B8860B}.sz.done b{color:#E8C25A}
+.sz.now{border-color:#FFB400}.sz.now b{color:#FFB400}.sz.now small{color:#fff}
 .sbt{font:800 .6rem var(--f-ui);letter-spacing:.22em;color:#7FA6BF;text-align:center}
 .sbr{display:grid;grid-template-columns:1fr 1.7fr 1fr .6fr;gap:6px;text-align:center;margin-top:4px}
 .sbr small{display:block;font-size:.58rem;color:#9FB6C7;letter-spacing:.08em;font-weight:800;white-space:nowrap}
@@ -802,30 +810,34 @@ const ITEMS=[
    Hall of Fame Game Aug 6; regular season Sep 9 to Jan 10 (18 weeks); Wild Card Jan 16-18; Divisional Jan 23-24;
    Conference Championships Jan 31; Super Bowl LXI Feb 14, 2027 at SoFi Stadium. Each stage covers 25 yards of the field. */
 const SEASON={hof:new Date(2026,7,6),kick:new Date(2026,8,9),wk1:new Date(2026,8,8),wc:new Date(2027,0,16),sbw:new Date(2027,1,1),sb:new Date(2027,1,14),end:new Date(2027,1,15)};
-const STOPS=[{n:'Preseason',at:0},{n:'Regular Season',at:25},{n:'Playoffs',at:50},{n:'Super Bowl',at:75},{n:'Touchdown',at:100}];
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const PHASES=[['Preseason','Aug 6'],['Regular Season','Sep 9'],['Playoffs','Jan 16'],['Super Bowl','Feb 14']];
+/* Emmett's drive: 400 stars from his math, spelling, geography and football work is one 100-yard drive to the end zone. The season does not move it. */
+function drive(stars){
+  const td=Math.floor(stars/400),s=stars%400;
+  return{td,s,yards:Math.floor(s/4),toGo:100-Math.floor(s/4),toTd:400-s};
+}
+/* The season: where the real NFL calendar is today. Only the date moves it. */
 function season(now){
   const D=now||new Date(),t=D.getTime(),S=SEASON,DAY=86400000;
-  const seg=(a,b,y0)=>y0+25*Math.min(1,Math.max(0,(t-a.getTime())/(b.getTime()-a.getTime())));
   const day=new Date(D.getFullYear(),D.getMonth(),D.getDate());
   const md=d=>`${MON[d.getMonth()]} ${d.getDate()}`,n=Math.round((new Date(2027,1,14)-day)/DAY);
-  const r={idx:0,stage:'Preseason',yards:0,week:0,line:'',sbDays:Math.max(0,n)};
+  const r={idx:-1,stage:'Offseason',week:0,line:'',sbDays:Math.max(0,n)};
   if(t<S.hof){r.line=`Offseason. The preseason starts ${md(S.hof)}.`}
-  else if(t<S.kick){r.yards=seg(S.hof,S.kick,0);r.line=`Preseason games are on. The regular season kicks off ${md(S.kick)}.`}
+  else if(t<S.kick){r.idx=0;r.stage='Preseason';r.line=`Preseason games are on. The regular season kicks off ${md(S.kick)}.`}
   else if(t<S.wc){
-    r.idx=1;r.stage='Regular Season';r.yards=seg(S.kick,S.wc,25);
+    r.idx=1;r.stage='Regular Season';
     const wk=Math.floor(Math.round((day-S.wk1)/DAY)/7)+1;
-    if(wk<=18){r.week=wk;r.line=`Week ${wk} of 18 in the NFL regular season. The playoffs start ${md(S.wc)}.`}
+    if(wk<=18){r.week=wk;r.line=`Week ${wk} of 18. The playoffs start ${md(S.wc)}.`}
     else r.line=`The regular season is over. The playoffs start ${md(S.wc)}.`;
   }else if(t<S.sbw){
-    r.idx=2;r.stage='Playoffs';r.yards=seg(S.wc,S.sbw,50);
+    r.idx=2;r.stage='Playoffs';
     const d=day.getDate();
     r.line=d<=18?'It is the Wild Card round.':d<=22?'The Divisional round is next, Jan 23-24.':d<=24?'It is the Divisional round.':d<=30?'The Conference Championships are Jan 31.':'It is Conference Championship day.';
   }else if(t<S.end){
-    r.idx=3;r.stage='Super Bowl';r.yards=seg(S.sbw,S.end,75);
+    r.idx=3;r.stage='Super Bowl';
     r.line=n>0?`Super Bowl LXI is in ${n} day${n===1?'':'s'}: ${md(S.sb)} at SoFi Stadium.`:'Super Bowl LXI is today!';
-  }else{r.idx=4;r.stage='Touchdown';r.yards=100;r.line='The season is complete and a champion has been crowned. See you next season!'}
-  r.yards=Math.round(r.yards);
+  }else{r.idx=4;r.stage='Season over';r.line='The season is complete and a champion has been crowned. See you next season!'}
   return r;
 }
 /* Halloween: automatic seasonal theme, nothing to earn. Runs October 1 to November 2. */
@@ -1005,27 +1017,28 @@ function kartSvg(){
   return`<svg viewBox="0 0 64 40" width="56" aria-hidden="true"><ellipse cx="32" cy="20" rx="26" ry="14" fill="#9A5B33" stroke="#0B2233" stroke-width="2"/><path d="M18 20H46M24 15V25M30 14V26M36 14V26M42 15V25" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
 
-/* football field: where the real NFL season is today, with a scoreboard */
-function fieldSvg(){
-  const d=season(),X=y=>24+y*2.52;let g='';
+/* football field: Emmett's drive toward the end zone, moved only by his stars */
+function fieldSvg(stars){
+  const d=drive(stars),X=y=>24+y*2.52;let g='';
   g+=`<rect x="2" y="22" width="296" height="48" rx="8" fill="#2E8B4E"/><rect x="2" y="22" width="22" height="48" rx="6" fill="#0A4F5C"/><rect x="276" y="22" width="22" height="48" rx="6" fill="#B8860B"/>`;
   for(let i=0;i<10;i++)g+=`<rect x="${X(i*10)}" y="22" width="25.2" height="48" fill="${i%2?'#2A8049':'#339A57'}"/>`;
   for(let i=0;i<=100;i+=10)g+=`<line x1="${X(i)}" x2="${X(i)}" y1="22" y2="70" stroke="#fff" stroke-width="${i%50?1:1.8}" opacity=".75"/>`;
   for(let i=1;i<10;i++){const n=i<=5?i*10:(10-i)*10;g+=`<text x="${X(i*10)}" y="50" text-anchor="middle" style="font-size:8px;opacity:.8">${n}</text>`}
   g+=`<text x="13" y="50" text-anchor="middle" transform="rotate(-90 13 46)" style="font-size:7px;letter-spacing:1px">START</text><text x="287" y="50" text-anchor="middle" transform="rotate(90 287 46)" style="font-size:7px;letter-spacing:1px">END ZONE</text>`;
-  STOPS.slice(0,4).forEach((p,i)=>{
-    const x=X(i*25),on=d.idx>=i,w=p.n.split(' ');
-    g+=`<g opacity="${on?1:.8}"><path d="M${x} 21V6" stroke="#fff" stroke-width="1.5"/><path d="M${x} 6H${x+9}L${x+6} 9L${x+9} 12H${x}Z" fill="${on?'#FFB400':'#C9D1D6'}"/>${w.map((t,j)=>`<text x="${x+12}" y="${9+j*8.5}" style="font-size:7.5px">${t}</text>`).join('')}</g>`;
-  });
   const mx=X(d.yards);
   g+=`<line x1="${X(0)}" x2="${mx.toFixed(1)}" y1="62" y2="62" stroke="#FFD84D" stroke-width="3" stroke-linecap="round"/>`;
   g+=`<g transform="translate(${mx.toFixed(1)} 50) rotate(-20)"><ellipse rx="9" ry="5.6" fill="#9A5B33" stroke="#fff" stroke-width="1.4"/><path d="M-3 0H3M-1.8 -2V2M0 -2V2M1.8 -2V2" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g>`;
-  return`<svg viewBox="0 0 300 72" role="img" aria-label="NFL season progress: ${d.stage}, ${d.line}">${g}</svg>`;
+  return`<svg viewBox="0 18 300 54" role="img" aria-label="Football field: ${d.yards} yards gained toward the end zone, ${d.toGo} to go">${g}</svg>`;
 }
 function scoreboardHtml(stars){
-  const d=season(),pad=n=>String(n).padStart(2,'0');
-  return`<div class="sboard" role="group" aria-label="Scoreboard"><div class="sbt">NFL SEASON 2026-27</div>
-  <div class="sbr"><div><small>EMMETT</small><b>${stars}</b></div><div class="wide"><small>${esc(d.stage.toUpperCase())}</small><b>${d.week?'WEEK '+pad(d.week):pad(d.yards)+' YDS'}</b></div><div><small>YARD LINE</small><b>${pad(d.yards)}</b></div><div><small>TO SB</small><b>${d.idx>=4?'--':pad(d.sbDays)}</b></div></div></div>`;
+  const d=drive(stars),pad=n=>String(n).padStart(2,'0');
+  return`<div class="sboard" role="group" aria-label="Scoreboard"><div class="sbt">BRAIN LAB BOWL</div>
+  <div class="sbr"><div><small>EMMETT</small><b>${stars}</b></div><div class="wide"><small>THIS DRIVE</small><b>${pad(d.yards)} YDS</b></div><div><small>TO GO</small><b>${pad(d.toGo)}</b></div><div><small>TD</small><b>${d.td}</b></div></div></div>`;
+}
+/* the real NFL season, shown on its own: it moves with the calendar and has nothing to do with Emmett's yards */
+function seasonBarHtml(){
+  const d=season();
+  return`<div class="szn" role="group" aria-label="NFL season 2026-27: ${esc(d.stage)}"><div class="sbt">NFL SEASON 2026-27</div><div class="szr">${PHASES.map((p,i)=>`<div class="sz ${i<d.idx?'done':i===d.idx?'now':''}"><b>${p[0]}</b><small>${i===d.idx&&d.week?'Week '+d.week+' of 18':p[1]}</small></div>`).join('')}</div><p>${esc(d.line)}</p></div>`;
 }
 
 
@@ -1468,7 +1481,7 @@ function finishSpell(){
   saveSession(sess);
   const now=stats().stars;
   const unlocked=ITEMS.filter(it=>it.at>before&&it.at<=now).map(it=>it.name);
-  const stop=[];
+  const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
   sp.result=Object.assign({},sess,{items,unlocked,stop,room:roomWins(sess)});
   S.view='spresults';render();
 }
@@ -1714,7 +1727,7 @@ function finishNfl(game,items,missed){
     allNow:infoA.all&&!infoB.all,rulesNew:infoA.rulesM.length-infoB.rulesM.length,
     milestone:infoA.bonus-infoB.bonus,
     items:ITEMS.filter(x=>x.nfl&&nflHas(x.id,infoA)&&!hadItems.includes(x.id)).map(x=>x.name).concat(ITEMS.filter(x=>!x.nfl&&x.at>before&&x.at<=now).map(x=>x.name)),
-    stops:[],room:roomWins(sess)};
+    stops:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),room:roomWins(sess)};
   S.view='fbres';render();
 }
 function finishQuiz(){
@@ -1818,7 +1831,8 @@ function homeView(){
   const home=nav('Brain Lab',S.home?`<button class="pill" data-act="rehome">${esc(S.home)}</button>`:'');
   if(!S.home||S.view==='pickhome')return home+homePicker()+tabbar('home');
   const st=stats(),av=getAv(),last=S.sessions[0];
-  const nextTxt=esc(season().line);
+  const dr=drive(st.stars);
+  const nextTxt=`${dr.td?`Touchdowns: ${dr.td}. `:''}Only ${dr.toTd} more stars to reach the end zone!`;
   const m=(k,ic,t,d,lead)=>`<button class="mode ${lead?'lead':''}" data-act="nav" data-v="${k}"><span class="ic">${ICON[ic]}</span><span><h3>${t}</h3><span class="d">${d}</span></span>${ICON.next}</button>`;
   const fact=factOfDay();
   const lastMath=mathSess()[0];
@@ -1828,7 +1842,7 @@ function homeView(){
   <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${avatarSvg(av)}</div>
     <div class="who"><h2>${halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
     <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${st.sessions}</b><span>sessions</span></div></div>
-    <div class="journey">${fieldSvg()}${scoreboardHtml(st.stars)}<p>${nextTxt}</p></div></section>
+    <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
   ${halloween()?`<section class="hwcard">${pumpkinSvg(46)}<div><b>Halloween season!</b><span>${hwMessage()}</span></div>${batSvg(34)}</section>`:''}
   <div class="sect">Pick a subject</div>
   <section class="modes">
@@ -1932,7 +1946,7 @@ function resultsView(){
   const msg=p>=90?'Amazing work! You really know this.':p>=75?'Strong work. A little more practice and it will be even better.':'Good effort. Every try builds the skill. Keep going.';
   const missed=run.qs.map((q,i)=>({q,it:s.items[i]})).filter(x=>!x.it.ok);
   const fact=factOfDay(1+Math.floor(Math.random()*30));
-  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`Moving up: ${n}!`),...(s.hi?['New high score! Your best stars in one session.']:[])];
+  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.hi?['New high score! Your best stars in one session.']:[])];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Full time!</span><span style="min-width:64px"></span></div>`+`
   <section class="card"><h2>${exam?'Final whistle!':'Great session!'}</h2>
   <div class="row" style="gap:22px"><div><div class="bigscore">${s.correct}/${s.total}</div><span class="mute">${p}% right</span></div>
@@ -2110,7 +2124,7 @@ function spResultsView(){
   const s=sp.result,p=pct(s),test=sp.game==='test';
   const msg=p>=90?'Amazing spelling! You really know these words.':p>=75?'Strong work. A little more practice and every word will stick.':'Good effort. Every try builds the skill. Keep going.';
   const missed=s.items.filter(i=>!i.ok),helped=s.items.filter(i=>i.ok&&i.h).length;
-  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`Moving up: ${n}!`)];
+  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`)];
   const fact=FACTS[Math.floor(Math.random()*FACTS.length)];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Great job!</span><span style="min-width:64px"></span></div>
   <section class="card"><h2>${test?'Test complete!':'Nice practice!'}</h2>
@@ -2196,7 +2210,7 @@ function fbResView(){
   const wins=[
     ...x.cards.map(n=>`New card: ${n}`),...x.divs.map(d=>`${d} champion! Bonus stars added.`),...x.confs.map(c=>`${c} champion! Bonus stars and a prize.`),
     ...(x.allNow?['Hall of Fame! You mastered all 32 teams.']:[]),...(x.rulesNew>0&&x.milestone>0&&!x.divs.length&&!x.confs.length?['Rules bonus earned!']:[]),
-    ...x.items.map(n=>`New in your closet: ${n}`),...(x.room||[]).map(n=>`New for your room: ${n}`),...x.stops.map(n=>`Moving up: ${n}!`)
+    ...x.items.map(n=>`New in your closet: ${n}`),...(x.room||[]).map(n=>`New for your room: ${n}`),...x.stops.map(n=>`${n}`)
   ];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Final whistle!</span><span style="min-width:64px"></span></div>
   <section class="card"><h2>${esc(FB_GAMES[x.game].name)} complete!</h2>
@@ -2353,7 +2367,7 @@ function geoFinish(){
     missed:geo.qs.map((q,i)=>({q,st:geo.st[i]})).filter(x=>!x.st.ok),
     newly:geoMastered().filter(s=>!mBefore.includes(s.ab)).map(s=>s.name),
     unlocked:ITEMS.filter(it=>it.at!==null&&it.at>before&&it.at<=now).map(it=>it.name),
-    stop:[],
+    stop:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),
     room:roomWins(sess)});
   S.view='gres';render();
 }
@@ -2431,7 +2445,7 @@ function gRunView(){
 function gResView(){
   const s=geo.result,p=pct(s);
   const msg=p>=90?'Amazing work! You really know your geography.':p>=70?'Strong work. A little more practice and it will stick.':'Good effort. Every try builds it. Keep going.';
-  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`Moving up: ${n}!`),...(s.newly||[]).map(n=>`Mastered: ${n}`)];
+  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.newly||[]).map(n=>`Mastered: ${n}`)];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Full time!</span><span style="min-width:64px"></span></div>
   <section class="card"><h2>Great session!</h2>
   <div class="row" style="gap:22px"><div><div class="bigscore">${s.correct}/${s.total}</div><span class="mute">${p}% right</span></div><div><div class="bigscore"><span style="color:var(--gold)">★</span> +${s.stars}</div><span class="mute">stars earned</span></div></div>
@@ -3083,7 +3097,7 @@ function finish(){
   saveSession(sess);
   const now=stats().stars;
   const unlocked=ITEMS.filter(it=>it.at!==null&&it.at>before&&it.at<=now).map(it=>it.name);
-  const stop=[];
+  const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
   run.result=Object.assign({},sess,{items,unlocked,stop,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
 }
 function guidedSubmit(val){
