@@ -9,7 +9,7 @@ service cloud.firestore {
         && d.id is string && d.id == id && d.id.size() <= 24
         && d.ts is number && d.ts > 1700000000000
         && d.ts < request.time.toMillis() + 86400000
-        && d.mode in ['smart','guided','exam','nfl']
+        && d.mode in ['smart','guided','exam','spell','nfl']
         && d.home is string && d.home.size() <= 20
         && d.total is int && d.total >= 1 && d.total <= 20
         && d.correct is int && d.correct >= 0 && d.correct <= d.total
@@ -25,12 +25,14 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // The avatar/closet look and the math topics follow Emmett between homes.
+    // The avatar/closet look, math topics, chosen spelling lesson and custom spelling lists follow Emmett between homes.
     function validProfile(d) {
-      return d.keys().hasOnly(['avatar','topics','updated'])
-        && d.keys().hasAll(['avatar','topics','updated'])
+      return d.keys().hasOnly(['avatar','topics','splist','lists','updated'])
+        && d.keys().hasAll(['avatar','topics','splist','lists','updated'])
         && d.avatar is map
         && d.topics is list && d.topics.size() >= 1 && d.topics.size() <= 5
+        && d.splist is string && d.splist.size() <= 24
+        && d.lists is list && d.lists.size() <= 10
         && d.updated is number;
     }
 
