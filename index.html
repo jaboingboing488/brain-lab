@@ -2531,68 +2531,6 @@ function packArt(id){
   if(id==='black'||id==='teal'||id==='gold')d+=RR(86,102,16,3,'rgba(255,255,255,.3)',1.5);
   return d;
 }
-function roomSvg(c){
-  const wall=WALLC[c.wall]||WALLC.cloud,dark=c.wall==='night';
-  const sheet=roomOpt('sheets',c.sheets);
-  const SH=178;
-  let s=RR(0,0,780,330,wall)+RR(0,224,780,106,'#C79A63')+RR(0,224,780,106,'url(#rm-floor)');
-  s=`<defs><linearGradient id="rm-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(0,0,0,.18)"/><stop offset="1" stop-color="rgba(255,255,255,.08)"/></linearGradient><linearGradient id="rm-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC4F0"/><stop offset="1" stop-color="#CBEBFA"/></linearGradient></defs>`+s;
-  for(let i=0;i<44;i++)s+=`<path d="M${i*18} 224V330" stroke="rgba(0,0,0,.09)" stroke-width="1"/>`;
-  s+=RR(0,216,780,8,dark?'#2A3A5C':'#fff',0,'opacity=".85"');
-  /* string lights */
-  if(c.lights==='on'){s+=`<path d="M-4 14Q65 40 130 14T260 14T390 14T520 14T650 14T780 14T910 14" fill="none" stroke="#555" stroke-width="1.4"/>`;[[26,27],[65,31],[104,27],[156,26],[195,30],[234,26],[286,26],[325,30],[364,26],[416,26],[455,30],[494,27],[534,26],[573,30],[612,26],[651,30],[690,26],[729,30],[768,26]].forEach(([x,y],i)=>s+=`<circle cx="${x}" cy="${y}" r="5.5" fill="${['#FFD84D','#FF7A00','#2FD0C5','#FFF3B0'][i%4]}" stroke="rgba(0,0,0,.2)"/><circle cx="${x}" cy="${y}" r="9" fill="${['#FFD84D','#FF7A00','#2FD0C5','#FFF3B0'][i%4]}" opacity=".22"/>`)}
-  s+=`<g transform="translate(${SH} 0)">`;
-  /* window */
-  s+=RR(322,36,70,96,'url(#rm-sky)',2,'stroke="#fff" stroke-width="4"')+EL(344,70,14,6,'#fff','opacity=".85"')+EL(356,66,10,6,'#fff','opacity=".85"')+`<path d="M357 36V132M322 84H392" stroke="#fff" stroke-width="3"/>`;
-  s+=curtainArt(c.curtains);
-  /* posters */
-  [['p1',138],['p2',190],['p3',242]].forEach(([k,x])=>{if(c[k]&&c[k]!=='none')s+=`<g transform="translate(${x} 28)">${RR(-3,-3,50,62,'#fff',3,'stroke="rgba(0,0,0,.2)"')}${posterArt(c[k])}</g>`});
-  /* wall shelf */
-  if(c.shelf&&c.shelf!=='none')s+=shelfArt(c.shelf);
-  s+=`<g transform="translate(${-SH} 0)">`;
-  /* closet door (opens the wardrobe) */
-  s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Open the closet">`+RR(8,62,66,164,'#6B4423',3)+RR(14,68,54,152,'#B9854F',2)+`<path d="M41 68V220" stroke="#6B4423" stroke-width="3"/>`+RR(18,82,20,60,'rgba(0,0,0,.08)',2)+RR(44,82,20,60,'rgba(0,0,0,.08)',2)+RR(18,150,20,56,'rgba(0,0,0,.08)',2)+RR(44,150,20,56,'rgba(0,0,0,.08)',2)+`<circle cx="36" cy="146" r="3" fill="#E8B923"/><circle cx="46" cy="146" r="3" fill="#E8B923"/>`;
-  if(c.hoop==='on')s+=RR(66,76,4,30,'#555',1)+RR(20,78,44,32,'#fff',2,'stroke="#C8102E" stroke-width="2"')+RR(33,92,18,14,'none',0,'stroke="#C8102E" stroke-width="2"')+`<ellipse cx="42" cy="114" rx="11" ry="3.4" fill="none" stroke="#FF7A00" stroke-width="2.4"/><path d="M32 115L36 132M52 115L48 132M42 117V134M36 132Q42 136 48 132" fill="none" stroke="#fff" stroke-width="1.2"/>`;
-  s+='</g>';
-  /* hook rack + backpack */
-  s+=RR(76,84,40,8,'#8A5A33',2)+[84,94,106].map(x=>`<circle cx="${x}" cy="88" r="2.4" fill="#C9D1D6"/>`).join('')+packArt(c.pack);
-  /* laundry */
-  s+=laundryArt(c.laundry);
-  s+=RR(12,48,58,14,'#6B4423',5,'stroke="rgba(0,0,0,.25)"')+`<text x="41" y="58.4" text-anchor="middle" style="fill:#fff;font:800 9px Inter,system-ui,sans-serif;letter-spacing:1.4px">CLOSET</text>`;
-  s+='</g>';
-  /* bed */
-  s+=EL(212,232,98,7,'rgba(0,0,0,.25)');
-  s+=PP('M126 156V104Q126 92 138 92H286Q298 92 298 104V156Z','#8A5A33')+RR(134,100,156,50,'rgba(255,255,255,.1)',6);
-  s+=RR(126,196,14,34,'#6B4423')+RR(284,196,14,34,'#6B4423')+RR(124,194,176,14,'#7A4E2B',3);
-  s+=sheetArt(sheet.id,sheet.c)+pillowArt(c.pillow);
-  /* rug */
-  s+=rugArt(c.rug);
-  if(c.beanbag==='on'){s+=`<g transform="translate(${-SH} 0)">`;s+=EL(52,300,34,12,'rgba(0,0,0,.2)')+PP('M18 298C16 270 34 258 52 258C72 258 88 272 86 298C80 306 24 306 18 298Z','#0A7E8C')+PP('M30 270Q50 262 70 272','rgba(255,255,255,.35)','stroke="rgba(255,255,255,.4)" stroke-width="3" fill="none"');s+='</g>'}
-  /* dresser + globe */
-  const dc=roomOpt('dresser',c.dresser).c,knob=lum(dc)>.6?'#555':'#E8B923';
-  s+=RR(314,168,86,56,dc,3,'stroke="rgba(0,0,0,.25)"')+RR(310,164,94,8,'rgba(0,0,0,.18)',3)+[0,1,2].map(i=>RR(320,176+i*15,74,12,'rgba(0,0,0,.1)',2)+`<circle cx="357" cy="${182+i*15}" r="2.2" fill="${knob}"/>`).join('');
-  if(c.globe==='on')s+=RR(335,160,14,4,'#555',1)+RR(341,150,2,10,'#555')+`<path d="M328 130A15 15 0 0 0 352 150" fill="none" stroke="#B9854F" stroke-width="2"/>`+`<circle cx="342" cy="138" r="14" fill="#3E86D6"/><path d="M334 130Q340 126 344 132Q340 138 346 142Q338 148 336 140Z" fill="#6DBF5B"/><path d="M345 128Q352 130 350 136Z" fill="#6DBF5B"/><ellipse cx="342" cy="138" rx="6" ry="14" fill="none" stroke="rgba(255,255,255,.4)"/>`;
-  /* telescope */
-  if(c.telescope==='on')s+=`<path d="M418 172L404 224M418 172L432 224M418 172V224" stroke="#555" stroke-width="3" stroke-linecap="round"/><circle cx="418" cy="170" r="4" fill="#333"/><g transform="translate(418 170) rotate(-42)">${RR(-6,-52,12,56,'#E9EEF2',3,'stroke="#9AA3AB"')}${RR(-7,-52,14,6,'#0A7E8C',2)}${RR(-7,-30,14,3,'#D7A22A')}${RR(-3,2,6,10,'#555',2)}</g>`;
-  s+=tvArt(c.tv)+arcadeArt(c.arcade)+floorArt(c.floorA);
-  s+=`<g transform="translate(${-SH} -14)">${rackArt(c.rack2)}</g>`;
-  /* desk */
-  s+=RR(436,178,82,8,'#8A5A33',3)+RR(441,186,6,38,'#6B4423')+RR(507,186,6,38,'#6B4423')+RR(447,190,58,5,'rgba(0,0,0,.15)');
-  s+=lampArt(c.lamp)+deskAArt(c.deskA)+deskBArt(c.deskB);
-  s+='</g>';
-  const av=getAv(),shoe=OUTFIT[av.bandc]||OUTFIT[2];
-  s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(210 224)"><ellipse cx="0" cy="3" rx="38" ry="6" fill="rgba(0,0,0,.25)"/><rect x="-23" y="-58" width="21" height="52" rx="3" fill="#2F4A6B"/><rect x="2" y="-58" width="21" height="52" rx="3" fill="#2F4A6B"/><path d="M-2 -52V-8M-23 -30H-2M2 -30H23" stroke="rgba(0,0,0,.18)" stroke-width="1"/><path d="M-26 -8Q-26 -14 -14 -14H-3L-3 -2H-26Z" fill="#F4F7FA" stroke="#9AA3AB"/><path d="M26 -8Q26 -14 14 -14H3L3 -2H26Z" fill="#F4F7FA" stroke="#9AA3AB"/><rect x="-26" y="-6" width="23" height="4" fill="${shoe}"/><rect x="3" y="-6" width="23" height="4" fill="${shoe}"/><svg x="-51" y="-168" width="102" height="111">${avatarSvg(av)}</svg></g>`;
-  if(halloween()){
-    const pk=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})">${pumpkinSvg(40).replace(/^<svg[^>]*>/,'').replace('</svg>','')}</g>`;
-    s+=`<g opacity=".85" stroke="#fff" stroke-width=".9" fill="none"><path d="M0 0L52 52M0 0L26 66M0 0L66 24M0 0L8 70M0 0L70 6"/><path d="M12 0Q10 10 0 12M26 0Q22 22 0 26M42 0Q36 36 0 42M58 0Q50 50 0 58"/></g>`;
-    s+=`<path d="M96 0V26" stroke="#555" stroke-width=".9"/><g transform="translate(96 30)"><ellipse rx="4" ry="3.4" fill="#1B1230"/><circle cy="-4" r="2.4" fill="#1B1230"/><path d="M-3 -1L-8 -5M-3 1L-9 2M3 -1L8 -5M3 1L9 2" stroke="#1B1230" stroke-width="1" fill="none"/></g>`;
-    [[478,22,.9],[440,48,.6],[682,26,.7],[112,52,.55]].forEach(([x,y,k])=>s+=`<g transform="translate(${x} ${y}) scale(${k})"><path d="${BAT_PATH}" fill="#1B1230"/><circle cx="18" cy="6" r="1" fill="#FF9A3C"/><circle cx="22" cy="6" r="1" fill="#FF9A3C"/></g>`);
-    s+=`<circle cx="561" cy="52" r="8" fill="#FFF3B0"/><circle cx="564" cy="50" r="7" fill="#9AD7F5"/>`;
-    s+=pk(548,148,.7)+pk(476,214,1.1)+pk(494,246,.6);
-    s+=`<g transform="translate(734 252)"><path d="M0 40V12Q0 -4 14 -4Q28 -4 28 12V40Q24 36 21 40Q17 36 14 40Q10 36 7 40Q3 36 0 40Z" fill="#fff" stroke="#C9D1D6"/><circle cx="9" cy="14" r="2.6" fill="#101820"/><circle cx="19" cy="14" r="2.6" fill="#101820"/><ellipse cx="14" cy="24" rx="3" ry="3.6" fill="#101820"/></g>`;
-  }
-  return`<svg viewBox="0 0 780 330" role="img" aria-label="Emmett's bedroom">${s}</svg>`;
-}
 /* ----- views ----- */
 function roomView(){
   const cfg=getAv().room,grp=S.rgroup||'bed',g=ROOMGROUPS.find(x=>x[0]===grp)||ROOMGROUPS[0];
@@ -2724,14 +2662,6 @@ function floorArt(id){
   if(id==='skee')return PP('M336 322L358 266H476L498 322Z','#B9854F','stroke="#6B4423" stroke-width="3"')+`<path d="M358 266L336 322M476 266L498 322" stroke="#6B4423" stroke-width="3"/>`+PP('M352 284H482L486 296H348Z','rgba(0,0,0,.12)')+[['#C8102E',18],['#2F7FD0',13],['#FFB400',8]].map(([c,r])=>`<circle cx="417" cy="272" r="${r}" fill="${c}" stroke="#101820" stroke-width="1.4"/>`).join('')+`<circle cx="417" cy="272" r="3" fill="#101820"/><path d="M360 266Q417 244 474 266" fill="none" stroke="#6B4423" stroke-width="4"/><circle cx="417" cy="312" r="6" fill="#9A5B33" stroke="#2A1608"/><circle cx="388" cy="314" r="5" fill="#9A5B33" stroke="#2A1608"/>`;
   return'';
 }
-function arcadeArt(id){
-  if(id!=='racing')return'';
-  return RR(530,112,58,112,'#232B6B',4,'stroke="#0B1118" stroke-width="1.6"')+RR(530,100,58,16,'#101820',4)+TXT(559,111,'RACE','#FFD84D',9)+RR(536,122,46,34,'#0B1118',3)+PP('M559 126L578 154H540Z','#3A3F55')+`<path d="M559 126V154" stroke="#FFD84D" stroke-width="1.4" stroke-dasharray="3 3"/><rect x="553" y="140" width="12" height="7" rx="2" fill="#E5671B"/>`+PP('M530 158H588L592 176H526Z','#1A1F24')+`<circle cx="550" cy="167" r="6" fill="none" stroke="#C9D1D6" stroke-width="2"/><circle cx="550" cy="167" r="1.6" fill="#C9D1D6"/><circle cx="572" cy="165" r="2.4" fill="#C8102E"/><circle cx="578" cy="169" r="2.4" fill="#2FD0C5"/>`+RR(542,190,34,16,'#101820',2)+`<rect x="554" y="194" width="10" height="3" fill="#FFD84D"/><path d="M536 100V224" stroke="#2FD0C5" stroke-width="2" opacity=".6"/>`+[0,1,2,3,4,5].map(i=>RR(530+i*9.6,214,4.8,4.8,i%2?'#fff':'#101820')).join('');
-}
-function tvArt(id){
-  if(id!=='on')return'';
-  return RR(526,34,66,42,'#101820',4,'stroke="#4A525A" stroke-width="1.4"')+RR(530,38,58,31,'#2E8B4E',2)+`<path d="M530 54H588M544 38V69M559 38V69M574 38V69" stroke="#fff" stroke-width=".8" opacity=".5"/>`+RR(530,38,58,9,'#C8102E',2)+TXT(559,45,'SPORTS DESK','#fff',5.4)+TXT(545,64,'24','#FFD84D',9)+TXT(573,64,'17','#fff',9)+RR(530,64,58,5,'rgba(0,0,0,.55)')+`<path d="M546 76V82M572 76V82M538 82H580" stroke="#555" stroke-width="2.4" stroke-linecap="round"/>`;
-}
 function rackArt(id){
   if(id!=='laser'&&id!=='foam')return'';
   let g=RR(8,20,66,40,'#6B4423',3)+RR(11,23,60,34,'#8A5A33',2)+[16,66].map(x=>`<circle cx="${x}" cy="40" r="2" fill="#C9D1D6"/>`).join('');
@@ -2741,6 +2671,151 @@ function rackArt(id){
 }
 
 roomWins();/* baseline the saved list the first time the app runs */
+
+/* ---------- My Room, part 3: every object in the room is a choice, drawn with shading, plus a full-body Emmett ---------- */
+Object.assign(ROOM_DEFAULT,{bedframe:'wood',desk:'wood',window:'day',floor:'wood',door:'wood',rack:'wood'});
+ROOMSLOTS.bedframe=['Bed frame',[o('wood','Wood','',0,'#8A5A33'),o('white','White','any',25,'#E9EEF3'),o('black','Black','any',70,'#2A3138'),o('teal','Teal','any',110,'#0A7E8C'),om('gold','Gold','streak',10,'#C9A227')]];
+ROOMSLOTS.desk=['Desk',[o('wood','Wood','',0,'#8A5A33'),o('white','White','any',20,'#F4F7FA'),o('black','Black','any',55,'#2A3138'),o('teal','Teal','any',95,'#1E8C97')]];
+ROOMSLOTS.window=['Window view',[o('day','Sunny day','',0,'#7CC4F0'),o('sunset','Sunset','any',30,'#F58A4B'),o('night','Starry night','math',35,'#1B2A55'),om('beach','Florida beach','caps',12,'#3FB6D6'),o('stadium','Stadium lights','nfl',30,'#4A5F8C'),om('space','Outer space','exam',1,'#0B0F26')]];
+ROOMSLOTS.floor=['Floor',[o('wood','Wood planks','',0,'#C79A63'),o('light','Light wood','any',15,'#E6C998'),o('dark','Dark wood','any',45,'#7A4E2B'),o('carpet','Gray carpet','any',80,'#8E98A3'),o('turf','Field turf','nfl',40,'#2E8B4E')]];
+ROOMSLOTS.door=['Closet door',[o('wood','Wood','',0,'#B9854F'),o('white','White','any',10,'#F4F7FA'),o('teal','Teal','any',30,'#1E8C97'),o('black','Black','any',60,'#3A424A')]];
+ROOMSLOTS.rack=['Wall hook rack',[o('wood','Wood','',0,'#8A5A33'),o('black','Black metal','any',15,'#2A3138'),o('gold','Gold','any',90,'#C9A227')]];
+ROOMSLOTS.beanbag=['Bean bag chair',[NONE,o('on','Teal','any',40,'#0A7E8C'),o('black','Black','any',65,'#2A3138'),o('gold','Gold','any',95,'#D7A22A'),o('red','Red','any',130,'#C8102E'),o('green','Green','any',160,'#3CB878'),o('ball','Football','nfl',45,'#9A5B33')]];
+ROOMSLOTS.globe=['Globe',[NONE,om('on','Classic globe','caps',5),om('gold','Antique globe','caps',20),om('glow','Glow globe','caps',35)]];
+ROOMSLOTS.telescope=['Telescope',[NONE,o('on','White telescope','any',55),o('brass','Brass telescope','any',120),o('black','Night-sky scope','math',70)]];
+ROOMSLOTS.lights=['String lights',[NONE,o('warm','Warm lights','any',40),o('on','Color lights','any',65),o('tealgold','Teal and gold','any',100)]];
+ROOMSLOTS.hoop=['Over-the-door hoop',[NONE,o('on','Red hoop','nfl',45),o('blue','Blue hoop','nfl',65)]];
+ROOMSLOTS.tv=['Morning sports TV',[NONE,o('on','Sports TV','any',35),o('game','Game screen','any',90)]];
+ROOMSLOTS.arcade=['Arcade corner',[NONE,o('racing','Racing game','any',100),o('shooter','Space shooter','any',150)]];
+ROOMGROUPS[0][2].unshift('bedframe');ROOMGROUPS[1][2].unshift('floor');ROOMGROUPS[2][2].push('door','rack');ROOMGROUPS[3][2].unshift('window');ROOMGROUPS[4][2].unshift('desk');
+const FLOORC={wood:['#C79A63','#B38650'],light:['#E6C998','#D4B67E'],dark:['#7A4E2B','#69411F'],carpet:['#8E98A3','#7C8691'],turf:['#2E8B4E','#277A44']};
+const DOORC={wood:'#B9854F',white:'#F4F7FA',teal:'#1E8C97',black:'#3A424A'};
+const FRAMEC={wood:'#8A5A33',white:'#E9EEF3',black:'#2A3138',teal:'#0A7E8C',gold:'#C9A227'};
+const DESKC={wood:'#8A5A33',white:'#F4F7FA',black:'#2A3138',teal:'#1E8C97'};
+const RACKC={wood:'#8A5A33',black:'#2A3138',gold:'#C9A227'};
+const BEANC={on:'#0A7E8C',black:'#2A3138',gold:'#D7A22A',red:'#C8102E',green:'#3CB878',ball:'#9A5B33'};
+
+/* ----- full-body Emmett, sized for the room (about 115 tall next to a 164 tall door) ----- */
+function avatarFigure(av){
+  const skin=SKIN[av.skin]||SKIN[2],shirt=av.top==='gi'?'#F4F7FA':OUTFIT[av.outfit]||OUTFIT[0],shoe=OUTFIT[av.bandc]||OUTFIT[2];
+  const long=['jacket','gi','hoodie'].includes(av.top),bare=av.top==='runner',k=.46,bw=120*k,bh=130*k;
+  const top=-115,pants=av.top==='gi'?'#F4F7FA':'#2F4A6B';
+  const arm=(sx)=>{const x1=sx*17,x2=sx*24;
+    return`<path d="M${x1} -72L${x2} ${-40}" stroke="${bare?skin:shirt}" stroke-width="9" stroke-linecap="round"/>`+
+    (long?'':`<path d="M${(x1+(x2-x1)*.5).toFixed(1)} ${-56}L${x2} ${-41}" stroke="${skin}" stroke-width="7" stroke-linecap="round"/>`)+
+    `<circle cx="${x2}" cy="-37" r="4.6" fill="${skin}"/><path d="M${x1} -72L${x2} ${-40}" stroke="rgba(0,0,0,.12)" stroke-width="9" stroke-linecap="round" opacity=".35"/>`};
+  const leg=(sx)=>{const x=sx<0?-15:1;
+    return`<rect x="${x}" y="-38" width="14" height="${bare?16:32}" rx="3" fill="${bare?'#101820':pants}"/>`+(bare?`<rect x="${x+1}" y="-22" width="12" height="17" rx="3" fill="${skin}"/>`:'')+
+    `<path d="M${sx<0?-3:3} -38V-8" stroke="rgba(0,0,0,.22)" stroke-width="1"/>`};
+  const shoeP=(sx)=>{const d=sx<0?-1:1;return`<path d="M${d*2} -7H${d*14}Q${d*20} -7 ${d*21} 0H${d*2}Z" fill="#F4F7FA" stroke="#9AA3AB" stroke-width=".9"/><path d="M${d*2} -2H${d*21}V0H${d*2}Z" fill="${shoe}"/><path d="M${d*7} -6L${d*11} -4M${d*5} -4L${d*9} -2" stroke="#9AA3AB" stroke-width=".7"/>`};
+  return`<ellipse cx="0" cy="2" rx="30" ry="5" fill="rgba(0,0,0,.28)"/>`+leg(-1)+leg(1)+shoeP(-1)+shoeP(1)+
+    `<path d="M-19 -56L-17 -34Q0 -30 17 -34L19 -56Z" fill="${shirt}"/><path d="M-16 -40Q0 -35 16 -40" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1"/><rect x="-17" y="-37" width="34" height="3" fill="${pants==='#F4F7FA'?bcLike(av):'#1B2A3C'}" opacity=".8"/>`+
+    arm(-1)+arm(1)+`<svg x="${-bw/2}" y="${top}" width="${bw}" height="${bh}">${avatarSvg(av)}</svg>`;
+}
+const bcLike=av=>OUTFIT[av.bandc]||'#D7A22A';
+
+function roomSvg(c){
+  const SH=178,av=getAv();
+  let D='';
+  const G=(id,stops,x2,y2)=>{D+=`<linearGradient id="${id}" x1="0" y1="0" x2="${x2||0}" y2="${y2===undefined?1:y2}">${stops.map(([o,col])=>`<stop offset="${o}" stop-color="${col}"/>`).join('')}</linearGradient>`;return`url(#${id})`};
+  const wood=(id,col)=>G(id,[[0,shade(col,1.18)],[1,shade(col,.78)]]);
+  D+=`<filter id="f-sh" x="-15%" y="-10%" width="130%" height="125%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".3"/></filter>`;
+  const wallc=WALLC[c.wall]||WALLC.cloud,dark=c.wall==='night',flr=FLOORC[c.floor]||FLOORC.wood;
+  const sheet=roomOpt('sheets',c.sheets);
+  let s=RR(0,0,780,224,wallc)+RR(0,0,780,224,G('g-wall',[[0,'rgba(255,255,255,.3)'],[.55,'rgba(255,255,255,0)'],[1,'rgba(0,0,0,.16)']]));
+  /* floor */
+  s+=RR(0,224,780,106,flr[0]);
+  if(c.floor==='carpet')for(let i=0;i<260;i++)s+=`<rect x="${(i*37)%780}" y="${226+(i*53)%100}" width="3" height="1.6" fill="${i%2?'rgba(255,255,255,.18)':'rgba(0,0,0,.14)'}"/>`;
+  else if(c.floor==='turf'){for(let i=0;i<10;i++)s+=RR(i*78,224,39,106,flr[1],0);for(let i=0;i<=10;i++)s+=`<path d="M${i*78} 224V330" stroke="rgba(255,255,255,.55)" stroke-width="2"/>`}
+  else for(let i=0;i<44;i++){s+=RR(i*18,224,18,106,i%3===0?flr[1]:'rgba(0,0,0,0)',0,'opacity=".55"')+`<path d="M${i*18} 224V330" stroke="rgba(0,0,0,.12)" stroke-width="1"/>`}
+  s+=RR(0,224,780,106,G('g-floor',[[0,'rgba(0,0,0,.2)'],[.5,'rgba(255,255,255,0)'],[1,'rgba(255,255,255,.12)']]));
+  s+=RR(0,214,780,10,dark?'#2A3A5C':shade(wallc,.94))+RR(0,214,780,2.4,'rgba(255,255,255,.7)')+RR(0,222,780,2,'rgba(0,0,0,.14)');
+  /* string lights */
+  if(c.lights&&c.lights!=='none'){
+    s+=`<path d="M-4 14Q65 40 130 14T260 14T390 14T520 14T650 14T780 14T910 14" fill="none" stroke="#444" stroke-width="1.4"/>`;
+    const pal=c.lights==='warm'?['#FFF3B0','#FFE08A']:c.lights==='tealgold'?['#2FD0C5','#E8B923']:['#FFD84D','#FF7A00','#2FD0C5','#FFF3B0'];
+    [[26,27],[65,31],[104,27],[156,26],[195,30],[234,26],[286,26],[325,30],[364,26],[416,26],[455,30],[494,27],[534,26],[573,30],[612,26],[651,30],[690,26],[729,30],[768,26]].forEach(([x,y],i)=>{const col=pal[i%pal.length];
+      s+=`<circle cx="${x}" cy="${y}" r="10" fill="${col}" opacity=".2"/><circle cx="${x}" cy="${y}" r="5.4" fill="${col}" stroke="rgba(0,0,0,.25)" stroke-width=".8"/><circle cx="${x-1.6}" cy="${y-1.8}" r="1.6" fill="#fff" opacity=".7"/>`});
+  }
+  s+=`<g transform="translate(${SH} 0)">`;
+  /* window, with a view */
+  const v=c.window||'day',vg={day:[['0','#6DBBEE'],['1','#D3EEFB']],sunset:[['0','#5B4B9A'],['.55','#F58A4B'],['1','#FFD27A']],night:[['0','#0B1033'],['1','#27346B']],beach:[['0','#6DBBEE'],['1','#D3EEFB']],stadium:[['0','#27346B'],['1','#7A8BB8']],space:[['0','#05060F'],['1','#14183A']]}[v]||[['0','#6DBBEE'],['1','#D3EEFB']];
+  s+=RR(316,30,82,108,'#fff',3,'filter="url(#f-sh)"')+RR(322,36,70,96,G('g-win',vg.map(([a,b])=>[+a,b])),2);
+  const cloud=(x,y,r)=>EL(x,y,r*1.5,r*.6,'rgba(255,255,255,.9)')+EL(x+r*.7,y-r*.3,r,r*.55,'rgba(255,255,255,.9)');
+  if(v==='day')s+=cloud(346,62,8)+cloud(372,84,6);
+  if(v==='sunset')s+=`<circle cx="357" cy="104" r="14" fill="#FFE9A0" opacity=".9"/>`+PP('M322 112H392V132H322Z','#3A2748')+PP('M336 112V98Q332 92 340 94M336 98Q342 92 344 98','none','stroke="#3A2748" stroke-width="2" fill="none"');
+  if(v==='night'||v==='space'){[[332,50],[350,64],[372,46],[382,82],[338,98],[364,110],[388,58]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="1.2" fill="#fff"/>`);}
+  if(v==='night')s+=`<circle cx="372" cy="60" r="9" fill="#FFF3B0"/><circle cx="376" cy="57" r="8" fill="#27346B"/>`;
+  if(v==='space')s+=`<circle cx="348" cy="94" r="14" fill="#E5674A"/><path d="M336 90Q348 98 360 90" stroke="#B4442E" stroke-width="2" fill="none"/><circle cx="378" cy="56" r="5" fill="#4DA3FF"/><ellipse cx="378" cy="56" rx="9" ry="2" fill="none" stroke="#E8CB86"/>`;
+  if(v==='beach')s+=PP('M322 96Q340 90 357 96T392 96V132H322Z','#2F9CC4')+PP('M322 112Q350 104 392 114V132H322Z','#F2E2B0')+PP('M376 112V88','none','stroke="#8A5A33" stroke-width="2.4"')+PP('M376 88Q366 84 362 90M376 88Q386 84 390 90M376 88Q370 78 366 80M376 88Q382 78 386 80','none','stroke="#3CB878" stroke-width="2.4" stroke-linecap="round" fill="none"')+cloud(344,58,7);
+  if(v==='stadium')s+=PP('M322 112L336 100H378L392 112V132H322Z','#3A4770')+[[336,92],[378,92]].map(([x,y])=>`<path d="M${x} ${y}V108" stroke="#C9D1D6" stroke-width="1.6"/><circle cx="${x}" cy="${y}" r="3" fill="#FFF3B0"/><circle cx="${x}" cy="${y}" r="8" fill="#FFF3B0" opacity=".25"/>`).join('')+PP('M322 120H392','none','stroke="rgba(255,255,255,.25)"');
+  s+=`<path d="M357 36V132M322 84H392" stroke="#fff" stroke-width="3"/>`+RR(312,132,90,7,'#fff',2,'filter="url(#f-sh)"')+PP('M330 138L398 138L470 330L360 330Z',G('g-beam',[[0,'rgba(255,255,255,.28)'],[1,'rgba(255,255,255,0)']]));
+  s+=curtainArt(c.curtains);
+  /* posters */
+  [['p1',138],['p2',190],['p3',242]].forEach(([k,x])=>{if(c[k]&&c[k]!=='none')s+=`<g transform="translate(${x} 28)" filter="url(#f-sh)">${RR(-3,-3,50,62,'#fff',3,'stroke="rgba(0,0,0,.2)"')}${posterArt(c[k])}${RR(0,0,44,56,G('g-pg'+k,[[0,'rgba(255,255,255,.22)'],[.5,'rgba(255,255,255,0)']],1,1))}</g>`});
+  if(c.shelf&&c.shelf!=='none')s+=shelfArt(c.shelf);
+  /* left wall pieces stay on the left edge: closet, hook rack, laundry, bean bag, blaster rack */
+  s+=`<g transform="translate(${-SH} 0)">`;
+  const dcol=DOORC[c.door]||DOORC.wood,dl=lum(dcol)>.6;
+  s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Open the closet" filter="url(#f-sh)">`+RR(8,62,66,164,shade(dcol,.72),3)+RR(14,68,54,152,wood('g-door',dcol),2)+`<path d="M41 68V220" stroke="${shade(dcol,.6)}" stroke-width="3"/>`+[[18,82,20,60],[44,82,20,60],[18,150,20,56],[44,150,20,56]].map(([x,y,w,h])=>RR(x,y,w,h,'rgba(0,0,0,.09)',2)+`<path d="M${x+1} ${y+h-1}V${y+1}H${x+w-1}" fill="none" stroke="rgba(255,255,255,${dl?.7:.28})" stroke-width="1"/>`).join('')+`<circle cx="36" cy="146" r="3" fill="url(#ag-gold)"/><circle cx="46" cy="146" r="3" fill="url(#ag-gold)"/>`;
+  if(c.hoop&&c.hoop!=='none'){const hc=c.hoop==='blue'?'#2F7FD0':'#C8102E';s+=RR(66,76,4,30,'#555',1)+RR(20,78,44,32,'#fff',2,`stroke="${hc}" stroke-width="2"`)+RR(33,92,18,14,'none',0,`stroke="${hc}" stroke-width="2"`)+`<ellipse cx="42" cy="114" rx="11" ry="3.4" fill="none" stroke="#FF7A00" stroke-width="2.4"/><path d="M32 115L36 132M52 115L48 132M42 117V134M36 132Q42 136 48 132" fill="none" stroke="#fff" stroke-width="1.2"/>`}
+  s+='</g>';
+  const rc=RACKC[c.rack]||RACKC.wood;
+  s+=RR(76,84,40,8,wood('g-rack',rc),2)+[84,94,106].map(x=>`<circle cx="${x}" cy="88" r="2.4" fill="#E9EEF3" stroke="rgba(0,0,0,.3)" stroke-width=".6"/>`).join('')+packArt(c.pack);
+  s+=laundryArt(c.laundry);
+  s+=RR(12,48,58,14,'#6B4423',5,'stroke="rgba(0,0,0,.25)"')+`<text x="41" y="58.4" text-anchor="middle" style="fill:#fff;font:800 9px Inter,system-ui,sans-serif;letter-spacing:1.4px">CLOSET</text>`;
+  if(c.beanbag&&c.beanbag!=='none'){const bc=BEANC[c.beanbag]||'#0A7E8C';s+=EL(52,300,34,12,'rgba(0,0,0,.22)')+PP('M18 298C16 270 34 258 52 258C72 258 88 272 86 298C80 306 24 306 18 298Z',G('g-bean',[[0,shade(bc,1.25)],[1,shade(bc,.78)]]))+PP('M30 270Q50 262 70 272','none','stroke="rgba(255,255,255,.45)" stroke-width="3" fill="none"')+(c.beanbag==='ball'?`<path d="M52 266V292M46 272H58M46 279H58M46 286H58" stroke="#fff" stroke-width="2"/>`:'')}
+  s+=`<g transform="translate(0 -14)">${rackArt(c.rack2)}</g>`;
+  s+='</g>';
+  /* bed */
+  const fc=FRAMEC[c.bedframe]||FRAMEC.wood;
+  s+=EL(212,232,98,7,'rgba(0,0,0,.25)');
+  s+=`<g filter="url(#f-sh)">`+PP('M126 156V104Q126 92 138 92H286Q298 92 298 104V156Z',wood('g-head',fc))+RR(134,100,156,50,'rgba(0,0,0,.14)',6)+RR(136,102,152,3,'rgba(255,255,255,.35)',1.5)+`<path d="M126 104Q126 92 138 92H286Q298 92 298 104" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.6"/>`+RR(126,196,14,34,wood('g-leg1',fc))+RR(284,196,14,34,wood('g-leg2',fc))+RR(124,194,176,14,wood('g-rail',fc),3)+`</g>`;
+  s+=sheetArt(sheet.id,sheet.c)+RR(128,148,168,52,G('g-mat',[[0,'rgba(255,255,255,0)'],[.7,'rgba(0,0,0,.04)'],[1,'rgba(0,0,0,.22)']]),8)+pillowArt(c.pillow)+[170,254].map(x=>EL(x-8,132,16,5,'rgba(255,255,255,.28)')).join('');
+  s+=rugArt(c.rug);
+  /* dresser + globe */
+  const dc=roomOpt('dresser',c.dresser).c,knob=lum(dc)>.6?'#555':'url(#ag-gold)';
+  s+=`<g filter="url(#f-sh)">`+RR(314,168,86,56,wood('g-dr',dc),3,'stroke="rgba(0,0,0,.25)"')+RR(310,164,94,8,shade(dc,.85),3)+RR(310,164,94,2.4,'rgba(255,255,255,.5)',1.2)+[0,1,2].map(i=>RR(320,176+i*15,74,12,'rgba(0,0,0,.1)',2)+`<path d="M321 ${187+i*15}V${177+i*15}H393" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/><circle cx="357" cy="${182+i*15}" r="2.2" fill="${knob}"/>`).join('')+`</g>`;
+  if(c.globe&&c.globe!=='none'){
+    const sea=c.globe==='gold'?'#D9B77A':c.globe==='glow'?'#12306B':'#3E86D6',land=c.globe==='gold'?'#8A5A33':c.globe==='glow'?'#2FD0C5':'#6DBF5B',stand=c.globe==='gold'?'url(#ag-gold)':'#555';
+    s+=(c.globe==='glow'?`<circle cx="342" cy="138" r="24" fill="#2FD0C5" opacity=".18"/>`:'')+RR(335,160,14,4,stand,1)+RR(341,150,2,10,stand)+`<path d="M328 130A15 15 0 0 0 352 150" fill="none" stroke="${c.globe==='gold'?'#B8860B':'#B9854F'}" stroke-width="2"/><circle cx="342" cy="138" r="14" fill="${sea}"/><path d="M334 130Q340 126 344 132Q340 138 346 142Q338 148 336 140Z" fill="${land}"/><path d="M345 128Q352 130 350 136Z" fill="${land}"/><ellipse cx="342" cy="138" rx="6" ry="14" fill="none" stroke="rgba(255,255,255,.4)"/><ellipse cx="337" cy="132" rx="4" ry="6" fill="rgba(255,255,255,.22)"/>`;
+  }
+  /* telescope */
+  if(c.telescope&&c.telescope!=='none'){
+    const tc=c.telescope==='brass'?['url(#ag-gold)','#6B4423','#8A5A33']:c.telescope==='black'?['#2A3138','#1A1F24','#C8102E']:['#E9EEF3','#555','#0A7E8C'];
+    s+=`<path d="M418 172L404 224M418 172L432 224M418 172V224" stroke="${tc[1]}" stroke-width="3" stroke-linecap="round"/><circle cx="418" cy="170" r="4" fill="#333"/><g transform="translate(418 170) rotate(-42)">${RR(-6,-52,12,56,tc[0],3,'stroke="#9AA3AB"')}${RR(-7,-52,14,6,tc[2],2)}${RR(-7,-30,14,3,'#D7A22A')}${RR(-3,2,6,10,'#555',2)}${RR(-4.4,-48,3,40,'rgba(255,255,255,.35)',1.5)}</g>`;
+  }
+  s+=tvArt(c.tv)+arcadeArt(c.arcade)+floorArt(c.floorA);
+  /* desk */
+  const dk=DESKC[c.desk]||DESKC.wood;
+  s+=`<g filter="url(#f-sh)">`+RR(436,178,82,8,wood('g-desk',dk),3)+RR(436,178,82,2,'rgba(255,255,255,.5)',1)+RR(441,186,6,38,shade(dk,.75))+RR(507,186,6,38,shade(dk,.75))+RR(447,190,58,5,'rgba(0,0,0,.18)')+RR(462,198,28,18,'rgba(0,0,0,.1)',2)+`<circle cx="476" cy="207" r="1.8" fill="${lum(dk)>.6?'#555':'url(#ag-gold)'}"/></g>`;
+  s+=lampArt(c.lamp)+deskAArt(c.deskA)+deskBArt(c.deskB);
+  s+='</g>';
+  /* Emmett, standing in the room at room scale */
+  s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(210 224)">${avatarFigure(av)}</g>`;
+  if(halloween()){
+    const pk=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})">${pumpkinSvg(40).replace(/^<svg[^>]*>/,'').replace('</svg>','')}</g>`;
+    s+=`<g opacity=".85" stroke="#fff" stroke-width=".9" fill="none"><path d="M0 0L52 52M0 0L26 66M0 0L66 24M0 0L8 70M0 0L70 6"/><path d="M12 0Q10 10 0 12M26 0Q22 22 0 26M42 0Q36 36 0 42M58 0Q50 50 0 58"/></g>`;
+    s+=`<path d="M96 0V26" stroke="#555" stroke-width=".9"/><g transform="translate(96 30)"><ellipse rx="4" ry="3.4" fill="#1B1230"/><circle cy="-4" r="2.4" fill="#1B1230"/><path d="M-3 -1L-8 -5M-3 1L-9 2M3 -1L8 -5M3 1L9 2" stroke="#1B1230" stroke-width="1" fill="none"/></g>`;
+    [[478,22,.9],[440,48,.6],[682,26,.7],[112,52,.55]].forEach(([x,y,k])=>s+=`<g transform="translate(${x} ${y}) scale(${k})"><path d="${BAT_PATH}" fill="#1B1230"/><circle cx="18" cy="6" r="1" fill="#FF9A3C"/><circle cx="22" cy="6" r="1" fill="#FF9A3C"/></g>`);
+    s+=pk(548,148,.7)+pk(476,214,1.1)+pk(494,246,.6);
+    s+=`<g transform="translate(734 252)"><path d="M0 40V12Q0 -4 14 -4Q28 -4 28 12V40Q24 36 21 40Q17 36 14 40Q10 36 7 40Q3 36 0 40Z" fill="#fff" stroke="#C9D1D6"/><circle cx="9" cy="14" r="2.6" fill="#101820"/><circle cx="19" cy="14" r="2.6" fill="#101820"/><ellipse cx="14" cy="24" rx="3" ry="3.6" fill="#101820"/></g>`;
+  }
+  return`<svg viewBox="0 0 780 330" role="img" aria-label="Emmett's bedroom"><defs>${D}<linearGradient id="rm-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC4F0"/><stop offset="1" stop-color="#CBEBFA"/></linearGradient></defs>${s}</svg>`;
+}
+/* arcade games and TV, with a second choice each */
+function tvArt(id){
+  if(!id||id==='none')return'';
+  const game=id==='game';
+  return`<g filter="url(#f-sh)">`+RR(526,34,66,42,'#101820',4,'stroke="#4A525A" stroke-width="1.4"')+(game?RR(530,38,58,31,'#0B1033',2)+[[536,46],[546,60],[560,44],[574,58],[582,48]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fff"/>`).join('')+PP('M559 62L555 54H563Z','#2FD0C5')+RR(540,44,5,5,'#E5671B')+RR(572,50,5,5,'#E5671B')+`<path d="M559 52V44" stroke="#FFD84D" stroke-width="1.6"/>`:RR(530,38,58,31,'#2E8B4E',2)+`<path d="M530 54H588M544 38V69M559 38V69M574 38V69" stroke="#fff" stroke-width=".8" opacity=".5"/>`+RR(530,38,58,9,'#C8102E',2)+TXT(559,45,'SPORTS DESK','#fff',5.4)+TXT(545,64,'24','#FFD84D',9)+TXT(573,64,'17','#fff',9)+RR(530,64,58,5,'rgba(0,0,0,.55)'))+RR(530,38,58,31,'rgba(255,255,255,.1)',2)+`<path d="M546 76V82M572 76V82M538 82H580" stroke="#555" stroke-width="2.4" stroke-linecap="round"/></g>`;
+}
+function arcadeArt(id){
+  if(!id||id==='none')return'';
+  const sh=id==='shooter',body=sh?'#4A1B6B':'#232B6B';
+  return`<g filter="url(#f-sh)">`+RR(530,112,58,112,body,4,'stroke="#0B1118" stroke-width="1.6"')+RR(530,100,58,16,'#101820',4)+TXT(559,111,sh?'SPACE':'RACE','#FFD84D',9)+RR(536,122,46,34,'#0B1118',3)+
+    (sh?[[542,128],[570,134],[552,146],[576,126]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fff"/>`).join('')+PP('M559 150L553 142H565Z','#2FD0C5')+RR(548,130,5,4,'#C8102E')+RR(562,134,5,4,'#C8102E'):PP('M559 126L578 154H540Z','#3A3F55')+`<path d="M559 126V154" stroke="#FFD84D" stroke-width="1.4" stroke-dasharray="3 3"/><rect x="553" y="140" width="12" height="7" rx="2" fill="#E5671B"/>`)+
+    PP('M530 158H588L592 176H526Z','#1A1F24')+`<circle cx="550" cy="167" r="6" fill="none" stroke="#C9D1D6" stroke-width="2"/><circle cx="550" cy="167" r="1.6" fill="#C9D1D6"/><circle cx="572" cy="165" r="2.4" fill="#C8102E"/><circle cx="578" cy="169" r="2.4" fill="#2FD0C5"/>`+RR(542,190,34,16,'#101820',2)+`<rect x="554" y="194" width="10" height="3" fill="#FFD84D"/><path d="M536 100V224" stroke="${sh?'#C86BFF':'#2FD0C5'}" stroke-width="2" opacity=".6"/>`+RR(536,122,46,34,'rgba(255,255,255,.08)',3)+`</g>`;
+}
 
 
 /* parent area */
