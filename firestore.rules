@@ -8,6 +8,7 @@ service cloud.firestore {
         && d.keys().hasAll(['id','ts','mode','home','correct','total','secs','stars','items'])
         && d.id is string && d.id == id && d.id.size() <= 24
         && d.ts is number && d.ts > 1700000000000
+        && d.ts > request.time.toMillis() - 7776000000
         && d.ts < request.time.toMillis() + 86400000
         && d.mode in ['smart','guided','exam','spell','geo','nfl']
         && d.home is string && d.home.size() <= 20
@@ -26,10 +27,17 @@ service cloud.firestore {
     }
 
     // The avatar/closet look, math topics, chosen spelling lesson and custom spelling lists follow Emmett between homes.
+    // Only the avatar fields the app actually uses (look, closet choices and bedroom choices), with small sizes.
+    function validAvatar(a) {
+      return a.keys().hasOnly(['skin','hair','style','outfit','bandc','head','top','extra','room'])
+        && (!('extra' in a) || (a.extra is list && a.extra.size() <= 30))
+        && (!('room' in a) || (a.room is map && a.room.size() <= 40));
+    }
+
     function validProfile(d) {
       return d.keys().hasOnly(['avatar','topics','splist','lists','updated'])
         && d.keys().hasAll(['avatar','topics','splist','lists','updated'])
-        && d.avatar is map
+        && d.avatar is map && validAvatar(d.avatar)
         && d.topics is list && d.topics.size() >= 1 && d.topics.size() <= 5
         && d.splist is string && d.splist.size() <= 24
         && d.lists is list && d.lists.size() <= 10
