@@ -13,6 +13,18 @@ A practice and exam-simulator site for a 5th grader. One file, no build step. Ap
 - **Parent area**: PIN created on first use and stored only on the device. Score history with a goal line, accuracy by skill, "right with no hint" percent, mistake patterns, practice log, print summary, settings.
 - Progress syncs through Firestore, and a copy stays in the browser so it works offline.
 
+## What is inside
+- **Math, Spelling, Geography, Football Club** practice with hints, second tries and a parent area.
+- **Football field progress:** every 400 stars is a 100-yard drive (Preseason, Regular Season, Playoffs, Super Bowl, touchdown), with a scoreboard.
+- **My Room:** a bedroom Emmett decorates with prizes. The closet door opens the wardrobe (skin, hair, outfit and headband colors, shirts, hats, extras).
+- **Prizes take effort:** only the first 100 stars per day count (70 per subject), star costs climb steeply, and the best prizes need mastery, strong practice-exam scores or practice streaks.
+- **Geography:** the 50 state capitals (typing is the lead activity) plus a Florida corner.
+- **Halloween:** an automatic seasonal theme from October 1 to November 2. Nothing to earn.
+- Team helmets use real team colors. Team logos load from ESPN's public image host; player lists come from ESPN depth charts (checked October 2026) and change during the season.
+
+## Florida fact sources
+Britannica, EBSCO, World Atlas, VisitFlorida, Wikipedia (St. Augustine, counties, Britton Hill, St. Johns River, Lake Okeechobee). Kennedy Space Center and Apollo 11 (July 16, 1969) are standard NASA history.
+
 ## Privacy
 
 No last name, school, teacher or grades in this repo. The only personal detail is the first name used in the greeting. The sync database holds scores, skill names, mistake labels and the avatar choices, and it is readable by anyone who knows the project's address, so it deliberately holds nothing identifying.
