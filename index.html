@@ -2807,11 +2807,14 @@ function roomSvg(c){
     const tc=c.telescope==='brass'?['url(#ag-gold)','#6B4423','#8A5A33']:c.telescope==='black'?['#2A3138','#1A1F24','#C8102E']:['#E9EEF3','#555','#0A7E8C'];
     s+=`<path d="M418 172L404 224M418 172L432 224M418 172V224" stroke="${tc[1]}" stroke-width="3" stroke-linecap="round"/><circle cx="418" cy="170" r="4" fill="#333"/><g transform="translate(418 170) rotate(-42)">${RR(-6,-52,12,56,tc[0],3,'stroke="#9AA3AB"')}${RR(-7,-52,14,6,tc[2],2)}${RR(-7,-30,14,3,'#D7A22A')}${RR(-3,2,6,10,'#555',2)}${RR(-4.4,-48,3,40,'rgba(255,255,255,.35)',1.5)}</g>`;
   }
-  s+=tvArt(c.tv)+arcadeArt(c.arcade)+floorArt(c.floorA);
-  /* desk */
-  const dk=DESKC[c.desk]||DESKC.wood;
-  s+=`<g filter="url(#f-sh)">`+RR(436,178,82,8,wood('g-desk',dk),3)+RR(436,178,82,2,'rgba(255,255,255,.5)',1)+RR(441,186,6,38,shade(dk,.75))+RR(507,186,6,38,shade(dk,.75))+RR(447,190,58,5,'rgba(0,0,0,.18)')+RR(462,198,28,18,'rgba(0,0,0,.1)',2)+`<circle cx="476" cy="207" r="1.8" fill="${lum(dk)>.6?'#555':'url(#ag-gold)'}"/></g>`;
-  s+=lampArt(c.lamp)+deskAArt(c.deskA)+deskBArt(c.deskB);
+  s+=`<g transform="translate(8 0)">${tvArt(c.tv)}${arcadeArt(c.arcade)}</g>`+floorArt(c.floorA);
+  /* desk: full-height writing desk with a drawer pedestal, items spaced along the top */
+  const dk=DESKC[c.desk]||DESKC.wood,T=158,dknob=lum(dk)>.6?'#555':'url(#ag-gold)';
+  s+=`<g filter="url(#f-sh)">`+RR(440,T+7,6,224-T-7,shade(dk,.74),1.5)+RR(446,T+6,54,8,shade(dk,.66))+RR(447,T+14,52,40,'rgba(0,0,0,.13)',2)+RR(447,T+14,52,3,'rgba(0,0,0,.14)')
+    +RR(500,T+7,30,224-T-7,wood('g-dped',shade(dk,.92)),2,'stroke="rgba(0,0,0,.22)"')
+    +[0,1,2].map(i=>RR(503,T+11+i*19,24,16,'rgba(0,0,0,.11)',2)+RR(503,T+11+i*19,24,1.6,'rgba(255,255,255,.28)',1)+RR(509,T+17+i*19,12,2.6,dknob,1.3)).join('')
+    +RR(434,T,98,7,wood('g-desk',dk),2.5)+RR(434,T,98,2,'rgba(255,255,255,.55)',1)+RR(434,T+5,98,2,'rgba(0,0,0,.18)')+RR(446,T+38,54,3,shade(dk,.7),1)+`</g>`;
+  s+=`<g transform="translate(-4 ${T-178})">${lampArt(c.lamp)}</g><g transform="translate(-2 ${T-178})">${deskAArt(c.deskA)}</g><g transform="translate(8 ${T-178})">${deskBArt(c.deskB)}</g>`;
   s+='</g>';
   /* Emmett, standing in the room at room scale */
   s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(210 224)">${avatarFigure(av)}</g>`;
