@@ -39,6 +39,7 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 | Request | Status |
 |---|---|
 | A spelling section like the math one, with lessons | Built (14 lessons), sandbox-checked |
+| All games listed on the main Spelling screen (not only inside each lesson) | Built, sandbox-checked |
 | Game: Complete the word | Built, sandbox-checked |
 | Game: Unscramble | Built, sandbox-checked |
 | Game: Word hunt | Built, sandbox-checked |

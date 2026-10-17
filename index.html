@@ -1968,8 +1968,11 @@ function spellView(){
   const lists=spLists(),st=wordStats();
   const card=l=>{const m=wprog(l.words),p=Math.round(100*m/l.words.length);
     return`<button class="skill" data-act="lesson" data-v="${esc(l.id)}"><b>${esc(l.name)}</b><span class="track2"><span class="fill" style="width:${p}%"></span></span><small>${esc(l.note||'')} · ${m} of ${l.words.length} mastered</small></button>`};
-  const custom=customLists();
+  const custom=customLists(),cur=lists.find(l=>l.id===S.splist)||LESSONS[0];
   return nav('Spelling')+`<div class="largehead"><h1>Spelling</h1><p class="mute">Each lesson teaches one pattern. Then you write the words from memory, because writing the letters is the part that makes spelling stick.</p></div>
+  <div class="sect">Spelling games</div>
+  <p class="mute" style="padding-inline:6px">All the games use the words from <b>${esc(cur.name)}</b>. Pick a different lesson below to change the words.</p>
+  <section class="modes">${Object.entries(SP_GAMES).map(([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="spgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`).join('')}</section>
   <div class="sect">Lessons</div>
   <section class="skills">${LESSONS.map(card).join('')}</section>
   ${custom.length?`<div class="sect">My lists</div><section class="skills">${custom.map(card).join('')}</section>`:''}
@@ -3194,6 +3197,7 @@ function act(a,v,d){
     case'fdcheck':fdCheck();render();break;
     case'fdnext':if(fd.i<fd.rounds.length-1){fd.i++;render()}else finishDraft();break;
     case'lesson':S.splist=v;store.set('bl.splist',v);S.view='lesson';render();break;
+    case'spgame':startSpell(v);break;
     case'splist':S.splist=v;store.set('bl.splist',v);touchProfile();render();break;
     case'sayword':say(v);break;
     case'spstart':startSpell(v);break;
