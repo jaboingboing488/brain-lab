@@ -67,6 +67,7 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 | Fourth wall poster | Built |
 | Curtains reach the floor, behind the dresser | Built, sandbox-checked |
 | Unlockables: football helmet and trophy | Built |
+| Closet prizes are a marathon: items Emmett already had stay unlocked; every other shirt, hat and extra needs more stars (first at 400, last at 8,000), with 8 new items added | Built, sandbox-checked (his 10 current items unchanged on his real session data) |
 
 ## Football
 
@@ -105,6 +106,7 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 
 ## Open items
 
+- Prize pacing lives in the `ITEMS` list (`at:` = stars). The room prizes (bed, desk, posters and so on) were not changed.
 - Season dates need a yearly update (`SEASON` in the code); after Feb 14 2027 the bar says "Season over" until the next schedule is added.
 - Preseason end date is unconfirmed, so it runs until the Sep 9 kickoff.
 - Three leaked test sessions in Firestore `sessions` ("Mom's home") must be deleted by the owner; the rules block client deletes.
