@@ -104,6 +104,20 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 | Scroll bar reaches the bottom of every screen; bottom not blocked | Addressed in an earlier session; not re-checked for this file |
 | Recurring reminder every 30 days to review the site | Google Calendar event every 30 days, from 2026-11-03 |
 
+## Round 4 (Oct 18): faster stars, 365 prizes, Spanish, counters
+
+| Request | Status |
+|---|---|
+| Math and spelling earn stars faster | Built: about 2 stars per right answer (was 1), practice exams up to 90; checked by running full sessions in a test copy |
+| Cooler prizes are won only through school subjects (math, spelling, Spanish, geography; not football) | Built: all 193 new prizes use school stars, one subject's stars, or mastery |
+| 365 prizes in total | Built: 365 counted on the Room and Closet screens (172 before, 193 added) |
+| Graphics more modern and clear | Built for the new art, avatar face (ears, brows, eye shine) and new subject tiles; the older room art was not redrawn |
+| More room items editable through prizes | Built: 7 new spots (banner, ceiling mobile, board, window sill, on the bed, desk chair, wall above the bed), 19 posters, 18 colors |
+| Counter of sessions per subject, counting correctly | Built on Home and each subject screen; checked against his 36 real sessions and new test sessions |
+| Spanish section (Thursday elective) | Built: 17 lessons, 215 words, 6 games, flash cards, parent progress tab |
+| Spanish earns the most stars and yards | Built: about 4 stars per right answer, 1.5 times on Thursdays, up to 150 a day |
+| Make math and spelling more eye-catching | Built: colorful subject tiles with star-rate ribbons, Today's Playbook bonus, streak counter, confetti |
+
 ## Open items
 
 - Prize pacing lives in the `ITEMS` list (`at:` = stars). The room prizes (bed, desk, posters and so on) were not changed.

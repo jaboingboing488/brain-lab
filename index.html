@@ -290,6 +290,62 @@ body.hw .hero{background:linear-gradient(140deg,#3a1a5e,#0A3D6B)}
 .hwcard b{display:block;font-size:1.05rem}.hwcard span{opacity:.92;font-size:.9rem;font-weight:600}.hwcard div{flex:1;min-width:0}
 body.hw .tab.on{color:#FF9A3C}
 @media print{.navbar,.tabbar,.noprint{display:none!important}body{background:#fff;color:#000;padding-block:0}.card{box-shadow:none;border:1px solid #999;break-inside:avoid}.hero{display:none}}
+/* ---- Round 4: subject tiles, session counter, playbook, Spanish, celebration ---- */
+.subjgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.subj{position:relative;overflow:hidden;text-align:left;color:#fff;border-radius:24px;padding:16px 16px 14px;min-height:150px;display:flex;flex-direction:column;gap:6px;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:0 10px 24px -10px var(--c1),0 2px 4px rgba(0,0,0,.18);transition:transform .15s ease}
+.subj::before{content:"";position:absolute;right:-26px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.16)}
+.subj::after{content:"";position:absolute;left:-30px;bottom:-46px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.1)}
+.subj:hover,.subj:focus-visible{transform:translateY(-3px)}
+.subj.wide{grid-column:1/-1;min-height:118px}
+.subj .sic{width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.22);display:grid;place-items:center;position:relative;z-index:1}
+.subj .sic svg{width:28px;height:28px;color:#fff}
+.subj h3{margin:0;font-size:1.22rem;color:#fff;position:relative;z-index:1}
+.subj .d{font-size:.78rem;opacity:.95;line-height:1.3;position:relative;z-index:1;font-weight:600}
+.subj .ribbon{position:absolute;right:12px;top:12px;z-index:2;background:#fff;color:var(--c1);font:800 .68rem var(--f-ui);letter-spacing:.06em;padding:4px 9px;border-radius:99px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.subj .go{margin-top:auto;font:800 .78rem var(--f-ui);position:relative;z-index:1;display:flex;align-items:center;gap:4px}
+.subj .go svg{width:16px;height:16px}
+.counter{background:var(--card);border-radius:24px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.counter h3{margin:0}
+.cnts{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:8px}
+.cnt{background:linear-gradient(160deg,var(--c1),var(--c2));color:#fff;border-radius:18px;padding:10px 10px 9px;display:flex;flex-direction:column;gap:2px;text-align:center;min-width:0}
+.cnt .cn{font:800 .66rem var(--f-ui);text-transform:uppercase;letter-spacing:.08em;opacity:.95}
+.cnt b{font:800 2rem/1.05 var(--f-num);color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.cnt .cp{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin:2px 0}
+.cnt .cp i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3)}
+.cnt .cp i.on{background:#fff}
+.cnt small{font-size:.66rem;font-weight:700;opacity:.92}
+.cnt.bump b{animation:bump .7s ease-out}
+@keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.5)}100%{transform:scale(1)}}
+.playbook{background:linear-gradient(135deg,#FFF3C4,#FFE08A);color:#4A3A00;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.playbook h3{margin:0;color:#4A3A00}.playbook .pill{background:#4A3A00;color:#FFE08A}
+.playbook .mute{color:#6B5400}
+.playbook.done{background:linear-gradient(135deg,#C9F2DA,#8EE0B4);color:#0B4A2A}.playbook.done h3{color:#0B4A2A}.playbook.done .pill{background:#0B4A2A;color:#C9F2DA}.playbook.done .mute{color:#14633B}
+.pbs{display:flex;flex-wrap:wrap;gap:8px}
+.pbi{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.7);border-radius:99px;padding:6px 12px 6px 6px;font:800 .8rem var(--f-ui)}
+.pbi i{width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.14);display:grid;place-items:center;font-style:normal;font-size:.8rem;color:#fff}
+.pbi.ok i{background:#12875B}
+.esbanner{display:flex;align-items:center;justify-content:space-between;gap:12px;background:linear-gradient(135deg,#E5412D,#F5A623);color:#fff;border-radius:24px;padding:16px 18px;box-shadow:var(--shadow)}
+.esbanner b{display:block;font-size:1.05rem}.esbanner span{font-size:.82rem;font-weight:600;opacity:.96}
+.esbanner .x{font:800 2.2rem var(--f-num);background:rgba(255,255,255,.22);border-radius:18px;padding:6px 14px;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.esbanner.thu{background:linear-gradient(135deg,#C8102E,#F2B705);animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 4px rgba(242,183,5,.5)}}
+.hola{font-size:.55em;color:var(--accent);font-weight:800;margin-left:6px}
+.skill.cur{box-shadow:inset 0 0 0 3px var(--accent),var(--shadow)}
+.pagehero{display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:24px;padding:16px 18px;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:var(--shadow)}
+.pagehero b{display:block;font-size:1.05rem}.pagehero span{font-size:.82rem;font-weight:600;opacity:.96}
+.pagehero .x{font:800 2rem var(--f-num);background:rgba(255,255,255,.22);border-radius:18px;padding:6px 14px;text-shadow:0 2px 0 rgba(0,0,0,.18)}
+.eslots{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0}
+.eslot{min-width:40px;height:48px;border-radius:12px;border:2px dashed var(--line);display:grid;place-items:center;font:800 1.5rem var(--f-num);color:var(--accent)}
+.eslot.f{border-style:solid;border-color:var(--accent);background:var(--accent-soft)}
+.combo{display:inline-block;background:#FFB400;color:#3A2A00;border-radius:99px;padding:1px 9px;font-weight:800;font-size:.76rem;animation:bump .5s ease-out}
+.confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:30}
+.confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{top:110%;transform:translateX(40px) rotate(720deg)}}
+.pcount{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pbar{flex:1;min-width:120px;height:10px;border-radius:99px;background:var(--line);overflow:hidden}.pbar i{display:block;height:100%;background:linear-gradient(90deg,#F5A623,#FFD84D);border-radius:99px}
+.item .tag{display:inline-block;font:800 .6rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-left:6px}
+@media(prefers-reduced-motion:reduce){.subj,.cnt b,.esbanner.thu,.combo{animation:none!important;transition:none!important}}
+@media(max-width:380px){.subjgrid{grid-template-columns:1fr}.subj.wide{grid-column:auto}}
 </style>
 </head><body>
 <div id="app"></div>
@@ -689,7 +745,7 @@ function saveSession(s){
   s.id='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   S.sessions.unshift(s);
   if(dbSessions)dbSessions.unshift(s);
-  pending.add(s.id);saveLocalCopy();
+  pending.add(s.id);saveLocalCopy();S.bump=subjOf(s);
   pushSession(s);
 }
 
@@ -698,7 +754,7 @@ const mathSess=()=>S.sessions.filter(s=>s.mode!=='spell'&&s.mode!=='nfl'&&s.mode
 const nflSess=()=>S.sessions.filter(s=>s.mode==='nfl');
 function stats(){
   /* football is extra: its sessions give stars (plus collection prizes) but do not count toward the school streak */
-  const ss=S.sessions.filter(s=>s.mode!=='nfl'),stars=capDay(S.sessions,100)+nflInfo(nflSess()).bonus;
+  const ss=S.sessions.filter(s=>s.mode!=='nfl'),stars=totalStars();
   const days=new Set(ss.map(s=>dayKey(s.ts)));
   let streak=0;const d=new Date();
   if(!days.has(dayKey(d)))d.setDate(d.getDate()-1);
@@ -984,7 +1040,8 @@ function avatarSvg(c){
   if(c.top==='sunshine'){
     top=`<defs><linearGradient id="ag-sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD95A"/><stop offset="1" stop-color="#F5A623"/></linearGradient><clipPath id="snc"><path d="${TORSO}"/></clipPath></defs><path d="${TORSO}" fill="url(#ag-sun)"/><g clip-path="url(#snc)"><circle cx="82" cy="108" r="8.4" fill="#FF6B2C"/><circle cx="82" cy="108" r="11.4" fill="none" stroke="#FF6B2C" stroke-width="1.2" stroke-dasharray="2 2.4"/><path d="M16 123Q28 118 40 123T64 123T88 123T112 123V130H16Z" fill="#1FB5C9"/><path d="M16 127Q28 122 40 127T64 127T88 127T112 127V130H16Z" fill="#0F8FA5"/><path d="M40 122Q42 110 38 100" fill="none" stroke="#7A4A22" stroke-width="2.4" stroke-linecap="round"/><path d="M38 100Q30 94 24 98M38 100Q32 92 40 90M38 100Q46 92 54 96M38 100Q48 100 52 106M38 100Q30 102 26 108" fill="none" stroke="#1F8A4C" stroke-width="2.6" stroke-linecap="round"/><path d="M38 100Q32 96 28 99" fill="none" stroke="#58C77F" stroke-width=".9" stroke-linecap="round"/></g><path d="M47 93Q60 106 73 93" fill="none" stroke="#C97A10" stroke-width="3.4" stroke-linecap="round"/>`;
   }
-  const head=`<rect x="52" y="82" width="16" height="16" rx="6" fill="${skin}"/><circle cx="60" cy="58" r="30" fill="${skin}"/>`;
+  {const g=WGEN[c.top];if(g&&g.slot==='top')top=genTopArt(g)}
+  const head=`<rect x="52" y="82" width="16" height="16" rx="6" fill="${skin}"/><circle cx="30.6" cy="62" r="5.6" fill="${shade(skin,.92)}"/><circle cx="89.4" cy="62" r="5.6" fill="${shade(skin,.92)}"/><circle cx="30.8" cy="62.4" r="2.8" fill="${shade(skin,.78)}"/><circle cx="89.2" cy="62.4" r="2.8" fill="${shade(skin,.78)}"/><path d="M52 92Q60 98 68 92V98H52Z" fill="${shade(skin,.8)}" opacity=".55"/><circle cx="60" cy="58" r="30" fill="${skin}"/>`;
   let fringe=`<path d="${CAP}" fill="${hair}"/>`;
   if(c.style==='waves'){
     /* 360 waves: rows of ripples that spin out from the crown, kept inside the hairline */
@@ -1000,7 +1057,7 @@ function avatarSvg(c){
   if(c.style==='fade')fringe=`<path d="M33 50C32 12 88 12 87 50C84 42 78 38 72 37C66 36 54 36 48 37C42 38 36 42 33 50Z" fill="${hair}"/><path d="M29 56C29 48 31 44 33 42L33 56Z M91 56C91 48 89 44 87 42L87 56Z" fill="${hair}" opacity=".35"/>`;
   if(c.style==='twists')fringe+=[34,42,50,58,66,74].map((x,i)=>`<rect x="${x}" y="${12+(i%2)*3}" width="8" height="22" rx="4" fill="${hair}"/>`).join('');
   if(c.style==='buzz')fringe=`<path d="${CAP}" fill="${hair}" opacity=".6"/>`;
-  const face=`<circle cx="50" cy="62" r="3.2" fill="#0B2233"/><circle cx="70" cy="62" r="3.2" fill="#0B2233"/><path d="M52 72Q60 80 68 72" stroke="#0B2233" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M60 64L58 69L62 69" stroke="rgba(0,0,0,.25)" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  const brow=shade(hair,.85),face=`<circle cx="50" cy="62" r="3.4" fill="#0B2233"/><circle cx="70" cy="62" r="3.4" fill="#0B2233"/><circle cx="51.1" cy="60.8" r="1.1" fill="#fff"/><circle cx="71.1" cy="60.8" r="1.1" fill="#fff"/><path d="M43.6 54.4Q50 51 56 54" stroke="${brow}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M64 54Q70 51 76.4 54.4" stroke="${brow}" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="43" cy="71" r="4.4" fill="#E5674A" opacity=".16"/><circle cx="77" cy="71" r="4.4" fill="#E5674A" opacity=".16"/><path d="M52 72Q60 80 68 72" stroke="#0B2233" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M60 64L58 69L62 69" stroke="rgba(0,0,0,.25)" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
   let hd='';
   if(c.head==='band'){const sc=lum(bc)>.6?'#0B2233':'#fff';hd=`<path d="M29 46Q60 36 91 46V54Q60 44 29 54Z" fill="url(#${gid}b)"/><path d="M29 49.5Q60 39.5 91 49.5" fill="none" stroke="${sc}" stroke-width="1.4" opacity=".6"/><path d="M29 52Q60 42 91 52" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1"/><path d="M31 47.2Q60 37.4 89 47.2" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="1 2.2" opacity=".35"/>`}
   if(c.head==='champ')hd=`<path d="M29 46Q60 33 91 46V55Q60 42 29 55Z" fill="url(#ag-gold)"/><path d="M31 48.5Q60 36 89 48.5M31 52.5Q60 40 89 52.5" fill="none" stroke="#7A5800" stroke-width=".9" stroke-dasharray="2 2" opacity=".7"/><circle cx="60" cy="42" r="6.2" fill="#101820" stroke="#FFE9A0" stroke-width="1.3"/>`+star(60,42,4.2,'#FFE9A0');
@@ -1019,6 +1076,7 @@ function avatarSvg(c){
   if(c.head==='paleo')hd=`<defs><linearGradient id="ag-kh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E2C98C"/><stop offset="1" stop-color="#B8964F"/></linearGradient></defs><path d="M12 52Q60 70 108 52Q100 44 60 42Q20 44 12 52Z" fill="#A98A45"/><path d="M34 50C30 22 90 22 86 50Q60 56 34 50Z" fill="url(#ag-kh)"/><path d="M42 26Q60 18 78 26" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.4"/><path d="M33 44Q60 52 87 44L87.6 49.4Q60 57.4 32.4 49.4Z" fill="#5B3A1C"/><path d="M33.4 46.6Q60 54.4 86.6 46.6" fill="none" stroke="#C99A55" stroke-width=".8" stroke-dasharray="1.6 1.4"/><path d="M14 52Q60 68 106 52" fill="none" stroke="rgba(0,0,0,.22)" stroke-width="1"/><path d="M16.4 52.4Q60 66 103.6 52.4" fill="none" stroke="#7E6430" stroke-width=".8" stroke-dasharray="2 2"/><path d="M66 52.4Q64 46 67 42Q70 46 69 52.4Z" fill="#FFF7E2" stroke="#C9B98E" stroke-width=".7"/><path d="M67 43.6L68 50.4" stroke="#C9B98E" stroke-width=".6"/><path d="M38 32Q46 24 56 22" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".3"/>`;
   if(c.head==='beanie')hd=`<path d="M29 50C25 12 95 12 91 50Z" fill="url(#${gid}b)"/><path d="M36 44Q38 26 46 18M46 46Q47 28 52 15M56 46Q56 26 57 14M66 46Q66 26 64 14M76 46Q74 28 68 15M85 44Q82 26 74 18" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/><path d="M34 34Q42 22 54 17" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".26"/><path d="M27 54L27.6 43Q60 36 92.4 43L93 54Q60 47 27 54Z" fill="${shade(bc,.78)}"/><path d="M32 51.6V44.6M38 52V43.6M44 52.4V42.6M50 52.6V42.2M56 52.7V42M62 52.7V42M68 52.6V42.2M74 52.4V42.6M80 52V43.6M86 51.6V44.6" stroke="rgba(0,0,0,.24)" stroke-width="1.3"/><path d="M27.6 43Q60 36 92.4 43" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1"/><circle cx="60" cy="9.4" r="7" fill="${shade(bc,1.12)}"/><path d="M55 7Q60 3 65 7M54.6 11.4Q60 8 65.4 11.4" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1"/><path d="M56 6Q58 4.6 61 5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".5"/>`;
   if(c.head==='visor')hd=`<path d="M28 50Q60 36 92 50L92 57Q60 43 28 57Z" fill="url(#${gid}b)"/><path d="M28 53.4Q60 39.6 92 53.4" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1"/><path d="M30 51.4Q60 38 90 51.4" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="1 2.2" opacity=".4"/><path d="M26 52Q60 62 94 52Q90 47 60 46.4Q30 47 26 52Z" fill="#F4F7FA" stroke="#B9C3CA" stroke-width="1"/><path d="M28 52.4Q60 60.4 92 52.4" fill="none" stroke="rgba(0,0,0,.14)" stroke-width="1.4"/><path d="M32 51.4Q60 58 88 51.4" fill="none" stroke="${bc}" stroke-width="1.2" opacity=".85"/><path d="M40 50.4Q50 49 58 49.4" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><circle cx="60" cy="43.6" r="3" fill="${shade(bc,.7)}"/>`;
+  {const g=WGEN[c.head];if(g&&g.slot==='head')hd=HAT[g.s](g.c1,g.c2)}
   let ex='';
   if(c.extra.includes('shades'))ex+=`<path d="M36 56H57Q58 66 53 69.5Q45 72 39.5 67Q35.5 62.5 36 56Z" fill="url(#ag-lens)" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/><path d="M84 56H63Q62 66 67 69.5Q75 72 80.5 67Q84.5 62.5 84 56Z" fill="url(#ag-lens)" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/><path d="M57 58Q60 55.5 63 58M36 57L28 55M84 57L92 55" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round"/><path d="M40 59.5H48M66 59.5H74" stroke="#fff" stroke-width="1.3" stroke-linecap="round" opacity=".4"/>`;
   if(c.extra.includes('eyeblack'))ex+=`<path d="M42.4 68.6L47.6 68.6L46.6 73.8L43 73.8Z" fill="#0B1118" opacity=".94"/><path d="M72.4 68.6L77.6 68.6L77 73.8L73.4 73.8Z" fill="#0B1118" opacity=".94"/><path d="M43.4 69.4H46.4M73.6 69.4H76.6" stroke="#fff" stroke-width=".7" opacity=".25"/>`;
@@ -1034,7 +1092,8 @@ function avatarSvg(c){
   if(c.extra.includes('whistle'))ex+=`<path d="M45 93L57 117M75 93L63 117" stroke="#0E2A5A" stroke-width="3.8" stroke-linecap="round"/><path d="M46.4 95L56.6 114.4M73.6 95L63.4 114.4" stroke="#fff" stroke-width=".9" stroke-dasharray="2 2.4" opacity=".7"/><circle cx="60" cy="118" r="2.2" fill="none" stroke="#9AA7B5" stroke-width="1.4"/><g transform="translate(60 125.4)"><rect x="-6.4" y="-4.6" width="17.4" height="3.6" rx="1.4" fill="#E9EEF3" stroke="#7B8794" stroke-width=".9"/><ellipse cx="-3" cy="2" rx="8.4" ry="6.4" fill="url(#ag-sil)" stroke="#6B747C" stroke-width="1.1"/><circle cx="-3.4" cy="2.4" r="2.2" fill="#2A323A"/><path d="M-9.6 -1Q-5 -3.6 -.4 -3.4" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round" opacity=".7"/><rect x="-5.2" y="-6.2" width="2.8" height="2.6" rx=".8" fill="#C8102E"/></g>`;
   if(c.extra.includes('fossil')){let bd='';for(let k=0;k<=10;k++){const t=k/10,x=(1-t)*(1-t)*45+2*(1-t)*t*60+t*t*75,y=(1-t)*(1-t)*93+2*(1-t)*t*117+t*t*93;if(k%3===1)bd+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.2" fill="${k%2?'#C1713F':'#E8DCC0'}" stroke="#5B3A1C" stroke-width=".6"/>`}
     ex+=`<path d="M45 93Q60 117 75 93" fill="none" stroke="#5B3A1C" stroke-width="2" stroke-linecap="round"/>`+bd+`<g transform="translate(60 118)"><path d="M-6.4 -3Q-4 -6 0 -6Q4 -6 6.4 -3L4.6 9Q3 15 0 17Q-3 15 -4.6 9Z" fill="#F3E7C7" stroke="#A58E57" stroke-width="1.1"/><path d="M-5.8 -2L-4 1L-5.2 4L-3.6 7M5.8 -2L4 1L5.2 4L3.6 7" fill="none" stroke="#BFA66B" stroke-width=".8"/><path d="M-1.4 -3Q-2.6 6 -.6 14" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity=".7"/><circle cx="0" cy="-6.6" r="1.4" fill="none" stroke="#5B3A1C" stroke-width="1"/></g>`}
-  return`<svg viewBox="0 0 120 130" width="100%" height="100%" role="img" aria-label="Emmett's avatar">${defs}${back}${top}${tfx}${head}${fringe}${face}${ex}${hd}</svg>`;
+  let cape='';c.extra.forEach(id=>{const g=WGEN[id];if(!g)return;if(g.g==='cape')cape+=genBack(id);ex+=genFront(id)});
+  return`<svg viewBox="0 0 120 130" width="100%" height="100%" role="img" aria-label="Emmett's avatar">${defs}${cape}${back}${top}${tfx}${head}${fringe}${face}${ex}${hd}</svg>`;
 }
 function kartSvg(){
   return`<svg viewBox="0 0 64 40" width="56" aria-hidden="true"><ellipse cx="32" cy="20" rx="26" ry="14" fill="#9A5B33" stroke="#0B2233" stroke-width="2"/><path d="M18 20H46M24 15V25M30 14V26M36 14V26M42 15V25" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`;
@@ -1243,7 +1302,7 @@ const SP_GAMES={
 const SP_ERR={blank:'Left blank',missing:'Left out a letter',extra:'Added an extra letter',swap:'Swapped two letters',vowel:'Wrong vowel',otherl:'Wrong letter',double:'Doubled a letter the wrong way',ie:'Mixed up ie and ei',ending:'Wrong word ending'};
 const customLists=()=>store.get('bl.lists',[]);
 const spLists=()=>LESSONS.concat(customLists());
-const spellSess=()=>S.sessions.filter(s=>s.mode==='spell');
+const spellSess=()=>S.sessions.filter(s=>s.mode==='spell'&&subjOf(s)!=='es');
 const allWords=()=>[...new Set(spLists().flatMap(l=>l.words))];
 const sentOf=w=>SENT[w]||null;
 const blankSent=w=>{const s=sentOf(w);return s?s.replace(new RegExp('\\b'+w+'\\b','i'),'_____'):null};
@@ -1491,7 +1550,7 @@ document.addEventListener('pointerup',huntEnd);
 document.addEventListener('pointercancel',()=>{drag=null;paintSel([])});
 
 function finishSpell(){
-  const g=sp.game,before=stats().stars;
+  const g=sp.game,before=stats().stars,snap0=closetSnap();
   const items=g==='hunt'?sp.hunt.words.map(x=>({w:x.w,ok:x.found,h:x.h||0,err:null,given:''}))
     :sp.items.map(it=>{
       if(g==='test'){const ok=it.val.trim().toLowerCase()===it.w;return{w:it.w,ok,h:0,err:ok?null:spErr(it.val,it.w),given:it.val.trim()}}
@@ -1499,13 +1558,14 @@ function finishSpell(){
       return{w:it.w,ok,h:it.helped?1:0,err:!ok&&(g==='cards'||g==='sent')&&it.given?spErr(it.given,it.w):null,given:it.given||''};
     });
   const correct=items.filter(i=>i.ok).length;
-  const sess={ts:Date.now(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-sp.t0)/1000)),stars:g==='test'?correct*2+5:correct+3,
+  const pbk=withPlaybook('spell',sessStars('spell',g==='test'?'test':'play',correct));
+  const sess={ts:Date.now(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-sp.t0)/1000)),stars:pbk.stars,
     items:items.map(i=>({t:'sp',g,w:i.w,ok:i.ok,h:i.h,err:i.err}))};
   saveSession(sess);
   const now=stats().stars;
-  const unlocked=ITEMS.filter(it=>it.at>before&&it.at<=now).map(it=>it.name);
+  const unlocked=closetNew(snap0);
   const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
-  sp.result=Object.assign({},sess,{items,unlocked,stop,room:roomWins(sess)});
+  sp.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,room:roomWins(sess)});
   S.view='spresults';render();
 }
 function spBadges(){
@@ -1734,7 +1794,7 @@ function fdCheck(){
   else{r.msg='retry';r.bad=[...r.sel].filter(id=>!r.ans.includes(id));r.sel=new Set(right)}
 }
 function finishNfl(game,items,missed){
-  const infoB=nflInfo(nflSess()),before=stats().stars;
+  const infoB=nflInfo(nflSess()),before=stats().stars,snap0=closetSnap();
   const aw=nflAward(items);
   const correct=items.filter(i=>i.ok).length;
   const started=game==='draft'?fd.t0:nq.t0;
@@ -1749,7 +1809,7 @@ function finishNfl(game,items,missed){
     divs:fresh(infoA.divsDone,infoB.divsDone),confs:fresh(infoA.confsDone,infoB.confsDone),
     allNow:infoA.all&&!infoB.all,rulesNew:infoA.rulesM.length-infoB.rulesM.length,
     milestone:infoA.bonus-infoB.bonus,
-    items:ITEMS.filter(x=>x.nfl&&nflHas(x.id,infoA)&&!hadItems.includes(x.id)).map(x=>x.name).concat(ITEMS.filter(x=>!x.nfl&&x.at>before&&x.at<=now).map(x=>x.name)),
+    items:ITEMS.filter(x=>x.nfl&&nflHas(x.id,infoA)&&!hadItems.includes(x.id)).map(x=>x.name).concat(closetNew(snap0)),
     stops:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),room:roomWins(sess)};
   S.view='fbres';render();
 }
@@ -1837,14 +1897,14 @@ function teamBack(t){
 
 
 /* ---------- views ---------- */
-const modeName=m=>({smart:'Smart Practice',guided:'Guided Practice',exam:'Practice Exam',spell:'Spelling',geo:'Geography',nfl:'Football Club'}[m]||m);
-const sessName=s=>s.mode==='spell'?'Spelling: '+((SP_GAMES[gameOf(s)]||{}).name||'practice'):s.mode==='nfl'?'Football: '+((FB_GAMES[gameOf(s)]||{}).name||'game'):s.mode==='geo'?'Geography: '+((GEO_GAMES[gameOf(s)]||{}).name||'practice'):modeName(s.mode);
+const modeName=m=>({smart:'Smart Practice',guided:'Guided Practice',exam:'Practice Exam',spell:'Spelling',geo:'Geography',nfl:'Football Club',es:'Spanish'}[m]||m);
+const sessName=s=>subjOf(s)==='es'?'Spanish: '+((ES_GAMES[gameOf(s)]||{}).name||'practice'):s.mode==='spell'?'Spelling: '+((SP_GAMES[gameOf(s)]||{}).name||'practice'):s.mode==='nfl'?'Football: '+((FB_GAMES[gameOf(s)]||{}).name||'game'):s.mode==='geo'?'Geography: '+((GEO_GAMES[gameOf(s)]||{}).name||'practice'):modeName(s.mode);
 const fbOn=()=>S.settings.football!==false;
 const syncPill=()=>`<span class="pill plain"><i class="dot ${S.sync==='live'?'':'off'}"></i>${S.sync==='live'?'Synced':'This device only'}</span>`;
 function nav(title,right){return`<div class="navbar">${syncPill()}<span class="mid">${esc(title)}</span>${right||'<span></span>'}</div>`}
 function tabbar(on){
   const t=(k,l)=>`<button class="tab ${on===k?'on':''}" data-act="nav" data-v="${k}" aria-label="${l}">${ICON[k]}<span>${l}</span></button>`;
-  return`<nav class="tabbar" aria-label="Main"><div>${t('home','Home')}${t('math','Math')}${t('spell','Spelling')}${t('geo','Geography')}${fbOn()?t('fb','Football'):''}${t('room','Room')}${t('parent','Parent')}</div></nav>`;
+  return`<nav class="tabbar" aria-label="Main"><div>${t('home','Home')}${t('math','Math')}${t('spell','Spelling')}${t('es','Spanish')}${t('geo','Geography')}${fbOn()?t('fb','Football'):''}${t('room','Room')}${t('parent','Parent')}</div></nav>`;
 }
 function homePicker(){
   return`<section class="card"><h2>Where are you practicing today?</h2><p class="mute">This helps Mom and Dad see where each session happened.</p>
@@ -1864,15 +1924,18 @@ function homeView(){
   return home+`
   <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${avatarSvg(av)}</div>
     <div class="who"><h2>${halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
-    <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${st.sessions}</b><span>sessions</span></div></div>
+    <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${sessCounts().all.total}</b><span>sessions</span></div></div>
     <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
   ${halloween()?`<section class="hwcard">${pumpkinSvg(46)}<div><b>Halloween season!</b><span>${hwMessage()}</span></div>${batSvg(34)}</section>`:''}
+  ${playbookHtml()}
   <div class="sect">Pick a subject</div>
-  <section class="modes">
-    ${m('math','math','Math',lastMath?`Last time: ${lastMath.correct} of ${lastMath.total} right on ${fmtDate(lastMath.ts)}`:'Long division, multiplying, fractions, mean and more.',true)}
-    ${m('spell','spell','Spelling',`${esc(cur.name)}: ${mastered} of ${cur.words.length} words mastered. Lessons and writing games.`)}
-    ${m('geo','geo','Geography',`${geoMastered().length} of 50 state capitals mastered. Plus a Florida corner.`)}
+  <section class="subjgrid">
+    <button class="subj wide" style="--c1:${SUBCOL.es[0]};--c2:${SUBCOL.es[1]}" data-act="nav" data-v="es"><span class="ribbon">${isThu(Date.now())?'THURSDAY ×6':'×4 STARS'}</span><span class="sic">${ICON.es}</span><h3>Spanish</h3><span class="d">${isThu(Date.now())?'¡Hoy es jueves! Every Spanish star counts 1.5 times today.':'The most stars and yards of any subject. Words, listening and writing.'}</span></button>
+    <button class="subj" style="--c1:${SUBCOL.math[0]};--c2:${SUBCOL.math[1]}" data-act="nav" data-v="math"><span class="ribbon">×2 STARS</span><span class="sic">${ICON.math}</span><h3>Math</h3><span class="d">${lastMath?`Last: ${lastMath.correct} of ${lastMath.total} on ${fmtDate(lastMath.ts)}`:'Long division, fractions, mean and more.'}</span></button>
+    <button class="subj" style="--c1:${SUBCOL.spell[0]};--c2:${SUBCOL.spell[1]}" data-act="nav" data-v="spell"><span class="ribbon">×2 STARS</span><span class="sic">${ICON.spell}</span><h3>Spelling</h3><span class="d">${esc(cur.name)}: ${mastered} of ${cur.words.length} words mastered.</span></button>
+    <button class="subj wide" style="--c1:${SUBCOL.geo[0]};--c2:${SUBCOL.geo[1]}" data-act="nav" data-v="geo"><span class="sic">${ICON.geo}</span><h3>Geography</h3><span class="d">${geoMastered().length} of 50 state capitals mastered. Plus a Florida corner.</span></button>
   </section>
+  ${counterHtml()}
   ${fbOn()?`<div class="sect">Just for fun</div><section class="modes">${m('fb','football','Football Club',`${nflInfo(nflSess()).teamsM.length} of 32 team cards won. Bonus prizes inside!`)}</section>`:''}
   ${last?`<p class="mute" style="padding-inline:6px">Last activity: ${esc(sessName(last))}, ${last.correct} of ${last.total} on ${fmtDate(last.ts)}.</p>`:''}
   <section class="spark"><b>Fun fact</b><p>${esc(fact)}</p></section>
@@ -1892,6 +1955,7 @@ function mathView(){
   const skill=k=>{const a=acc[k],p=a.n?Math.round(100*a.c/a.n):null;
     return`<button class="skill" data-act="skill" data-v="${k}"><b>${esc(TYPES[k].label)}</b><span class="track2"><span class="fill ${p!==null&&p<70?'low':''}" style="width:${p||0}%"></span></span><small>${p===null?'Not tried yet':p+'% right'}</small></button>`};
   return nav('Math')+`<div class="largehead"><h1>Math</h1><p class="mute">Pick one skill to practice, or play a mix.</p></div>
+  ${subjHero('math')}${counterHtml('math')}
   <div class="sect">Practice one skill</div>
   ${SKILL_SECTIONS.map(([t,ks])=>`<div class="sect" style="padding-top:0;color:var(--accent)">${t}</div><section class="skills">${ks.map(skill).join('')}</section>`).join('')}
   <div class="sect">Mixed practice</div>
@@ -1969,7 +2033,7 @@ function resultsView(){
   const msg=p>=90?'Amazing work! You really know this.':p>=75?'Strong work. A little more practice and it will be even better.':'Good effort. Every try builds the skill. Keep going.';
   const missed=run.qs.map((q,i)=>({q,it:s.items[i]})).filter(x=>!x.it.ok);
   const fact=factOfDay(1+Math.floor(Math.random()*30));
-  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.hi?['New high score! Your best stars in one session.']:[])];
+  const wins=[...(s.pb?[`Playbook bonus: +${s.pb} stars for finishing math, spelling and Spanish or geography today.`]:[]),...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.hi?['New high score! Your best stars in one session.']:[])];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Full time!</span><span style="min-width:64px"></span></div>`+`
   <section class="card"><h2>${exam?'Final whistle!':'Great session!'}</h2>
   <div class="row" style="gap:22px"><div><div class="bigscore">${s.correct}/${s.total}</div><span class="mute">${p}% right</span></div>
@@ -1993,6 +2057,7 @@ function spellView(){
     return`<button class="skill" data-act="lesson" data-v="${esc(l.id)}"><b>${esc(l.name)}</b><span class="track2"><span class="fill" style="width:${p}%"></span></span><small>${esc(l.note||'')} · ${m} of ${l.words.length} mastered</small></button>`};
   const custom=customLists(),cur=lists.find(l=>l.id===S.splist)||LESSONS[0];
   return nav('Spelling')+`<div class="largehead"><h1>Spelling</h1><p class="mute">Each lesson teaches one pattern. Then you write the words from memory, because writing the letters is the part that makes spelling stick.</p></div>
+  ${subjHero('spell')}${counterHtml('spell')}
   <div class="sect">Spelling games</div>
   <p class="mute" style="padding-inline:6px">All the games use the words from <b>${esc(cur.name)}</b>. Pick a different lesson below to change the words.</p>
   <section class="modes">${Object.entries(SP_GAMES).map(([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="spgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`).join('')}</section>
@@ -2150,7 +2215,7 @@ function spResultsView(){
   const s=sp.result,p=pct(s),test=sp.game==='test';
   const msg=p>=90?'Amazing spelling! You really know these words.':p>=75?'Strong work. A little more practice and every word will stick.':'Good effort. Every try builds the skill. Keep going.';
   const missed=s.items.filter(i=>!i.ok),helped=s.items.filter(i=>i.ok&&i.h).length;
-  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`)];
+  const wins=[...(s.pb?[`Playbook bonus: +${s.pb} stars for finishing math, spelling and Spanish or geography today.`]:[]),...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`)];
   const fact=FACTS[Math.floor(Math.random()*FACTS.length)];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Great job!</span><span style="min-width:64px"></span></div>
   <section class="card"><h2>${test?'Test complete!':'Nice practice!'}</h2>
@@ -2385,14 +2450,15 @@ function geoSubmit(v){
 }
 function geoFinish(){
   const items=geo.qs.map((q,i)=>{const st=geo.st[i];return{t:'geo',g:geo.game,w:q.k,k:q.fl?'fl':q.state.r,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
-  const correct=items.filter(i=>i.ok).length,before=stats().stars,mBefore=geoMastered().map(s=>s.ab);
-  const sess={ts:Date.now(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-geo.t0)/1000)),stars:correct+3,items};
+  const correct=items.filter(i=>i.ok).length,before=stats().stars,snap0=closetSnap(),mBefore=geoMastered().map(s=>s.ab);
+  const pbk=withPlaybook('geo',sessStars('geo','play',correct));
+  const sess={ts:Date.now(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-geo.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);
   const now=stats().stars;
   geo.result=Object.assign({},sess,{
     missed:geo.qs.map((q,i)=>({q,st:geo.st[i]})).filter(x=>!x.st.ok),
     newly:geoMastered().filter(s=>!mBefore.includes(s.ab)).map(s=>s.name),
-    unlocked:ITEMS.filter(it=>it.at!==null&&it.at>before&&it.at<=now).map(it=>it.name),
+    unlocked:closetNew(snap0),pb:pbk.bonus,
     stop:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),
     room:roomWins(sess)});
   S.view='gres';render();
@@ -2415,6 +2481,7 @@ function geoView(){
   const gm=k=>{const g=GEO_GAMES[k];return`<button class="mode ${g.lead?'lead':''}" data-act="gstart" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`};
   const chips=['all',...Object.keys(REGIONS)].map(k=>`<button class="${reg===k?'on':''}" data-act="gregion" data-v="${k}">${k==='all'?'All 50':REGIONS[k]}</button>`).join('');
   return nav('Geography')+`<div class="largehead"><h1>Geography</h1><p class="mute">Learn the 50 state capitals. Writing the capital yourself is the best way to remember how it is spelled.</p></div>
+  ${subjHero('geo')}${counterHtml('geo')}
   <section class="card"><div class="row between"><h3>Your map</h3><span class="pill">${m} of 50 mastered</span></div>${tileMap()}
     <p class="mute">Green tiles are mastered (right 2 times in a row with no hint). Blue tiles are in progress.</p></section>
   <div class="sect">Pick a region</div><div class="seg wrap">${chips}</div>
@@ -2471,7 +2538,7 @@ function gRunView(){
 function gResView(){
   const s=geo.result,p=pct(s);
   const msg=p>=90?'Amazing work! You really know your geography.':p>=70?'Strong work. A little more practice and it will stick.':'Good effort. Every try builds it. Keep going.';
-  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.newly||[]).map(n=>`Mastered: ${n}`)];
+  const wins=[...(s.pb?[`Playbook bonus: +${s.pb} stars for finishing math, spelling and Spanish or geography today.`]:[]),...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.newly||[]).map(n=>`Mastered: ${n}`)];
   return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Full time!</span><span style="min-width:64px"></span></div>
   <section class="card"><h2>Great session!</h2>
   <div class="row" style="gap:22px"><div><div class="bigscore">${s.correct}/${s.total}</div><span class="mute">${p}% right</span></div><div><div class="bigscore"><span style="color:var(--gold)">★</span> +${s.stars}</div><span class="mute">stars earned</span></div></div>
@@ -2502,7 +2569,8 @@ const NEEDLAB={any:'',math:'math ',spell:'spelling ',geo:'geography ',nfl:'footb
 const SUBMODES={math:['smart','guided','exam'],spell:['spell'],geo:['geo'],nfl:['nfl']};
 function subStars(sub){
   if(sub==='any')return stats().stars;
-  return capDay(S.sessions.filter(s=>SUBMODES[sub].includes(s.mode)),70)+(sub==='nfl'?nflInfo(nflSess()).bonus:0);
+  if(sub==='school')return schoolStars();
+  return starsFrom(S.sessions,[sub])+(sub==='nfl'?nflInfo(nflSess()).bonus:0);
 }
 /* prizes are meant to take real effort: star costs climb steeply, and the best ones need mastery, exam scores or streaks */
 const SC={any:a=>a<=20?a*3:60+(a-20)*12,math:a=>a<=25?a*3:75+(a-25)*7,spell:a=>a<=25?a*3:75+(a-25)*7,geo:a=>a*8,nfl:a=>a*7};
@@ -2557,6 +2625,7 @@ const EL=(cx,cy,rx,ry,f,x2)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry
 const PP=(d,f,x2)=>`<path d="${d}" fill="${f}" ${x2||''}/>`;
 const WALLC={cloud:'#E4ECF2',sky:'#BFE3F7',teal:'#9ED4D8',sand:'#F2E2B0',green:'#B5DDB0',night:'#3A4F7A'};
 function posterArt(id){
+  if(POSTER_NEW[id])return POSTER_NEW[id]();
   const T=(t,c)=>`<text x="22" y="53" text-anchor="middle" style="fill:${c||'#fff'};font:800 6.5px Inter,system-ui,sans-serif">${t}</text>`;
   switch(id){
     case'rex':return RR(0,0,44,56,'#0F8F8B')+RR(0,43,44,13,'#0A5E5C')+PP('M8 34Q-1 38 3 43L11 38Z','#7BD389')+EL(20,33,11,7,'#7BD389')+PP('M26 31L28 21H38L39 29L33 31Z','#7BD389')+RR(28,17,12,9,'#7BD389',3)+RR(15,38,4,7,'#5DB36B')+RR(23,38,4,7,'#5DB36B')+`<circle cx="36" cy="21" r="1.4" fill="#0B2233"/><path d="M31 26l1.5 2 1.5-2 1.5 2 1.5-2" stroke="#fff" fill="none" stroke-width=".9"/>`+T('T. REX');
@@ -2663,27 +2732,27 @@ function packArt(id){
 /* ----- views ----- */
 function roomView(){
   const cfg=getAv().room,grp=S.rgroup||'bed',g=ROOMGROUPS.find(x=>x[0]===grp)||ROOMGROUPS[0];
-  const total=Object.values(ROOMSLOTS).reduce((n,[l,opts])=>n+opts.filter(x=>x.need).length,0);
-  const have=Object.values(ROOMSLOTS).reduce((n,[l,opts])=>n+opts.filter(x=>x.need&&needMet(x)).length,0);
+  const pc=prizeCount();
   const slot=k=>{const [label,opts]=ROOMSLOTS[k];
     return`<div class="sect" style="padding-inline:0">${label}</div><div class="items">${opts.map(x=>{
       const un=needMet(x),on=cfg[k]===x.id;
       return`<button class="item ${on?'on':''} ${un?'':'lock'}" ${un?'':'disabled'} data-act="rm" data-k="${k}" data-v="${x.id}"><b>${x.c?`<i class="cdot" style="background:${x.c}"></i>`:''}${esc(x.name)}</b><small>${un?(on?'In my room':'Tap to use'):needText(x)}</small></button>`}).join('')}</div>`};
-  return nav('My Room')+`<div class="largehead"><h1>My Room</h1><p class="mute">Prizes take real work. Up to 100 stars a day count, and the best prizes need mastery, strong exam scores or practice streaks. Tap the closet door to change your look.</p></div>
+  return nav('My Room')+`<div class="largehead"><h1>My Room</h1><p class="mute">Prizes take real work. School stars (math, spelling, Spanish and geography) win the coolest ones, and the best need mastery, exam scores or school streaks. Tap the closet door to change your look.</p></div>
   <section class="roomcard">${roomSvg(cfg)}</section>
-  <div class="row between"><button class="btn" data-act="closet">Open the closet</button><span class="pill">${have} of ${total} prizes won</span></div>
+  <div class="row between"><button class="btn" data-act="closet">Open the closet</button><span class="pill">${pc.have} of ${pc.total} prizes won</span></div>
   <div class="seg wrap">${ROOMGROUPS.map(([k,l])=>`<button class="${grp===k?'on':''}" data-act="rgroup" data-v="${k}">${l}</button>`).join('')}</div>
   <section class="card">${g[2].map(slot).join('')}</section>
   ${tabbar('room')}`;
 }
+const ckey=x=>x.nfl?1e9:x.need?x.eq:x.at;
 function closetView(){
   const st=stats(),av=getAv(),inf=nflInfo(nflSess());
   const swc=(k,arr,label,names)=>`<div class="sect" style="padding-inline:0">${label}</div><div class="swatches">${arr.map((c,i)=>`<button class="swatch ${av[k]===i?'on':''}" style="background:${c}" data-act="av" data-k="${k}" data-v="${i}" aria-label="${label}: ${names?names[i]:i+1}" title="${names?names[i]:''}"></button>`).join('')}</div>`;
-  const it=x=>{const un=x.nfl?nflHas(x.id,inf):st.stars>=x.at,on=x.slot==='extra'?av.extra.includes(x.id):av[x.slot]===x.id;
-    return`<button class="item ${on?'on':''} ${un?'':'lock'}" ${un?'':'disabled'} data-act="av" data-k="item" data-v="${x.id}"><b>${x.name}</b><small>${un?(on?'Wearing it':'Tap to wear'):x.nfl?`Football Club prize: ${x.nfl}`:`Unlocks at ${x.at} stars`}</small></button>`};
-  const sec=(title,slot,clear)=>`<div class="sect">${title}</div><section class="items">${clear||''}${ITEMS.filter(x=>x.slot===slot&&(!x.season||halloween())).sort((p,q)=>(p.nfl?1e9:p.at)-(q.nfl?1e9:q.at)).map(it).join('')}</section>`;
+  const it=x=>{const un=closetOpen(x,inf,st.stars),on=x.slot==='extra'?av.extra.includes(x.id):av[x.slot]===x.id;
+    return`<button class="item ${on?'on':''} ${un?'':'lock'}" ${un?'':'disabled'} data-act="av" data-k="item" data-v="${x.id}"><b>${x.name}</b><small>${un?(on?'Wearing it':'Tap to wear'):x.nfl?`Football Club prize: ${x.nfl}`:x.need?needText(x):`Unlocks at ${x.at} stars`}</small></button>`};
+  const sec=(title,slot,clear)=>`<div class="sect">${title}</div><section class="items">${clear||''}${ITEMS.filter(x=>x.slot===slot&&(!x.season||halloween())).sort((p,q)=>ckey(p)-ckey(q)).map(it).join('')}</section>`;
   return`<div class="navbar"><button class="back" data-act="nav" data-v="room">${ICON.chev}Room</button><span class="mid">Closet</span><span style="min-width:64px"></span></div>
-  <div class="largehead"><h1>Closet</h1><p class="mute">You have <b class="num">${st.stars}</b> stars. Earn more to unlock new looks.</p></div>
+  <div class="largehead"><h1>Closet</h1><p class="mute">You have <b class="num">${st.stars}</b> stars, and <b class="num">${schoolStars()}</b> of them are school stars from math, spelling, Spanish and geography. The newest prizes need school stars, so football stars do not count for them.</p>${prizeBar()}</div>
   <div class="avbig"><div style="width:190px;height:206px">${avatarSvg(av)}</div></div>
   <section class="card">${swc('skin',SKIN,'Skin',['Lightest','Light','Medium','Tan','Brown','Deep'])}${swc('hair',HAIR,'Hair color',['Black','Dark brown','Brown','Light brown','Blond','Blue'])}
     <div class="sect" style="padding-inline:0">Hair style</div><div class="seg wrap">${[['waves','Short waves'],['curly','Curly'],['fade','Fade'],['twists','Twists'],['buzz','Buzz'],['afro','Afro']].map(([k,l])=>`<button class="${av.style===k?'on':''}" data-act="av" data-k="style" data-v="${k}">${l}</button>`).join('')}</div>
@@ -2799,6 +2868,93 @@ function rackArt(id){
   return g+bl(25,'#FF7A00','#2F7FD0','#FFD84D')+bl(43,'#2F7FD0','#FFD84D','#FF7A00');
 }
 
+
+/* ---------- Round 4: school work earns the most ---------- */
+/* Spanish sessions are saved as mode 'spell' with items tagged t:'es' (the database rules already accept that), so no rules change is needed. */
+const SUBJECTS=[['es','Spanish'],['math','Math'],['spell','Spelling'],['geo','Geography'],['nfl','Football']];
+const SUBNAME={es:'Spanish',math:'Math',spell:'Spelling',geo:'Geography',nfl:'Football Club'};
+function subjOf(s){
+  if(s.mode==='spell')return(s.items||[]).length&&s.items[0].t==='es'?'es':'spell';
+  return s.mode==='geo'?'geo':s.mode==='nfl'?'nfl':'math';
+}
+const isThu=ts=>new Date(ts).getDay()===4;
+/* the most stars one subject can add in a day, and all subjects together */
+const SUBCAP={math:100,spell:100,geo:70,es:150,nfl:70},DAYCAP=250;
+const capFor=(sub,ts)=>sub==='es'&&isThu(ts)?220:SUBCAP[sub];
+function starsFrom(list,subs){
+  const d={};
+  list.forEach(s=>{const sub=subjOf(s);if(subs&&!subs.includes(sub))return;const k=dayNo(s.ts),o=d[k]||(d[k]={ts:s.ts,v:{}});o.v[sub]=(o.v[sub]||0)+(s.stars||0)});
+  return Object.values(d).reduce((n,o)=>n+Math.min(DAYCAP,Object.keys(o.v).reduce((t,k)=>t+Math.min(o.v[k],capFor(k,o.ts)),0)),0);
+}
+const SCHOOL=['math','spell','es','geo'];
+const schoolStars=()=>starsFrom(S.sessions,SCHOOL);
+const totalStars=()=>starsFrom(S.sessions)+nflInfo(nflSess()).bonus;
+/* stars for one finished session: math and spelling pay about double what they used to; Spanish pays the most */
+function sessStars(sub,kind,correct){
+  let s=sub==='es'?(kind==='test'?correct*5+10:correct*4+8):sub==='geo'?correct*2+3:(kind==='test'?correct*4+10:correct*2+4);
+  if(sub==='es'&&isThu(Date.now()))s=Math.round(s*1.5);
+  return Math.min(100,s);
+}
+/* Today's Playbook: one math session, one spelling session, and one Spanish or geography session in a day earns a bonus */
+const PLAYBOOK_BONUS=25;
+function todaySubs(list){const k=dayNo(Date.now()),set=new Set();(list||S.sessions).forEach(s=>{if(dayNo(s.ts)===k)set.add(subjOf(s))});return set}
+const playbookDone=set=>set.has('math')&&set.has('spell')&&(set.has('es')||set.has('geo'));
+function withPlaybook(sub,stars){
+  const had=todaySubs(),now=new Set(had);now.add(sub);
+  const bonus=!playbookDone(had)&&playbookDone(now)?PLAYBOOK_BONUS:0;
+  return{stars:Math.min(100,stars+bonus),bonus};
+}
+/* ----- the session counter ----- */
+function sessCounts(){
+  const k=dayNo(Date.now()),c={};
+  SUBJECTS.forEach(([id])=>c[id]={total:0,today:0});
+  S.sessions.forEach(s=>{const o=c[subjOf(s)];o.total++;if(dayNo(s.ts)===k)o.today++});
+  c.all={total:S.sessions.length,today:Object.values(c).reduce((n,o)=>n+o.today,0)};
+  return c;
+}
+const SUBCOL={es:['#E5412D','#F5A623'],math:['#0076B6','#2FA8E8'],spell:['#7B3FE4','#C06CFF'],geo:['#12875B','#3CC98E'],nfl:['#8A5A33','#D7A22A']};
+function counterHtml(only){
+  const c=sessCounts(),list=only?SUBJECTS.filter(([id])=>id===only):SUBJECTS;
+  const pips=n=>{const k=Math.min(n,20);return Array.from({length:20},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join('')};
+  const tile=([id,name])=>{const o=c[id],col=SUBCOL[id];
+    return`<div class="cnt ${S.bump===id?'bump':''}" data-sub="${id}" style="--c1:${col[0]};--c2:${col[1]}"><span class="cn">${name}</span><b class="num" aria-label="${o.total} ${name} sessions">${o.total}</b><span class="cp">${pips(o.total)}</span><small>${o.today?`+${o.today} today`:'none today'}</small></div>`};
+  return`<section class="counter" role="group" aria-label="Sessions finished, by subject"><div class="row between"><h3>Sessions finished</h3><span class="pill plain"><span class="num" id="cnt-all">${c.all.total}</span> in all</span></div><div class="cnts">${list.map(tile).join('')}</div></section>`;
+}
+function playbookHtml(){
+  const set=todaySubs(),item=(ok,l)=>`<span class="pbi ${ok?'ok':''}"><i>${ok?'✓':''}</i>${l}</span>`;
+  const done=playbookDone(set);
+  return`<section class="playbook ${done?'done':''}"><div class="row between"><h3>Today's Playbook</h3><span class="pill">${done?'Bonus won!':'+'+PLAYBOOK_BONUS+' bonus stars'}</span></div>
+  <div class="pbs">${item(set.has('math'),'Math')}${item(set.has('spell'),'Spelling')}${item(set.has('es')||set.has('geo'),'Spanish or Geography')}</div>
+  <p class="mute">${done?'All three finished today. Great work!':'Finish one session of each to score the bonus.'}${isThu(Date.now())?' <b>Thursday: Spanish stars are worth 1.5 times as much today.</b>':''}</p></section>`;
+}
+/* ----- prizes: one list for everything Emmett can win ----- */
+function closetOpen(x,inf,stars){
+  if(x.nfl)return nflHas(x.id,inf||nflInfo(nflSess()));
+  if(x.need)return needMet(x);
+  return(stars===undefined?stats().stars:stars)>=x.at;
+}
+const closetSnap=()=>{const inf=nflInfo(nflSess()),st=stats().stars;return ITEMS.filter(x=>!x.season&&closetOpen(x,inf,st)).map(x=>x.id)};
+const closetNew=snap=>{const inf=nflInfo(nflSess()),st=stats().stars;return ITEMS.filter(x=>!x.season&&!x.nfl&&!snap.includes(x.id)&&closetOpen(x,inf,st)).map(x=>x.name)};
+function prizeList(){
+  const out=ITEMS.filter(x=>!x.season).map(x=>({key:'c:'+x.id,met:()=>closetOpen(x)})),seen=new Set();
+  Object.entries(ROOMSLOTS).forEach(([k,[l,opts]])=>opts.forEach(x=>{
+    if(!x.need)return;const key='r:'+(/^p[1-4]$/.test(k)?'poster':k)+':'+x.id;
+    if(seen.has(key))return;seen.add(key);out.push({key,met:()=>needMet(x)});
+  }));
+  return out;
+}
+function prizeCount(){const L=prizeList();return{total:L.length,have:L.filter(p=>p.met()).length}}
+/* ----- celebration ----- */
+function confetti(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const box=document.createElement('div');box.className='confetti';box.setAttribute('aria-hidden','true');
+  const cols=['#FFB400','#0076B6','#E5412D','#7B3FE4','#12875B','#fff'];
+  for(let i=0;i<46;i++){const p=document.createElement('i');p.style.cssText=`left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${(Math.random()*.5).toFixed(2)}s;animation-duration:${(1.8+Math.random()*1.4).toFixed(2)}s;transform:rotate(${Math.floor(Math.random()*360)}deg)`;box.appendChild(p)}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),3800);
+}
+const CELE_VIEWS=['results','spresults','gres','fbres','esres'];
+const comboOf=r=>{let n=0;for(let i=r.i;i>=0;i--){const s=r.st[i];if(i===r.i&&!s.done)continue;if(s.ok&&!s.helped&&!s.h)n++;else break}return n};
+
 roomWins();/* baseline the saved list the first time the app runs */
 
 /* ---------- My Room, part 3: every object in the room is a choice, drawn with shading, plus a full-body Emmett ---------- */
@@ -2826,7 +2982,7 @@ const BEANC={on:'#0A7E8C',black:'#2A3138',gold:'#D7A22A',red:'#C8102E',green:'#3
 
 /* ----- full-body Emmett, sized for the room (about 115 tall next to a 164 tall door) ----- */
 function avatarFigure(av){
-  const skin=SKIN[av.skin]||SKIN[2],shirt=av.top==='gi'?'#F4F7FA':OUTFIT[av.outfit]||OUTFIT[0],shoe=OUTFIT[av.bandc]||OUTFIT[2];
+  const skin=SKIN[av.skin]||SKIN[2],shirt=av.top==='gi'?'#F4F7FA':WGEN[av.top]&&WGEN[av.top].slot==='top'?WGEN[av.top].c1:OUTFIT[av.outfit]||OUTFIT[0],shoe=OUTFIT[av.bandc]||OUTFIT[2];
   const long=['jacket','gi','hoodie'].includes(av.top),bare=av.top==='runner',pro=['jersey','fbjersey'].includes(av.top),k=.46,bw=120*k,bh=130*k;
   const top=-115,white=av.top==='gi',pants=white?'#F4F7FA':'#2F4A6B',pd=shade(pants,.72),pl=shade(pants,1.18);
   const sd=shade(shirt,.7),sl=shade(shirt,1.2);
@@ -2900,6 +3056,7 @@ function roomSvg(c){
   if(v==='stadium')s+=PP('M322 112L336 100H378L392 112V132H322Z','#3A4770')+[[336,92],[378,92]].map(([x,y])=>`<path d="M${x} ${y}V108" stroke="#C9D1D6" stroke-width="1.6"/><circle cx="${x}" cy="${y}" r="3" fill="#FFF3B0"/><circle cx="${x}" cy="${y}" r="8" fill="#FFF3B0" opacity=".25"/>`).join('')+PP('M322 120H392','none','stroke="rgba(255,255,255,.25)"');
   s+=`<path d="M357 36V132M322 84H392" stroke="#fff" stroke-width="3"/>`+RR(312,132,90,7,'#fff',2,'filter="url(#f-sh)"')+PP('M330 138L398 138L470 330L360 330Z',G('g-beam',[[0,'rgba(255,255,255,.28)'],[1,'rgba(255,255,255,0)']]));
   s+=curtainArt(c.curtains);
+  s+=WALL_BACK(c);
   /* posters */
   [['p4',86],['p1',138],['p2',190],['p3',242]].forEach(([k,x])=>{if(c[k]&&c[k]!=='none')s+=`<g transform="translate(${x} 28)" filter="url(#f-sh)">${RR(-3,-3,50,62,'#fff',3,'stroke="rgba(0,0,0,.2)"')}${posterArt(c[k])}${RR(0,0,44,56,G('g-pg'+k,[[0,'rgba(255,255,255,.22)'],[.5,'rgba(255,255,255,0)']],1,1))}</g>`});
   if(c.shelf&&c.shelf!=='none')s+=shelfArt(c.shelf);
@@ -2942,6 +3099,7 @@ function roomSvg(c){
     +[0,1,2].map(i=>RR(503,T+11+i*19,24,16,'rgba(0,0,0,.11)',2)+RR(503,T+11+i*19,24,1.6,'rgba(255,255,255,.28)',1)+RR(509,T+17+i*19,12,2.6,dknob,1.3)).join('')
     +RR(434,T,98,7,wood('g-desk',dk),2.5)+RR(434,T,98,2,'rgba(255,255,255,.55)',1)+RR(434,T+5,98,2,'rgba(0,0,0,.18)')+RR(446,T+38,54,3,shade(dk,.7),1)+`</g>`;
   s+=`<g transform="translate(-4 ${T-178})">${lampArt(c.lamp)}</g><g transform="translate(-2 ${T-178})">${deskAArt(c.deskA)}</g><g transform="translate(8 ${T-178})">${deskBArt(c.deskB)}</g>`;
+  s+=WALL_ART(c)+FRONT_ART(c);
   s+='</g>';
   /* Emmett, standing in the room at room scale */
   s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(206 294) scale(1.22)">${avatarFigure(av)}</g>`;
@@ -2982,8 +3140,8 @@ function parentView(){
     ${S.pinErr?'<div class="fb try">That PIN is not right. Try again.</div>':''}</section>`+tabbar('parent');
   }
   const seg=`<div class="seg">${[['progress','Progress'],['log','Practice log'],['settings','Settings']].map(([k,l])=>`<button class="${S.tab===k?'on':''}" data-act="tab" data-v="${k}">${l}</button>`).join('')}</div>`;
-  const sub=S.tab==='progress'?`<div class="seg">${[['math','Math'],['spell','Spelling'],['geo','Geography'],['fb','Football']].map(([k,l])=>`<button class="${S.psub===k?'on':''}" data-act="psub" data-v="${k}">${l}</button>`).join('')}</div>`:'';
-  return head+seg+sub+(S.tab==='progress'?(S.psub==='fb'?fbProgress():S.psub==='spell'?spellProgress():S.psub==='geo'?geoProgress():progressTab()):S.tab==='log'?logTab():settingsTab())+tabbar('parent');
+  const sub=S.tab==='progress'?`<div class="seg">${[['math','Math'],['spell','Spelling'],['es','Spanish'],['geo','Geography'],['fb','Football']].map(([k,l])=>`<button class="${S.psub===k?'on':''}" data-act="psub" data-v="${k}">${l}</button>`).join('')}</div>`:'';
+  return head+seg+sub+(S.tab==='progress'?(S.psub==='fb'?fbProgress():S.psub==='es'?esProgress():S.psub==='spell'?spellProgress():S.psub==='geo'?geoProgress():progressTab()):S.tab==='log'?logTab():settingsTab())+tabbar('parent');
 }
 
 function progressTab(){
@@ -3093,6 +3251,7 @@ function render(){
     case'gstudy':h=gStudyView();break;
     case'flfacts':h=flFactsView();break;
     case'room':h=roomView();break;
+    case'es':case'esrun':case'esres':case'esstudy':h=v2view();break;
     case'lesson':h=lessonView();break;
     case'sprun':h=spRunView();break;
     case'spresults':h=spResultsView();break;
@@ -3102,13 +3261,14 @@ function render(){
   }
   $app.innerHTML=h;
   document.body.classList.toggle('hw',halloween());
-  if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view}
-  const a=document.getElementById('ans')||document.getElementById('spin')||document.getElementById('gans')||document.getElementById('gcopy');
+  if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view;if(CELE_VIEWS.includes(S.view))confetti()}
+  if(!CELE_VIEWS.includes(S.view))S.bump=null;
+  const a=document.getElementById('ans')||document.getElementById('spin')||document.getElementById('gans')||document.getElementById('gcopy')||document.getElementById('esans')||document.getElementById('escopy');
   if(a&&!a.disabled)a.focus({preventScroll:true});
   const p=document.getElementById('pin');if(p)p.focus({preventScroll:true});
 }
 function finish(){
-  const exam=run.mode==='exam',before=stats().stars,prevBest=S.sessions.reduce((m,s)=>Math.max(m,s.stars||0),0),had=S.sessions.length>0;
+  const exam=run.mode==='exam',before=stats().stars,snap0=closetSnap(),prevBest=S.sessions.reduce((m,s)=>Math.max(m,s.stars||0),0),had=S.sessions.length>0;
   const items=run.qs.map((q,i)=>{
     const st=run.st[i];
     if(exam){
@@ -3119,12 +3279,13 @@ function finish(){
     return{t:q.type,k:q.kind,ok:st.ok,h:st.helped?1:0,err:st.err||(hintOnly?'Needed a hint: '+TYPES[q.type].label:null),given:st.given};
   });
   const correct=items.filter(i=>i.ok).length;
-  const sess={ts:Date.now(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-run.t0)/1000)),stars:exam?correct*2+5:correct+3,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err}))};
+  const pbk=withPlaybook('math',sessStars('math',exam?'test':'play',correct));
+  const sess={ts:Date.now(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-run.t0)/1000)),stars:pbk.stars,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err}))};
   saveSession(sess);
   const now=stats().stars;
-  const unlocked=ITEMS.filter(it=>it.at!==null&&it.at>before&&it.at<=now).map(it=>it.name);
+  const unlocked=closetNew(snap0);
   const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
-  run.result=Object.assign({},sess,{items,unlocked,stop,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
+  run.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
 }
 function guidedSubmit(val){
   const q=run.qs[run.i],st=run.st[run.i];
@@ -3160,6 +3321,7 @@ function setRoom(k,v){
 document.addEventListener('input',e=>{
   if(e.target.id==='spin'&&sp&&sp.game==='test')sp.items[sp.i].val=e.target.value;
   if(e.target.id==='gcopy'&&geo){const q=geo.qs[geo.i];geo.st[geo.i].copy=e.target.value;const b=document.getElementById('gnextbtn');if(b)b.disabled=gnorm(e.target.value)!==gnorm(q.ans)}
+  if(e.target.id==='escopy'&&es){const q=es.qs[es.i];es.st[es.i].copy=e.target.value;const b=document.getElementById('esnextbtn');if(b)b.disabled=!(esn(e.target.value)===esn(q.ans)||esn(e.target.value)===esn(esBare(q.ans)))}
   if(e.target.id==='ans'){
     const v=e.target.value.replace(/[^0-9a-zA-Z\/ ,.]/g,'');
     if(v!==e.target.value)e.target.value=v;
@@ -3174,6 +3336,8 @@ document.addEventListener('keydown',e=>{
   }
   if(e.key!=='Enter')return;
   if(e.target.id==='spin'&&sp){e.preventDefault();act(sp.game==='test'?'spnext':'spcheck');return}
+  if(e.target.id==='esans'&&es){e.preventDefault();act('escheck');return}
+  if(e.target.id==='escopy'&&es){e.preventDefault();const b=document.getElementById('esnextbtn');if(b&&!b.disabled)act('esnext');return}
   if(e.target.id==='gans'&&geo){e.preventDefault();geoSubmit(e.target.value);return}
   if(e.target.id==='gcopy'&&geo){e.preventDefault();const b=document.getElementById('gnextbtn');if(b&&!b.disabled)act('gnext');return}
   if(e.target.id==='ans'&&run){e.preventDefault();if(run.mode==='exam')act('next');else guidedSubmit(e.target.value)}
@@ -3207,7 +3371,7 @@ function act(a,v,d){
       if(on.length){S.topics=on;store.set('bl.topics',on);touchProfile()}
       render();break}
     case'home':S.view='home';S.unlocked=false;run=null;sp=null;render();break;
-    case'exit':S.view=S.from||'home';S.unlocked=false;run=null;sp=null;render();break;
+    case'exit':S.view=S.from||'home';S.unlocked=false;run=null;sp=null;es=null;render();break;
     case'psub':S.psub=v;render();break;
     case'print':window.print();break;
     case'fbstart':if(v==='draft')startDraft();else startQuiz(v);break;
@@ -3300,8 +3464,655 @@ function act(a,v,d){
       break;
     case'begin':r.started=true;r.tickAt=Date.now();render();break;
     case'submitExam':finish();break;
+    default:v2act(a,v,d);
   }
 }
+
+ICON.es='<svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="currentColor"/><text x="12" y="13.4" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="-apple-system,Inter,sans-serif">Ñ</text></svg>';
+const SUBTAG={math:['Math pays double','×2','Every right answer is worth about 2 stars, and a practice exam can pay up to 90.'],spell:['Spelling pays double','×2','Every right answer is worth about 2 stars, and the Practice Test can pay up to 90.'],geo:['Geography pays more now','×2','Every right answer is worth about 2 stars.']};
+function subjHero(sub){
+  const t=SUBTAG[sub],col=SUBCOL[sub];
+  return`<section class="pagehero" style="--c1:${col[0]};--c2:${col[1]}"><div><b>${t[0]}</b><span>${t[2]}</span></div><div class="x">${t[1]}</div></section>`;
+}
+function prizeBar(){const pc=prizeCount();return`<div class="pcount"><span class="pill">${pc.have} of ${pc.total} prizes won</span><span class="pbar" role="img" aria-label="${pc.have} of ${pc.total} prizes won"><i style="width:${Math.round(100*pc.have/pc.total)}%"></i></span></div>`}
+
+/* ---------- Spanish: a Thursday elective at school. Words are grade-5 starters, with the article for nouns. ---------- */
+const ES_LESSONS=[
+  {id:'saludos',name:'Greetings',note:'hello, please, thank you',words:[['hola','hello'],['adiós','goodbye'],['buenos días','good morning'],['buenas tardes','good afternoon'],['buenas noches','good night'],['por favor','please'],['gracias','thank you'],['de nada','you are welcome'],['¿cómo estás?','how are you?'],['muy bien','very well'],['mucho gusto','nice to meet you'],['me llamo','my name is'],['hasta luego','see you later'],['perdón','excuse me']]},
+  {id:'num1',name:'Numbers 1 to 10',note:'uno, dos, tres',words:[['uno','one (1)'],['dos','two (2)'],['tres','three (3)'],['cuatro','four (4)'],['cinco','five (5)'],['seis','six (6)'],['siete','seven (7)'],['ocho','eight (8)'],['nueve','nine (9)'],['diez','ten (10)']]},
+  {id:'num2',name:'Numbers 11 to 20',note:'once to veinte',words:[['once','eleven (11)'],['doce','twelve (12)'],['trece','thirteen (13)'],['catorce','fourteen (14)'],['quince','fifteen (15)'],['dieciséis','sixteen (16)'],['diecisiete','seventeen (17)'],['dieciocho','eighteen (18)'],['diecinueve','nineteen (19)'],['veinte','twenty (20)']]},
+  {id:'num3',name:'Tens and hundreds',note:'treinta to cien',words:[['veinte','twenty (20)'],['treinta','thirty (30)'],['cuarenta','forty (40)'],['cincuenta','fifty (50)'],['sesenta','sixty (60)'],['setenta','seventy (70)'],['ochenta','eighty (80)'],['noventa','ninety (90)'],['cien','one hundred (100)'],['mil','one thousand (1,000)']]},
+  {id:'colores',name:'Colors',note:'rojo, azul, verde',words:[['rojo','red'],['azul','blue'],['verde','green'],['amarillo','yellow'],['naranja','orange'],['morado','purple'],['rosado','pink'],['negro','black'],['blanco','white'],['gris','gray'],['marrón','brown'],['dorado','gold']]},
+  {id:'dias',name:'Days of the week',note:'lunes to domingo',words:[['lunes','Monday'],['martes','Tuesday'],['miércoles','Wednesday'],['jueves','Thursday'],['viernes','Friday'],['sábado','Saturday'],['domingo','Sunday'],['hoy','today'],['mañana','tomorrow'],['ayer','yesterday'],['la semana','the week'],['el fin de semana','the weekend']]},
+  {id:'meses',name:'Months',note:'enero to diciembre',words:[['enero','January'],['febrero','February'],['marzo','March'],['abril','April'],['mayo','May'],['junio','June'],['julio','July'],['agosto','August'],['septiembre','September'],['octubre','October'],['noviembre','November'],['diciembre','December']]},
+  {id:'familia',name:'Family',note:'mamá, papá, hermano',words:[['la mamá','mom'],['el papá','dad'],['el hermano','brother'],['la hermana','sister'],['el abuelo','grandfather'],['la abuela','grandmother'],['el tío','uncle'],['la tía','aunt'],['el primo','male cousin'],['la prima','female cousin'],['la familia','family'],['el amigo','friend']]},
+  {id:'animales',name:'Animals',note:'perro, gato, tiburón',words:[['el perro','dog'],['el gato','cat'],['el pájaro','bird'],['el pez','fish'],['el caballo','horse'],['la vaca','cow'],['el cerdo','pig'],['el león','lion'],['el elefante','elephant'],['el mono','monkey'],['el oso','bear'],['la serpiente','snake'],['la tortuga','turtle'],['el tiburón','shark'],['el delfín','dolphin'],['el cocodrilo','crocodile'],['el caimán','alligator'],['el pelícano','pelican'],['el manatí','manatee']]},
+  {id:'escuela',name:'At school',note:'libro, lápiz, mochila',words:[['el libro','book'],['el lápiz','pencil'],['el papel','paper'],['la mochila','backpack'],['la escuela','school'],['el maestro','male teacher'],['la maestra','female teacher'],['el estudiante','student'],['la pizarra','whiteboard'],['el escritorio','desk'],['la computadora','computer'],['la regla','ruler'],['el cuaderno','notebook'],['la clase','class'],['la tarea','homework']]},
+  {id:'comida',name:'Food and drinks',note:'pan, leche, manzana',words:[['el pan','bread'],['el agua','water'],['la leche','milk'],['la manzana','apple'],['la naranja','orange (fruit)'],['el plátano','banana'],['el queso','cheese'],['el pollo','chicken'],['el arroz','rice'],['los frijoles','beans'],['el huevo','egg'],['el helado','ice cream'],['el jugo','juice'],['el desayuno','breakfast'],['el almuerzo','lunch'],['la cena','dinner']]},
+  {id:'cuerpo',name:'The body',note:'cabeza, mano, pie',words:[['la cabeza','head'],['el ojo','eye'],['la nariz','nose'],['la boca','mouth'],['la oreja','ear'],['la mano','hand'],['el pie','foot'],['el brazo','arm'],['la pierna','leg'],['el dedo','finger'],['la cara','face'],['el pelo','hair']]},
+  {id:'clima',name:'Weather and nature',note:'sol, lluvia, huracán',words:[['el sol','sun'],['la luna','moon'],['la estrella','star'],['la lluvia','rain'],['la nube','cloud'],['el viento','wind'],['la nieve','snow'],['el calor','heat'],['el frío','cold'],['el huracán','hurricane'],['la playa','beach'],['el mar','sea']]},
+  {id:'deportes',name:'Sports and games',note:'fútbol, equipo, ganar',words:[['el fútbol','soccer'],['el fútbol americano','football'],['el béisbol','baseball'],['el baloncesto','basketball'],['correr','to run'],['saltar','to jump'],['jugar','to play'],['el equipo','team'],['la pelota','ball'],['ganar','to win'],['perder','to lose'],['el campeón','champion'],['el jugador','player']]},
+  {id:'verbos',name:'Action words',note:'hablar, leer, escribir',words:[['hablar','to talk'],['comer','to eat'],['beber','to drink'],['leer','to read'],['escribir','to write'],['escuchar','to listen'],['caminar','to walk'],['dormir','to sleep'],['cantar','to sing'],['bailar','to dance'],['estudiar','to study'],['abrir','to open'],['cerrar','to close'],['ayudar','to help']]},
+  {id:'clase',name:'Class phrases',note:'no entiendo, más despacio',words:[['no entiendo','I do not understand'],['más despacio, por favor','slower, please'],['repite, por favor','please repeat'],['tengo una pregunta','I have a question'],['abre el libro','open the book'],['levanta la mano','raise your hand'],['escucha','listen'],['siéntate','sit down'],['lo siento','I am sorry'],['¿qué significa?','what does it mean?']]},
+  {id:'paises',name:'Hispanic heritage: capitals',note:'Madrid, Lima, Bogotá',words:[['Ciudad de México','capital of Mexico'],['Madrid','capital of Spain'],['Bogotá','capital of Colombia'],['Buenos Aires','capital of Argentina'],['Lima','capital of Peru'],['Santiago','capital of Chile'],['La Habana','capital of Cuba'],['San Juan','capital of Puerto Rico'],['San José','capital of Costa Rica'],['Santo Domingo','capital of the Dominican Republic'],['Caracas','capital of Venezuela'],['Quito','capital of Ecuador']]}
+];
+ES_LESSONS.forEach(l=>{l.words=l.words.map(([es,en])=>({id:l.id+'.'+es,es,en,lesson:l.id}))});
+const ES_ALL=ES_LESSONS.flatMap(l=>l.words);
+const esWord=id=>ES_ALL.find(w=>w.id===id);
+const esn=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[¿¡?!.,]/g,'').replace(/\s+/g,' ').trim();
+const esBare=s=>s.replace(/^(el|la|los|las)\s+/i,'');
+const esLetters=w=>[...esBare(w.es)].filter(ch=>/[a-záéíóúñü]/i.test(ch));
+const esTileOk=w=>{const n=esLetters(w).length;return n>=3&&n<=9&&!/\s/.test(esBare(w.es))};
+const ES_GAMES={
+  es2en:{name:'Pick the English',d:'Read the Spanish word and pick what it means.',ic:'check',lead:1},
+  en2es:{name:'Pick the Spanish',d:'See the English and pick the Spanish word.',ic:'quote'},
+  listen:{name:'Listen and pick',d:'Hear the Spanish word, then pick its meaning.',ic:'speaker'},
+  type:{name:'Type the Spanish',d:'Write the Spanish word yourself. Writing makes it stick.',ic:'pencil'},
+  tiles:{name:'Letter tiles',d:'Put the letters in order to spell the Spanish word.',ic:'shuffle'},
+  test:{name:'Spanish Quiz',d:'20 mixed questions, no hints. The most stars of any game.',ic:'trophy'}
+};
+const esLesson=()=>ES_LESSONS.find(l=>l.id===S.eslesson)||ES_LESSONS[0];
+function esPool(){
+  if(S.eslesson==='all')return ES_ALL;
+  if(S.eslesson==='tricky'){const st=esStats(),t=ES_ALL.filter(w=>esLevel(st[w.id])==='l');return t.length>=4?t:ES_ALL}
+  return esLesson().words;
+}
+const esName=()=>S.eslesson==='all'?'Everything':S.eslesson==='tricky'?'Tricky words':esLesson().name;
+const esSess=()=>S.sessions.filter(s=>subjOf(s)==='es');
+function esStats(){
+  const m={};
+  esSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w)(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h})}));
+  return m;
+}
+const esLevel=a=>!a||!a.length?'n':a.length>=2&&a[0].ok&&!a[0].h&&a[1].ok&&!a[1].h?'m':'l';
+const esMastered=()=>{const st=esStats();return ES_ALL.filter(w=>esLevel(st[w.id])==='m')};
+/* speaking Spanish: use a Spanish voice when the device has one */
+let esVoice=null;
+function sayEs(t){
+  if(!canSpeak())return;
+  try{
+    const ss=window.speechSynthesis;ss.cancel();
+    const vs=ss.getVoices().filter(v=>/^es[-_]/i.test(v.lang));
+    esVoice=esVoice||vs.find(v=>/es[-_](US|MX)/i.test(v.lang))||vs[0]||null;
+    const u=new SpeechSynthesisUtterance(t);u.lang=esVoice?esVoice.lang:'es-MX';u.rate=.8;if(esVoice)u.voice=esVoice;ss.speak(u);
+  }catch(e){}
+}
+/* ----- building questions ----- */
+let es=null;
+function esMake(game,w,pool){
+  const others=key=>{const same=shuffle(pool.filter(o=>o.id!==w.id&&o[key]!==w[key]));const rest=shuffle(ES_ALL.filter(o=>o.id!==w.id&&o[key]!==w[key]&&!same.includes(o)));return[...new Set(same.concat(rest).map(o=>o[key]))].slice(0,3)};
+  const b={k:w.id,w,why:`${w.es} means “${w.en}”.`};
+  if(game==='es2en')return Object.assign(b,{kind:'mc',prompt:`What does “${w.es}” mean?`,ans:w.en,choices:shuffle([w.en,...others('en')])});
+  if(game==='en2es')return Object.assign(b,{kind:'mc',prompt:`How do you say “${w.en}” in Spanish?`,ans:w.es,choices:shuffle([w.es,...others('es')])});
+  if(game==='listen')return Object.assign(b,{kind:'mc',say:w.es,prompt:'Listen, then pick what it means.',ans:w.en,choices:shuffle([w.en,...others('en')])});
+  if(game==='tiles'){const L=esLetters(w),idx=L.map((_,i)=>i);let sh=shuffle(idx),n=0;while(sh.join()===idx.join()&&n++<8)sh=shuffle(idx);return Object.assign(b,{kind:'tiles',prompt:`Put the letters in order to spell “${w.en}” in Spanish.`,ans:esBare(w.es),letters:L,order:sh})}
+  return Object.assign(b,{kind:'type',prompt:`Type the Spanish for “${w.en}”.`,ans:w.es,accept:[esBare(w.es)]});
+}
+function esBuild(game){
+  const pool=esPool(),n=game==='test'?examLen():sessLen(),st=esStats(),rank={n:0,l:1,m:2};
+  let words=shuffle(pool).sort((a,b)=>rank[esLevel(st[a.id])]-rank[esLevel(st[b.id])]);
+  if(game==='tiles'){const ok=words.filter(esTileOk);if(ok.length>=4)words=ok}
+  const list=[];
+  while(list.length<n&&words.length)list.push(...shuffle(words.slice(0,Math.max(n,10))).slice(0,n-list.length));
+  if(game==='test'){
+    const kinds=['es2en','en2es','type','listen','es2en','en2es','type','tiles'];
+    return list.map((w,i)=>{let g=kinds[i%kinds.length];if(g==='tiles'&&!esTileOk(w))g='type';return esMake(g,w,pool)});
+  }
+  return list.map(w=>esMake(game==='tiles'&&!esTileOk(w)?'type':game,w,pool));
+}
+function esStart(game){
+  const qs=esBuild(game);if(!qs.length)return;
+  es={game,qs,i:0,t0:Date.now(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null,placed:[],accent:false}))};
+  S.from='es';S.view='esrun';render();
+  if(qs[0].say)sayEs(qs[0].say);
+}
+function esRight(q,v){
+  if(q.kind==='mc')return String(v)===String(q.ans);
+  const g=esn(v);
+  return g===esn(q.ans)||(q.accept||[]).some(a=>esn(a)===g);
+}
+function esErr(q,v){
+  if(q.kind==='mc')return q.prompt.startsWith('How')?'Picked the wrong Spanish word':'Picked the wrong meaning';
+  const g=esn(v);
+  return lev(g,esn(esBare(q.ans)))<=2?'Misspelled the Spanish word':'Not close';
+}
+function esSubmit(v){
+  const q=es.qs[es.i],st=es.st[es.i];
+  if(st.done)return;v=String(v).trim();if(v==='')return;
+  st.tries++;st.given=v;
+  if(esRight(q,v)){
+    st.done=true;st.ok=true;st.h=st.tries>1||st.hinted;st.msg='right';st.cheer=cheerPick();
+    st.accent=q.kind!=='mc'&&v!==q.ans&&v!==esBare(q.ans);
+  }else{
+    if(!st.err)st.err=esErr(q,v);
+    st.wrong.push(v);st.hinted=true;
+    if(es.game==='test'||st.tries>=2){st.done=true;st.ok=false;st.msg='reveal'}else st.msg='retry';
+    if(q.kind==='tiles'&&!st.done)st.placed=[];
+  }
+  render();
+}
+function esTilePlace(i){
+  const q=es.qs[es.i],st=es.st[es.i];if(st.done||st.placed.includes(i))return;
+  st.placed.push(i);
+  if(st.placed.length===q.letters.length)esSubmit(st.placed.map(k=>q.letters[k]).join(''));
+  else render();
+}
+function esFinish(){
+  const g=es.game,items=es.qs.map((q,i)=>{const st=es.st[i];return{t:'es',g,w:q.k,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
+  const correct=items.filter(i=>i.ok).length,before=stats().stars,snap=closetSnap(),mBefore=esMastered().map(w=>w.id);
+  const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',correct));
+  const sess={ts:Date.now(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-es.t0)/1000)),stars:pbk.stars,items};
+  saveSession(sess);S.bump='es';
+  const now=stats().stars;
+  es.result=Object.assign({},sess,{pb:pbk.bonus,thu:isThu(Date.now()),
+    missed:es.qs.map((q,i)=>({q,st:es.st[i]})).filter(x=>!x.st.ok),
+    newly:esMastered().filter(w=>!mBefore.includes(w.id)).map(w=>w.es),
+    unlocked:closetNew(snap),
+    stop:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),
+    room:roomWins(sess)});
+  S.view='esres';render();
+}
+/* ----- screens ----- */
+function esView(){
+  const st=esStats(),m=esMastered().length,cur=esName(),thu=isThu(Date.now());
+  const lcard=l=>{const mm=l.words.filter(w=>esLevel(st[w.id])==='m').length,p=Math.round(100*mm/l.words.length);
+    return`<button class="skill ${(S.eslesson||ES_LESSONS[0].id)===l.id?'cur':''}" data-act="eslesson" data-v="${l.id}"><b>${esc(l.name)}</b><span class="track2"><span class="fill" style="width:${p}%"></span></span><small>${esc(l.note)} · ${mm} of ${l.words.length} mastered</small></button>`};
+  const gm=([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="esgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`;
+  return nav('Spanish')+`<div class="largehead"><h1>Spanish <small class="hola">¡Hola!</small></h1><p class="mute">Spanish class is on Thursdays. Practice here and earn the most stars and yards of any subject.</p></div>
+  <section class="esbanner ${thu?'thu':''}"><div><b>${thu?'¡Hoy es jueves! Spanish day':'Spanish pays the most stars'}</b><span>${thu?'Every Spanish star counts 1.5 times today.':'Math and spelling pay about 2 stars for each right answer. Spanish pays about 4, and 6 on Thursdays.'}</span></div><div class="x">${thu?'×6':'×4'}</div></section>
+  ${counterHtml('es')}
+  <section class="card"><div class="row between"><h3>Your words</h3><span class="pill">${m} of ${ES_ALL.length} mastered</span></div><p class="mute">Mastered means right 2 times in a row with no hint. All the games use the words from <b>${esc(cur)}</b>. Pick a different set below.</p></section>
+  <div class="sect">Games</div><section class="modes">${Object.entries(ES_GAMES).map(gm).join('')}
+    <button class="mode" data-act="esstudy"><span class="ic">${ICON.cards}</span><span><h3>Flash Cards</h3><span class="d">Flip, listen and learn the words. No score.</span></span>${ICON.next}</button></section>
+  <div class="sect">Lessons</div><section class="skills">${ES_LESSONS.map(lcard).join('')}</section>
+  <div class="sect">Mixed practice</div><section class="skills">
+    <button class="skill ${S.eslesson==='tricky'?'cur':''}" data-act="eslesson" data-v="tricky"><b>Tricky words</b><small>The words that need more practice</small></button>
+    <button class="skill ${S.eslesson==='all'?'cur':''}" data-act="eslesson" data-v="all"><b>Everything</b><small>All ${ES_ALL.length} words</small></button></section>
+  ${tabbar('es')}`;
+}
+function esStudyView(){
+  const open=S.esOpen||(S.esOpen=new Set()),list=esPool();
+  return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">Flash Cards</span><span style="min-width:64px"></span></div>
+  <div class="largehead"><h1>${esc(esName())}</h1><p class="mute">Tap a card to flip it and hear the Spanish. Then cover the card and say it again.</p></div>
+  <section class="tcards">${list.map(w=>{const o=open.has(w.id);
+    return`<button class="tcard" style="--dc:var(--accent)" data-act="esflip" data-v="${esc(w.id)}" aria-pressed="${o}"><b>${esc(w.es)}</b><small>${o?`<strong>${esc(w.en)}</strong>`:'Tap to flip'}</small></button>`}).join('')}</section>`;
+}
+function esRunView(){
+  const r=es,q=r.qs[r.i],st=r.st[r.i],N=r.qs.length,last=r.i===N-1,g=ES_GAMES[r.game];
+  const top=`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Exit</button><span class="mid">${esc(g.name)}</span><span style="min-width:64px"></span></div>`;
+  const good=r.st.filter(s=>s.ok).length,f=(r.i+(st.done?1:0))/N,cb=comboOf(r),quiz=r.game==='test';
+  let ans='';
+  if(q.kind==='type'){
+    ans=`<div class="row"><input class="ans wide" id="esans" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your answer" placeholder="Type it in Spanish" ${st.done?'disabled':''} value="${esc(st.done?st.given:'')}"></div><p class="mute">Accent marks are a bonus. You can leave them off.</p>`;
+  }else if(q.kind==='tiles'){
+    ans=`<div class="eslots" aria-label="Your word so far">${q.letters.map((_,k)=>`<span class="eslot ${st.placed[k]!==undefined?'f':''}">${st.placed[k]!==undefined?esc(q.letters[st.placed[k]]):''}</span>`).join('')}</div>
+    <div class="tiles">${q.order.map(i=>`<button class="tile" data-act="estile" data-v="${i}" ${st.done||st.placed.includes(i)?'disabled':''}>${esc(q.letters[i])}</button>`).join('')}</div>
+    ${st.done?'':`<div class="row"><button class="btn quiet" data-act="esback" ${st.placed.length?'':'disabled'}>Back one</button><button class="btn quiet" data-act="esclear" ${st.placed.length?'':'disabled'}>Clear</button></div>`}`;
+  }else{
+    ans=`<div class="choices w">${q.choices.map(c=>{let cls='choice';if(st.wrong.includes(String(c)))cls+=' bad';if(st.done&&c===q.ans)cls+=' ok';
+      return`<button class="${cls}" data-act="espick" data-v="${esc(c)}" ${st.done||st.wrong.includes(String(c))?'disabled':''}>${esc(c)}</button>`}).join('')}</div>`;
+  }
+  const hintTxt=!st.done&&st.hinted&&!quiz&&(q.kind==='type')?`<div class="fb try">Hint: it starts with <b>${esc(esBare(q.ans)[0])}</b> and has ${esBare(q.ans).replace(/ /g,'').length} letters.</div>`:'';
+  let fb='';
+  if(st.msg==='right')fb=`<div class="fb good">${esc(st.cheer)} ${st.h?'Right, on the second try.':'Right!'}</div><p>${esc(q.why)}${st.accent?` <span class="mute">The full spelling is <b>${esc(q.ans)}</b>.</span>`:''}</p>`;
+  if(st.msg==='retry')fb=`<div class="fb try">${st.err==='Misspelled the Spanish word'?'So close! Check the letters and try once more.':'Not yet. Try once more.'}</div>`;
+  const needCopy=q.kind==='type'&&!quiz;
+  if(st.msg==='reveal')fb=`<div class="fb try">The answer is <b>${esc(q.ans)}</b>. ${esc(q.why)}</div>`+(needCopy?`<p class="mute">Look at it, then write it once to lock it in:</p><div class="row"><input class="ans wide" id="escopy" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Copy the answer" value="${esc(st.copy)}"></div>`:'');
+  const copyOk=!(needCopy&&st.msg==='reveal')||esn(st.copy)===esn(q.ans)||esn(st.copy)===esn(esBare(q.ans));
+  const hear=q.kind==='mc'&&r.game==='es2en'?`<button class="btn quiet" data-act="espeak" data-v="${esc(q.w.es)}">${ICON.speaker}Hear it</button>`:'';
+  return top+`<section class="card"><div class="row between"><span class="pill">Question ${r.i+1} of ${N}</span><span class="score pill plain">${cb>=2?`<span class="combo">Streak ×${cb}</span> `:''}Points <span class="num">${good}</span></span></div>${raceTrack(r,f)}
+  <p class="qtext word">${esc(q.prompt)}</p>${q.say?`<div class="row"><button class="btn tint" data-act="espeak" data-v="${esc(q.say)}">${ICON.speaker}Play the word</button></div>`:''}${ans}${hintTxt}${fb}
+  <div class="row between"><div class="row">${!st.done&&q.kind==='type'?`<button class="btn" data-act="escheck">Check answer</button>`:''}${!st.done&&!quiz?`<button class="btn quiet" data-act="eshint">Show a hint</button>`:''}${hear}</div>
+  ${st.done?`<button class="btn" id="esnextbtn" data-act="esnext" ${copyOk?'':'disabled'}>${last?'See my results':'Next question'}</button>`:''}</div></section>`;
+}
+function esResView(){
+  const s=es.result,p=pct(s);
+  const msg=p>=90?'¡Excelente! You really know your Spanish.':p>=70?'¡Muy bien! A little more practice and it will stick.':'¡Buen trabajo! Every try builds it. Keep going.';
+  const wins=[...(s.unlocked||[]).map(n=>`New in your closet: ${n}`),...(s.room||[]).map(n=>`New for your room: ${n}`),...(s.stop||[]).map(n=>`${n}`),...(s.newly||[]).map(n=>`Mastered: ${n}`)];
+  return`<div class="navbar"><button class="back" data-act="exit">${ICON.chev}Done</button><span class="mid">¡Fin!</span><span style="min-width:64px"></span></div>
+  <section class="card"><h2>¡Buen trabajo!</h2>
+  <div class="row" style="gap:22px"><div><div class="bigscore">${s.correct}/${s.total}</div><span class="mute">${p}% right</span></div><div><div class="bigscore"><span style="color:var(--gold)">★</span> +${s.stars}</div><span class="mute">stars earned</span></div></div>
+  <p>${msg}</p>${s.thu?'<div class="fb good">Thursday bonus: Spanish stars counted 1.5 times today.</div>':''}${s.pb?`<div class="fb good">Playbook bonus: +${s.pb} stars for finishing math, spelling and Spanish or geography today.</div>`:''}
+  ${wins.map(w=>`<div class="fb good">${esc(w)}</div>`).join('')}
+  ${s.missed.length?`<h3>Let's look at ${s.missed.length===1?'this one':'these'}</h3>${s.missed.map(({q,st})=>`<details><summary>${esc(q.prompt)} <span class="mute">(${esc(q.ans)})</span></summary><p style="margin-top:8px">${esc(q.why)}${st.given?` You answered <b>${esc(st.given)}</b>.`:''}</p></details>`).join('')}`:'<div class="fb good">No misses. Perfect!</div>'}
+  <div class="row"><button class="btn" data-act="esgame" data-v="${s.items[0].g}">Play again</button><button class="btn tint" data-act="exit">Done</button></div></section>`;
+}
+function esProgress(){
+  const ss=esSess();
+  if(!ss.length)return`<section class="card"><h3>No Spanish sessions yet</h3><p class="mute">Once Emmett finishes a Spanish game, his word progress shows up here for both homes.</p></section>`;
+  const st=esStats(),items=ss.flatMap(s=>s.items||[]);
+  const bar=(label,p,right,low)=>`<div class="bar"><span>${label}</span><span class="track2"><span class="fill ${low?'low':''}" style="width:${p}%"></span></span><span class="num">${right}</span></div>`;
+  const errs={};items.filter(i=>i.err&&i.err!=='Needed a hint').forEach(i=>errs[i.err]=(errs[i.err]||0)+1);
+  const rows=Object.entries(errs).sort((a,b)=>b[1]-a[1]),mx=rows.length?rows[0][1]:1;
+  const byGame=Object.keys(ES_GAMES).map(k=>{const a=items.filter(i=>i.g===k);return{k,n:a.length,c:a.filter(i=>i.ok&&!i.h).length}}).filter(x=>x.n);
+  const tricky=ES_ALL.filter(w=>esLevel(st[w.id])==='l');
+  return`<section class="card"><div class="row between"><h3>Spanish</h3><span class="pill">${esMastered().length} of ${ES_ALL.length} words mastered</span></div><p class="mute">${ss.length} sessions. Mastered means right 2 times in a row with no hint.</p>
+    ${ES_LESSONS.map(l=>{const m=l.words.filter(w=>esLevel(st[w.id])==='m').length;return bar(esc(l.name),Math.round(100*m/l.words.length),m+'/'+l.words.length)}).join('')}</section>
+  <section class="card"><h3>Score history</h3>${chart(ss)}</section>
+  <section class="card"><h3>Words that need work</h3>${tricky.length?`<div class="wchips">${tricky.map(w=>`<span class="wchip"><i class="t"></i>${esc(w.es)}</span>`).join('')}</div>`:'<p class="mute">None right now.</p>'}</section>
+  <section class="card"><h3>Right with no hint, by game</h3>${byGame.map(x=>{const p=Math.round(100*x.c/x.n);return bar(esc(ES_GAMES[x.k].name),p,p+'%',p<70)}).join('')}</section>
+  <section class="card"><h3>Mistake patterns</h3>${rows.length?rows.map(([k,n])=>bar(esc(k),Math.round(100*n/mx),n,true)).join(''):'<p class="mute">No mistakes recorded yet.</p>'}</section>`;
+}
+/* the screens and actions the main switches hand over */
+function v2view(){
+  switch(S.view){
+    case'es':return esView();
+    case'esrun':return esRunView();
+    case'esres':return esResView();
+    case'esstudy':return esStudyView();
+  }
+  return null;
+}
+function v2act(a,v,d){
+  switch(a){
+    case'eslesson':S.eslesson=v;store.set('bl.eslesson',v);render();break;
+    case'esgame':esStart(v);break;
+    case'esstudy':S.from='es';S.view='esstudy';render();break;
+    case'esflip':{const o=S.esOpen||(S.esOpen=new Set());if(o.has(v))o.delete(v);else{o.add(v);const w=esWord(v);if(w)sayEs(w.es)}render();break}
+    case'espick':esSubmit(v);break;
+    case'escheck':{const el=document.getElementById('esans');esSubmit(el?el.value:'');break}
+    case'estile':esTilePlace(Number(v));break;
+    case'esback':{es.st[es.i].placed.pop();render();break}
+    case'esclear':{es.st[es.i].placed=[];render();break}
+    case'eshint':{
+      const q=es.qs[es.i],st=es.st[es.i];st.hinted=true;
+      if(q.kind==='mc'){const bad=q.choices.filter(c=>c!==q.ans&&!st.wrong.includes(String(c)));if(bad.length>1)st.wrong.push(String(pick(bad)))}
+      else if(q.kind==='tiles'){
+        const want=esn(q.ans),have=esn(st.placed.map(i=>q.letters[i]).join(''));
+        if(want.startsWith(have)){const idx=q.order.find(i=>!st.placed.includes(i)&&esn(q.letters[i])===want[have.length]);if(idx!==undefined)st.placed.push(idx)}
+      }
+      render();break}
+    case'esnext':if(es.i<es.qs.length-1){es.i++;render();const q=es.qs[es.i];if(q.say)sayEs(q.say)}else esFinish();break;
+    case'espeak':sayEs(v);break;
+  }
+}
+
+/* ---------- Round 4: 100 new wardrobe prizes (40 shirts, 34 hats, 26 extras), drawn from small patterns and palettes ---------- */
+const GC={navy:'#1B2A55',gold:'#F2B705',red:'#D62839',royal:'#2F6FD0',teal:'#0E9AA7',green:'#2E9E5B',lime:'#9BD13B',orange:'#F57C1F',purple:'#7B3FE4',pink:'#F06AA8',black:'#1C2128',white:'#F4F7FA',gray:'#7C8794',sky:'#5CC2F2',maroon:'#7A1F2B',cream:'#F3E7C7',brown:'#7A4E2D',coral:'#FF6F61',mint:'#6FD6B0',silver:'#BFC7CF',tan:'#C9A66B',olive:'#5E6E3C'};
+const TORSO_D='M18 130C20 100 38 92 60 92C82 92 100 100 102 130Z';
+const PAT={
+  stripes:(a,b)=>{let g='';for(let y=95;y<131;y+=9)g+=`<rect x="14" y="${y}" width="92" height="4.6" fill="${b}"/>`;return g},
+  vstripes:(a,b)=>{let g='';for(let x=22;x<104;x+=9)g+=`<rect x="${x}" y="90" width="2.8" height="42" fill="${b}" opacity=".9"/>`;return g},
+  chevron:(a,b)=>{let g='';for(let k=0;k<4;k++)g+=`<path d="M12 ${98+k*9}L60 ${111+k*9}L108 ${98+k*9}" fill="none" stroke="${b}" stroke-width="4"/>`;return g},
+  stars:(a,b)=>[[30,106],[47,119],[63,109],[79,122],[93,106],[38,127],[70,129],[100,119],[24,121]].map(([x,y],i)=>star(x,y,i%2?3.4:4.4,b)).join(''),
+  dots:(a,b)=>{let g='';for(let r=0;r<5;r++)for(let c=0;c<8;c++)g+=`<circle cx="${22+c*11+(r%2)*5.5}" cy="${98+r*8}" r="2.4" fill="${b}"/>`;return g},
+  split:(a,b)=>`<path d="M10 90H60V132H10Z" fill="${b}"/><path d="M60 92V130" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/>`,
+  diag:(a,b)=>`<path d="M10 120L110 98V132H10Z" fill="${b}"/><path d="M10 120L110 98" stroke="rgba(255,255,255,.4)" stroke-width="1.6"/>`,
+  sash:(a,b)=>`<path d="M24 90H46L108 128V134H88L20 96Z" fill="${b}"/><path d="M24 90L90 130" stroke="rgba(255,255,255,.35)" stroke-width="1"/><circle cx="48" cy="108" r="3.2" fill="${a}" opacity=".9"/>`,
+  checker:(a,b)=>{let g='';for(let r=0;r<7;r++)for(let c=0;c<15;c++)if((r+c)%2)g+=`<rect x="${12+c*6.4}" y="${90+r*6.4}" width="6.4" height="6.4" fill="${b}"/>`;return g},
+  bolt:(a,b)=>`<path d="M66 95L50 115H59L53 131L74 108H64Z" fill="${b}" stroke="${shade(a,.5)}" stroke-width="1.4" stroke-linejoin="round"/><path d="M62 99L54 112" stroke="#fff" stroke-width="1.2" opacity=".6"/>`,
+  flame:(a,b)=>`<path d="M14 134V121Q21 108 26 119Q30 102 37 117Q43 100 49 118Q55 105 61 119Q67 98 74 117Q80 104 86 119Q92 108 98 120Q103 114 108 122V134Z" fill="${b}"/><path d="M26 134Q28 124 33 126Q35 118 40 128Q43 122 47 134ZM64 134Q67 122 72 126Q75 118 80 128Q83 124 86 134Z" fill="#FFE8A0" opacity=".85"/>`,
+  wave:(a,b)=>[104,114,124].map(y=>`<path d="M12 ${y}Q25 ${y-8} 38 ${y}T64 ${y}T90 ${y}T116 ${y}" fill="none" stroke="${b}" stroke-width="4.4"/>`).join(''),
+  hex:(a,b)=>{let g='';for(let r=0;r<5;r++)for(let c=0;c<8;c++){const x=22+c*11+(r%2)*5.5,y=96+r*8.6;g+=`<path d="M${x} ${y-5}L${x+4.6} ${y-2.5}V${y+2.5}L${x} ${y+5}L${x-4.6} ${y+2.5}V${y-2.5}Z" fill="none" stroke="${b}" stroke-width="1.5"/>`}return g},
+  tri:(a,b)=>`<path d="M10 134L26 112L42 134L58 108L74 134L90 112L106 134Z" fill="${b}"/><path d="M26 112L31 120M58 108L65 120M90 112L96 120" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/>`,
+  tie:(a,b)=>`<circle cx="60" cy="112" r="40" fill="${b}" opacity=".5"/><circle cx="60" cy="112" r="28" fill="${a}" opacity=".6"/><circle cx="60" cy="112" r="16" fill="${b}" opacity=".7"/><circle cx="60" cy="112" r="6" fill="#fff" opacity=".6"/>`,
+  num:(a,b,sp)=>`<text x="60" y="124" text-anchor="middle" style="fill:${b};font:800 ${String(sp.n).length>1?25:32}px Inter,system-ui,sans-serif;paint-order:stroke;stroke:${shade(a,.45)};stroke-width:2.6px;stroke-linejoin:round">${sp.n}</text><path d="M26 130L30 100M94 130L90 100" stroke="${b}" stroke-width="3.4" opacity=".75"/>`,
+  pocket:(a,b)=>`<rect x="70" y="102" width="17" height="17" rx="2.6" fill="${b}"/><path d="M70 105H87" stroke="rgba(0,0,0,.22)"/>${star(78.5,111.5,4,a)}`,
+  ombre:(a,b,sp)=>`<defs><linearGradient id="om${sp.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}" stop-opacity="0"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect x="10" y="90" width="100" height="44" fill="url(#om${sp.id})"/>`,
+  paw:(a,b)=>`<g fill="${b}"><ellipse cx="60" cy="121" rx="10" ry="8"/><ellipse cx="46" cy="108" rx="4.2" ry="5.4" transform="rotate(-20 46 108)"/><ellipse cx="55" cy="102" rx="4.2" ry="5.6"/><ellipse cx="65" cy="102" rx="4.2" ry="5.6"/><ellipse cx="74" cy="108" rx="4.2" ry="5.4" transform="rotate(20 74 108)"/></g>`,
+  moon:(a,b)=>`<circle cx="60" cy="114" r="14" fill="${b}"/><circle cx="66" cy="110" r="12.4" fill="${a}"/>${star(80,104,3.6,b)}${star(44,124,2.8,b)}${star(84,124,2.4,b)}`,
+  argyle:(a,b)=>{let g='';for(let r=0;r<4;r++)for(let c=0;c<5;c++){const x=18+c*21+(r%2)*10.5,y=98+r*11;g+=`<path d="M${x} ${y-9}L${x+10} ${y}L${x} ${y+9}L${x-10} ${y}Z" fill="${(r+c)%2?b:shade(b,.8)}" opacity=".9"/>`}return g},
+  raglan:(a,b)=>`<path d="M10 134V108Q16 98 40 93L47 97Q33 104 31 134Z M110 134V108Q104 98 80 93L73 97Q87 104 89 134Z" fill="${b}"/><path d="M40 93L47 97M80 93L73 97" stroke="rgba(0,0,0,.2)"/>`,
+  letter:(a,b,sp)=>`<text x="60" y="126" text-anchor="middle" style="fill:${b};font:900 32px Inter,system-ui,sans-serif;paint-order:stroke;stroke:${shade(a,.45)};stroke-width:2.4px;stroke-linejoin:round">${sp.n}</text>`,
+  brick:(a,b)=>{let g='';for(let r=0;r<6;r++)for(let c=-1;c<7;c++){const x=12+c*17+(r%2)*8.5,y=92+r*7.2;g+=`<rect x="${x}" y="${y}" width="15.6" height="6" rx="1" fill="${b}" opacity=".85"/>`}return g},
+  camo:(a,b)=>`<path d="M14 104Q28 96 40 104Q46 114 34 119Q20 121 14 113Z M58 96Q76 92 84 103Q82 114 66 111Q52 107 58 96Z M86 118Q100 109 112 121L112 134H86Z M30 124Q44 120 52 128L50 134H28Z" fill="${b}"/><path d="M46 100Q56 98 58 106Q52 112 44 108Z M88 98Q98 96 104 104Q98 110 90 106Z M64 122Q74 118 80 126L78 134H62Z" fill="${shade(a,.7)}"/>`,
+  circuit:(a,b)=>`<g fill="none" stroke="${b}" stroke-width="1.6" stroke-linecap="round"><path d="M24 128V112H42V100H58M60 130V116H78V104H96M82 130V120H100"/><path d="M36 128V118H52"/></g><g fill="${b}"><circle cx="58" cy="100" r="2.4"/><circle cx="96" cy="104" r="2.4"/><circle cx="100" cy="120" r="2.4"/><circle cx="52" cy="118" r="2.4"/><circle cx="24" cy="128" r="2.4"/></g>`
+};
+/* shirts: [id, name, pattern, base, accent, extra] */
+const TOPS_GEN=[
+  ['rally','Rally stripes','stripes','navy','gold'],['pinpro','Pinstripe pro','vstripes','black','white'],['charge','Chevron charge','chevron','red','white'],
+  ['starry','Starry tee','stars','royal','white'],['polka','Polka pop','dots','teal','white'],['twotone','Two-tone tee','split','red','black'],
+  ['slant','Slant tee','diag','orange','navy'],['sashw','Victory sash','sash','white','royal'],['checkb','Checkerboard','checker','black','white'],
+  ['thunder','Lightning tee','bolt','navy','gold'],['blaze','Blaze tee','flame','black','orange'],['surf','Surf waves','wave','sky','white'],
+  ['honey','Honeycomb tee','hex','gold','black'],['peaks','Mountain tee','tri','green','cream'],['tiedye','Tie-dye tee','tie','purple','sky'],
+  ['num5','Number 5 jersey','num','maroon','gold',{n:5}],['num12','Number 12 jersey','num','teal','white',{n:12}],['num99','Number 99 jersey','num','black','lime',{n:99}],
+  ['pocket','Pocket tee','pocket','mint','navy'],['sunset','Sunset fade tee','ombre','orange','purple'],['ocean','Ocean fade tee','ombre','sky','navy'],
+  ['pawtee','Big cat paw tee','paw','teal','gold'],['moontee','Moonlight tee','moon','navy','cream'],['argyle','Argyle tee','argyle','green','cream'],
+  ['baseb','Baseball tee','raglan','white','red'],['initE','Initial E tee','letter','royal','white',{n:'E'}],
+  ['brickw','Brick wall tee','brick','red','cream'],['arctic','Arctic camo','camo','white','silver'],['desert','Desert camo','camo','tan','brown'],
+  ['neoncam','Neon camo','camo','black','lime'],['goldstar','Gold stars tee','stars','black','gold'],['candy','Candy stripes','stripes','pink','white'],
+  ['arrow','Arrow tee','chevron','gold','black'],['lavaw','Lava waves','wave','maroon','orange'],['galdots','Galaxy dots','dots','navy','mint'],
+  ['cblock','Color block tee','split','teal','gold'],['sprint','Sprint tee','diag','lime','black'],['zigzag','Zigzag tee','tri','purple','pink'],
+  ['storm','Storm bolt tee','bolt','gray','sky'],['circuit','Circuit tee','circuit','black','lime']
+].map(([id,name,p,a,b,x])=>Object.assign({id,name,slot:'top',p,c1:GC[a],c2:GC[b]},x||{}));
+function genTopArt(sp){
+  const id='gt'+sp.id,a=sp.c1,b=sp.c2;
+  return`<defs><clipPath id="${id}"><path d="${TORSO_D}"/></clipPath><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shade(a,1.12)}"/><stop offset="1" stop-color="${shade(a,.8)}"/></linearGradient></defs><path d="${TORSO_D}" fill="url(#${id}g)"/><g clip-path="url(#${id})">${PAT[sp.p](a,b,sp)}</g><path d="M47 93Q60 106 73 93" fill="none" stroke="${shade(a,.5)}" stroke-width="3.4" stroke-linecap="round"/>`;
+}
+/* hats: drawn over the hair. a = main color, b = accent. Eyes sit at y 62, so nothing may come lower than about y 58 in the middle. */
+const HATS_GEN=[
+  ['snapN','Navy snapback','snap','navy','gold'],['snapR','Red snapback','snap','red','white'],['snapT','Teal snapback','snap','teal','gold'],
+  ['bucketS','Sand bucket hat','bucket','tan','brown'],['bucketB','Sky bucket hat','bucket','sky','white'],
+  ['beanR','Red cuff beanie','beanie2','red','white'],['beanY','Royal pom beanie','beanie2','royal','gold'],['beanP','Purple pom beanie','beanie2','purple','pink'],
+  ['bandT','Teal sport band','band2','teal','white'],['bandO','Orange sport band','band2','orange','navy'],
+  ['kerR','Red bandana','kerchief','red','white'],['kerN','Navy bandana','kerchief','navy','white'],
+  ['cowboy','Cowboy hat','cowboy','brown','tan'],['tophat','Top hat','tophat','black','red'],['royal','Royal crown','crown','gold','red'],
+  ['knight','Knight helmet','knight','silver','red'],['viking','Viking helmet','viking','gray','cream'],['catears','Cat ears','catears','black','pink'],
+  ['antlers','Reindeer antlers','antlers','brown','red'],['party','Party hat','party','pink','gold'],['chef','Chef hat','chef','white','gray'],
+  ['propeller','Propeller cap','propeller','royal','red'],['miner','Miner helmet','miner','gold','white'],['pilot','Pilot cap','pilot','brown','silver'],
+  ['safari','Safari helmet','safari','tan','brown'],['beret','Artist beret','beret','red','black'],['newsboy','Newsboy cap','newsboy','gray','black'],
+  ['grad','Graduation cap','grad','black','gold'],['hardhat','Builder hard hat','hardhat','orange','white'],['halo','Angel halo','halo','gold','white'],
+  ['devil','Little horns','devil','red','black'],['dinohood','Dino hood','dinohood','green','lime'],['flowers','Flower crown','flowers','green','pink'],
+  ['straw','Straw sun hat','straw','tan','red']
+].map(([id,name,s,a,b])=>({id,name,slot:'head',s,c1:GC[a],c2:GC[b]}));
+const HAT={
+  snap:(a,b)=>`<path d="M30 50C28 12 92 12 90 50Q60 42 30 50Z" fill="${a}"/><path d="M60 14V46M44 18Q48 34 50 46M76 18Q72 34 70 46" stroke="rgba(0,0,0,.2)" fill="none"/><path d="M29 49Q60 40 91 49L92 53Q60 44 28 53Z" fill="${b}"/><path d="M22 51Q60 63 98 51Q92 43 60 43Q28 43 22 51Z" fill="${shade(a,.8)}"/><path d="M27 51Q60 59 93 51" stroke="rgba(255,255,255,.4)" fill="none"/><circle cx="60" cy="13.6" r="2.4" fill="${b}"/>`,
+  bucket:(a,b)=>`<path d="M32 48C30 20 90 20 88 48Z" fill="${a}"/><path d="M32 40Q60 46 88 40" stroke="${b}" stroke-width="3" fill="none"/><path d="M14 52Q60 36 106 52Q100 60 60 56Q20 60 14 52Z" fill="${shade(a,.86)}" stroke="rgba(0,0,0,.18)"/><path d="M18 52Q60 40 102 52" stroke="rgba(255,255,255,.35)" fill="none"/>`,
+  beanie2:(a,b)=>`<path d="M30 42C26 6 94 6 90 42Z" fill="${a}"/><path d="M38 38Q40 20 48 10M50 38Q51 20 55 8M62 38Q62 20 62 8M74 38Q73 20 69 10M84 36Q81 20 74 12" stroke="rgba(0,0,0,.18)" fill="none"/><path d="M27 41Q60 33 93 41V53Q60 45 27 53Z" fill="${b}"/><path d="M27 46Q60 38 93 46M27 50Q60 42 93 50" stroke="rgba(0,0,0,.14)" fill="none"/><circle cx="60" cy="8" r="7" fill="${b}"/><path d="M55 5Q60 2 65 6" stroke="#fff" stroke-width="1.4" fill="none" opacity=".6"/>`,
+  band2:(a,b)=>`<path d="M29 45Q60 35 91 45V54Q60 44 29 54Z" fill="${a}"/><path d="M29 48.6Q60 38.6 91 48.6M29 51.4Q60 41.4 91 51.4" stroke="${b}" stroke-width="1.8" fill="none"/>`,
+  kerchief:(a,b)=>{let d='';for(let i=0;i<8;i++)d+=`<circle cx="${34+i*8.4}" cy="${44+Math.sin(i*1.2)*2.2}" r="1.5" fill="${b}"/>`;return`<path d="M27 46Q60 28 93 46L93 55Q60 40 27 55Z" fill="${a}"/>${d}<path d="M92 49Q104 44 106 56Q98 54 94 58Z M92 52Q102 60 98 68Q94 62 91 57Z" fill="${shade(a,.85)}"/>`},
+  cowboy:(a,b)=>`<path d="M32 46C30 18 54 22 60 28C66 22 90 18 88 46Z" fill="${a}"/><path d="M32 41Q60 49 88 41" stroke="${b}" stroke-width="3.4" fill="none"/><path d="M8 40Q16 52 40 52Q60 55 80 52Q104 52 112 40Q106 46 88 46Q60 40 32 46Q14 46 8 40Z" fill="${shade(a,.9)}" stroke="rgba(0,0,0,.2)"/><path d="M40 28Q60 36 80 28" stroke="rgba(0,0,0,.2)" fill="none"/>`,
+  tophat:(a,b)=>`<rect x="38" y="2" width="44" height="36" rx="3" fill="${a}"/><rect x="38" y="30" width="44" height="7" fill="${b}"/><path d="M42 6V28" stroke="rgba(255,255,255,.28)" stroke-width="3"/><path d="M22 44Q60 34 98 44Q98 49 60 50Q22 49 22 44Z" fill="${shade(a,.85)}" stroke="rgba(255,255,255,.2)"/>`,
+  crown:(a,b)=>`<path d="M30 48L32 18L46 32L60 12L74 32L88 18L90 48Q60 40 30 48Z" fill="${a}" stroke="${shade(a,.6)}" stroke-width="1.4" stroke-linejoin="round"/><path d="M30 44Q60 36 90 44V50Q60 42 30 50Z" fill="${shade(a,.8)}"/><circle cx="60" cy="38" r="3.6" fill="${b}" stroke="#fff" stroke-width=".8"/><circle cx="42" cy="40" r="2.6" fill="${GC.royal}"/><circle cx="78" cy="40" r="2.6" fill="${GC.royal}"/><circle cx="32" cy="17" r="2.4" fill="${b}"/><circle cx="60" cy="11" r="2.6" fill="${b}"/><circle cx="88" cy="17" r="2.4" fill="${b}"/>`,
+  knight:(a,b)=>`<path d="M28 56C24 6 96 6 92 56L86 56L86 46Q60 38 34 46L34 56Z" fill="${a}" stroke="${shade(a,.55)}" stroke-width="1.4"/><path d="M60 8V44" stroke="${shade(a,.6)}" stroke-width="3"/><path d="M36 44Q60 36 84 44" stroke="${shade(a,.5)}" stroke-width="2.4" fill="none"/><path d="M60 8Q54 -6 66 -8Q74 -2 62 10Z" fill="${b}"/><path d="M36 24Q44 14 54 12" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".5"/>`,
+  viking:(a,b)=>`<path d="M30 50C28 12 92 12 90 50Q60 42 30 50Z" fill="${a}" stroke="${shade(a,.55)}"/><path d="M29 46Q60 38 91 46V51Q60 43 29 51Z" fill="${shade(a,.6)}"/><path d="M32 30Q14 28 12 6Q22 18 36 22Z M88 30Q106 28 108 6Q98 18 84 22Z" fill="${b}" stroke="${shade(b,.6)}" stroke-width="1.2"/><circle cx="60" cy="32" r="3" fill="${shade(a,.5)}"/>`,
+  catears:(a,b)=>`<path d="M30 40L32 8L52 24Z M90 40L88 8L68 24Z" fill="${a}"/><path d="M35 32L36 16L46 25Z M85 32L84 16L74 25Z" fill="${b}"/><path d="M29 44Q60 30 91 44V50Q60 36 29 50Z" fill="${a}"/>`,
+  antlers:(a,b)=>`<g fill="none" stroke="${a}" stroke-width="4" stroke-linecap="round"><path d="M38 26Q30 14 34 2M34 14Q24 12 22 6M32 20Q38 10 44 8M82 26Q90 14 86 2M86 14Q96 12 98 6M88 20Q82 10 76 8"/></g><path d="M29 44Q60 30 91 44V50Q60 36 29 50Z" fill="${b}"/><circle cx="60" cy="40" r="4" fill="${GC.red}"/>`,
+  party:(a,b)=>`<path d="M42 40L60 6L78 40Q60 46 42 40Z" fill="${a}"/><path d="M47 30Q60 36 73 30M52 20Q60 26 68 20" stroke="${b}" stroke-width="3" fill="none"/><circle cx="60" cy="6" r="5" fill="${b}"/><path d="M56 4L64 8" stroke="#fff" stroke-width="1.2" opacity=".7"/><path d="M42 40Q60 47 78 40" stroke="${shade(a,.7)}" stroke-width="2" fill="none"/>`,
+  chef:(a,b)=>`<circle cx="42" cy="18" r="13" fill="${a}"/><circle cx="60" cy="10" r="15" fill="${a}"/><circle cx="78" cy="18" r="13" fill="${a}"/><path d="M32 22Q60 28 88 22V42Q60 36 32 42Z" fill="${a}"/><path d="M30 38Q60 46 90 38V48Q60 40 30 48Z" fill="${b}"/><path d="M44 12Q48 6 54 8M70 8Q76 6 80 12" stroke="${b}" stroke-width="1.4" fill="none" opacity=".6"/>`,
+  propeller:(a,b)=>`<path d="M30 50C28 12 92 12 90 50Q60 42 30 50Z" fill="${a}"/><path d="M60 14V46M42 20Q48 34 50 46M78 20Q72 34 70 46" stroke="${b}" stroke-width="2.6" fill="none"/><rect x="58.6" y="3" width="2.8" height="10" fill="#555"/><path d="M60 3C48 -2 38 4 46 6C52 7 58 5 60 3ZM60 3C72 8 82 2 74 0C68 -1 62 1 60 3Z" fill="${b}" stroke="${shade(b,.6)}" stroke-width=".8"/><circle cx="60" cy="3" r="2.4" fill="#333"/><path d="M29 49Q60 40 91 49L92 53Q60 44 28 53Z" fill="${shade(a,.8)}"/>`,
+  miner:(a,b)=>`<path d="M28 52C26 10 94 10 92 52Q60 44 28 52Z" fill="${a}" stroke="${shade(a,.6)}"/><path d="M60 14V46" stroke="${shade(a,.65)}" stroke-width="5"/><rect x="50" y="22" width="20" height="14" rx="4" fill="#2A3138"/><circle cx="60" cy="29" r="5.4" fill="#FFF3B0" stroke="#fff" stroke-width="1.2"/><path d="M60 29L52 44M60 29L68 44" stroke="#FFF3B0" stroke-width="1.4" opacity=".25"/><path d="M24 52Q60 62 96 52Q92 46 60 46Q28 46 24 52Z" fill="${shade(a,.8)}"/>`,
+  pilot:(a,b)=>`<path d="M29 56C25 8 95 8 91 56L84 50Q60 40 36 50Z" fill="${a}" stroke="${shade(a,.6)}"/><path d="M26 44Q60 30 94 44" stroke="${shade(a,.7)}" stroke-width="2" fill="none"/><rect x="38" y="30" width="16" height="11" rx="5" fill="#8DD3F0" stroke="${b}" stroke-width="2.4"/><rect x="66" y="30" width="16" height="11" rx="5" fill="#8DD3F0" stroke="${b}" stroke-width="2.4"/><path d="M54 35H66" stroke="${b}" stroke-width="2.4"/><path d="M42 33L48 31" stroke="#fff" stroke-width="1.4" opacity=".8"/>`,
+  safari:(a,b)=>`<path d="M32 48C28 12 92 12 88 48Z" fill="${a}"/><path d="M34 40Q60 46 86 40" stroke="${b}" stroke-width="4" fill="none"/><path d="M14 50Q60 38 106 50Q100 57 60 54Q20 57 14 50Z" fill="${shade(a,.88)}" stroke="rgba(0,0,0,.18)"/><circle cx="60" cy="14" r="2.6" fill="${shade(a,.7)}"/><path d="M60 14V40" stroke="rgba(0,0,0,.14)"/>`,
+  beret:(a,b)=>`<ellipse cx="56" cy="30" rx="36" ry="17" fill="${a}" transform="rotate(-8 56 30)"/><path d="M34 40Q60 46 86 40L84 46Q60 52 36 46Z" fill="${shade(a,.8)}"/><rect x="59" y="9" width="4" height="7" rx="2" fill="${b}"/><path d="M36 26Q48 18 64 20" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none" opacity=".35"/>`,
+  newsboy:(a,b)=>`<path d="M26 46C26 14 62 8 96 22Q98 36 92 46Q60 38 26 46Z" fill="${a}"/><path d="M30 44Q60 36 92 44L94 50Q60 42 28 50Z" fill="${shade(a,.75)}"/><path d="M60 14V40M44 12Q46 28 44 40M76 17Q74 30 76 40" stroke="${b}" stroke-width="1.6" fill="none" opacity=".7"/><circle cx="60" cy="12" r="2.2" fill="${b}"/>`,
+  grad:(a,b)=>`<path d="M36 38Q60 46 84 38V50Q60 58 36 50Z" fill="${shade(a,.85)}"/><path d="M60 14L106 30L60 46L14 30Z" fill="${a}" stroke="${shade(a,.5)}" stroke-width="1.2"/><circle cx="60" cy="30" r="3" fill="${b}"/><path d="M60 30L94 40V54" stroke="${b}" stroke-width="2" fill="none"/><rect x="91" y="52" width="6" height="9" rx="2" fill="${b}"/>`,
+  hardhat:(a,b)=>`<path d="M28 52C26 10 94 10 92 52Q60 44 28 52Z" fill="${a}" stroke="${shade(a,.6)}"/><path d="M52 12V46M68 12V46" stroke="${shade(a,.75)}" stroke-width="3"/><path d="M60 12V46" stroke="${shade(a,.65)}" stroke-width="6"/><path d="M22 52Q60 62 98 52Q92 46 60 46Q28 46 22 52Z" fill="${shade(a,.82)}"/><path d="M34 34Q42 20 54 15" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".5"/><rect x="54" y="28" width="12" height="9" rx="2" fill="${b}"/>`,
+  halo:(a,b)=>`<ellipse cx="60" cy="9" rx="26" ry="6.4" fill="none" stroke="${shade(a,.7)}" stroke-width="7"/><ellipse cx="60" cy="9" rx="26" ry="6.4" fill="none" stroke="${a}" stroke-width="4.4"/><path d="M42 6Q52 3 62 3.4" stroke="${b}" stroke-width="1.4" fill="none" opacity=".8"/><path d="M60 14V24" stroke="${a}" stroke-width="1" opacity=".5"/>`,
+  devil:(a,b)=>`<path d="M32 36Q22 24 28 6Q42 16 46 30Z M88 36Q98 24 92 6Q78 16 74 30Z" fill="${a}" stroke="${shade(a,.6)}" stroke-width="1.2"/><path d="M29 44Q60 30 91 44V50Q60 36 29 50Z" fill="${b}"/>`,
+  dinohood:(a,b)=>`<path d="M24 62C20 6 100 6 96 62L90 52Q60 36 30 52Z" fill="${a}" stroke="${shade(a,.6)}"/><path d="M42 16L48 4L54 14L60 0L66 14L72 4L78 16Z" fill="${b}" stroke="${shade(b,.6)}" stroke-width="1"/><circle cx="44" cy="30" r="6.2" fill="#fff" stroke="${shade(a,.5)}"/><circle cx="76" cy="30" r="6.2" fill="#fff" stroke="${shade(a,.5)}"/><circle cx="45" cy="31" r="2.6" fill="#0B2233"/><circle cx="75" cy="31" r="2.6" fill="#0B2233"/><path d="M36 22Q44 18 52 22M68 22Q76 18 84 22" stroke="${shade(a,.5)}" stroke-width="1.4" fill="none"/>`,
+  flowers:(a,b)=>{let g=`<path d="M28 50Q60 30 92 50" fill="none" stroke="${a}" stroke-width="4"/>`;[[32,44],[44,36],[58,32],[74,34],[86,41]].forEach(([x,y],i)=>{const c=[b,GC.gold,GC.white,GC.coral,GC.sky][i];g+=`<g transform="translate(${x} ${y})"><circle r="5.6" cx="0" cy="-5" fill="${c}"/><circle r="5.6" cx="5" cy="0" fill="${c}"/><circle r="5.6" cx="0" cy="5" fill="${c}"/><circle r="5.6" cx="-5" cy="0" fill="${c}"/><circle r="3" fill="#FFE08A"/></g>`});return g},
+  straw:(a,b)=>`<path d="M34 46C32 16 88 16 86 46Z" fill="${a}"/><path d="M34 40Q60 46 86 40" stroke="${b}" stroke-width="4" fill="none"/><path d="M6 50Q60 34 114 50Q108 60 60 56Q12 60 6 50Z" fill="${shade(a,.92)}" stroke="rgba(0,0,0,.2)"/><path d="M16 50Q60 40 104 50M24 53Q60 44 96 53" stroke="rgba(0,0,0,.14)" fill="none"/><path d="M40 24Q60 18 80 24" stroke="rgba(255,255,255,.4)" fill="none" stroke-width="2"/>`
+};
+/* extras: back = drawn behind the body, front = drawn over it */
+const EXTRAS_GEN=[
+  ['scarfR','Red scarf','neck'],['scarfB','Striped scarf','neck'],['bowtie','Bow tie','neck'],['necktie','Team tie','neck'],['lanyard','School lanyard','neck'],
+  ['neckphones','Headphones around the neck','neck'],['medalS','Silver medal','neck'],['medalB','Bronze medal','neck'],['compass','Compass necklace','neck'],
+  ['planet','Planet necklace','neck'],['starpin','Star pin','neck'],['capeR','Hero cape','cape'],['capeP','Starry cloak','cape'],
+  ['rglasses','Round glasses','face'],['glasses3d','3D glasses','face'],['goggles','Sport goggles','face'],
+  ['basketball','Basketball','hold'],['soccer','Soccer ball','hold'],['mic','Microphone','hold'],['flagMX','Mexico flag','hold'],['flagES','Spain flag','hold'],
+  ['robot','Robot buddy','pet'],['cat','Cat buddy','pet'],['dog','Dog buddy','pet'],['penguin','Penguin buddy','pet'],['owl','Owl buddy','pet']
+].map(([id,name,g])=>({id,name,slot:'extra',g}));
+const XART={
+  scarfR:()=>`<path d="M40 96Q60 112 80 96L82 104Q60 120 38 104Z" fill="#D62839"/><path d="M40 98Q60 114 80 98" stroke="#fff" stroke-width="1.4" fill="none" opacity=".4"/><path d="M70 108L78 134L88 130L82 106Z" fill="#B71F2F"/><path d="M76 124L86 121M77 129L87 126" stroke="#F4F7FA" stroke-width="2"/>`,
+  scarfB:()=>`<path d="M40 96Q60 112 80 96L82 104Q60 120 38 104Z" fill="#2F6FD0"/><path d="M44 100L42 106M52 104L51 111M60 106V113M68 104L69 111M76 100L78 106" stroke="#F2B705" stroke-width="2.2"/><path d="M42 108L34 134L44 136L50 112Z" fill="#2F6FD0"/><path d="M38 124L47 126M36 130L45 132" stroke="#F2B705" stroke-width="2.2"/>`,
+  bowtie:()=>`<path d="M60 106L46 98V114Z M60 106L74 98V114Z" fill="#D62839" stroke="#8E1424" stroke-width="1.2" stroke-linejoin="round"/><rect x="56.4" y="101.6" width="7.2" height="9" rx="2.4" fill="#B71F2F"/><path d="M50 102L54 105M70 102L66 105" stroke="#fff" stroke-width="1" opacity=".4"/>`,
+  necktie:()=>`<path d="M56 96H64L66 102L60 106L54 102Z" fill="#1B2A55"/><path d="M58 106H62L68 132L60 138L52 132Z" fill="#1B2A55"/><path d="M57 114L66 118M56 120L66 124M55 126L65 130" stroke="#F2B705" stroke-width="2.2"/>`,
+  lanyard:()=>`<path d="M46 93L58 122M74 93L62 122" stroke="#0E9AA7" stroke-width="3.6" stroke-linecap="round"/><path d="M58 122H62" stroke="#888" stroke-width="2"/><rect x="50" y="120" width="20" height="14" rx="2.4" fill="#fff" stroke="#9AA7B5"/><circle cx="56" cy="126" r="3" fill="#F2B705"/><path d="M61 124H67M61 128H67M52 132H68" stroke="#7C8794" stroke-width="1.4"/>`,
+  neckphones:()=>`<path d="M42 94Q60 124 78 94" fill="none" stroke="#1C2128" stroke-width="3.6" stroke-linecap="round"/><rect x="34" y="96" width="12" height="17" rx="5" fill="#0E9AA7" stroke="#1C2128" stroke-width="1.6"/><rect x="74" y="96" width="12" height="17" rx="5" fill="#0E9AA7" stroke="#1C2128" stroke-width="1.6"/><path d="M37 100V108M83 100V108" stroke="#fff" stroke-width="1.2" opacity=".5"/>`,
+  medalS:()=>`<path d="M46 93L58 112M74 93L62 112" stroke="#2F6FD0" stroke-width="5"/><circle cx="60" cy="117" r="8" fill="#D5DCE3" stroke="#7C8794" stroke-width="1.2"/><circle cx="60" cy="117" r="5.4" fill="none" stroke="#9AA7B5" stroke-width="1"/><text x="60" y="120.6" text-anchor="middle" style="fill:#5A6672;font:800 9px Inter,sans-serif">2</text>`,
+  medalB:()=>`<path d="M46 93L58 112M74 93L62 112" stroke="#8E1424" stroke-width="5"/><circle cx="60" cy="117" r="8" fill="#C98544" stroke="#7A4E2D" stroke-width="1.2"/><circle cx="60" cy="117" r="5.4" fill="none" stroke="#8A5A2D" stroke-width="1"/><text x="60" y="120.6" text-anchor="middle" style="fill:#5B3A1C;font:800 9px Inter,sans-serif">3</text>`,
+  compass:()=>`<path d="M45 93Q60 117 75 93" fill="none" stroke="#7A4E2D" stroke-width="2" stroke-linecap="round"/><circle cx="60" cy="119" r="8.6" fill="#F3E7C7" stroke="#B8860B" stroke-width="2"/><path d="M60 112.6L63 119L60 125.4L57 119Z" fill="#D62839"/><path d="M60 112.6L57 119L63 119Z" fill="#1B2A55"/><circle cx="60" cy="119" r="1.2" fill="#fff"/>`,
+  planet:()=>`<path d="M45 93Q60 117 75 93" fill="none" stroke="#9AA7B5" stroke-width="1.8" stroke-linecap="round"/><circle cx="60" cy="120" r="6.6" fill="#F57C1F"/><path d="M54 118Q60 122 66 118" stroke="#B4550E" stroke-width="1.4" fill="none"/><ellipse cx="60" cy="120" rx="11.6" ry="3" fill="none" stroke="#F2B705" stroke-width="1.6" transform="rotate(-18 60 120)"/>`,
+  starpin:()=>`<g transform="translate(78 108) rotate(14)">${star(0,0,7,'#F2B705')}<circle r="2.2" fill="#D62839"/></g><path d="M74 118L76 128" stroke="#D62839" stroke-width="1.4" opacity="0"/>`,
+  rglasses:()=>`<circle cx="46" cy="62" r="9.6" fill="rgba(180,225,255,.28)" stroke="#1C2128" stroke-width="2.4"/><circle cx="74" cy="62" r="9.6" fill="rgba(180,225,255,.28)" stroke="#1C2128" stroke-width="2.4"/><path d="M55.6 61Q60 58 64.4 61M36.6 61L30 58M83.4 61L90 58" stroke="#1C2128" stroke-width="2.2" fill="none"/><path d="M40 57Q43 55 46 55.6" stroke="#fff" stroke-width="1.6" fill="none" opacity=".8" stroke-linecap="round"/>`,
+  glasses3d:()=>`<rect x="35" y="54" width="22" height="16" rx="4" fill="#D62839" fill-opacity=".72" stroke="#F4F7FA" stroke-width="3"/><rect x="63" y="54" width="22" height="16" rx="4" fill="#2F9CC4" fill-opacity=".72" stroke="#F4F7FA" stroke-width="3"/><path d="M57 60H63M35 58L29 55M85 58L91 55" stroke="#F4F7FA" stroke-width="3" fill="none"/>`,
+  goggles:()=>`<path d="M30 60Q60 52 90 60" stroke="#1C2128" stroke-width="5" fill="none"/><rect x="34" y="52" width="24" height="17" rx="8" fill="rgba(255,150,40,.55)" stroke="#1C2128" stroke-width="3"/><rect x="62" y="52" width="24" height="17" rx="8" fill="rgba(255,150,40,.55)" stroke="#1C2128" stroke-width="3"/><path d="M40 56Q44 54 50 55" stroke="#fff" stroke-width="2" fill="none" opacity=".7" stroke-linecap="round"/>`,
+  basketball:()=>`<g transform="translate(19 112)"><ellipse cy="12" rx="13" ry="3" fill="rgba(0,0,0,.2)"/><circle r="12.4" fill="#E5671B" stroke="#7A3010" stroke-width="1.4"/><path d="M-12 0H12M0 -12V12M-8.6 -8.6Q-3 0 -8.6 8.6M8.6 -8.6Q3 0 8.6 8.6" stroke="#2A1608" stroke-width="1.2" fill="none"/></g>`,
+  soccer:()=>`<g transform="translate(19 112)"><ellipse cy="12" rx="13" ry="3" fill="rgba(0,0,0,.2)"/><circle r="12.4" fill="#F4F7FA" stroke="#5A6672" stroke-width="1.4"/><path d="M0 -4.6L4.4 -1.4L2.8 3.8H-2.8L-4.4 -1.4Z" fill="#1C2128"/><path d="M0 -4.6V-12M4.4 -1.4L11.6 -4M2.8 3.8L7 10M-2.8 3.8L-7 10M-4.4 -1.4L-11.6 -4" stroke="#1C2128" stroke-width="1.2"/></g>`,
+  mic:()=>`<g transform="translate(20 112) rotate(-20)"><rect x="-2.6" y="2" width="5.2" height="22" rx="2.6" fill="#2A3138"/><circle cy="-6" r="9" fill="#9AA7B5" stroke="#5A6672" stroke-width="1.4"/><path d="M-8 -10Q0 -6 8 -10M-8 -6H8M-8 -2Q0 2 8 -2M-4 -14V2M4 -14V2" stroke="#5A6672" stroke-width=".9" fill="none"/><rect x="-3.4" y="1" width="6.8" height="3.4" rx="1" fill="#D62839"/></g>`,
+  flagMX:()=>`<g transform="translate(14 96)"><rect x="-1" y="-2" width="2.6" height="42" rx="1.2" fill="#8A5A33"/><rect x="1.6" y="-1" width="26" height="17" fill="#fff" stroke="#9AA7B5" stroke-width=".6"/><rect x="1.6" y="-1" width="8.7" height="17" fill="#2E9E5B"/><rect x="19" y="-1" width="8.6" height="17" fill="#D62839"/><circle cx="14.8" cy="7.5" r="2.6" fill="#B8860B"/></g>`,
+  flagES:()=>`<g transform="translate(14 96)"><rect x="-1" y="-2" width="2.6" height="42" rx="1.2" fill="#8A5A33"/><rect x="1.6" y="-1" width="26" height="17" fill="#F2B705"/><rect x="1.6" y="-1" width="26" height="4.5" fill="#D62839"/><rect x="1.6" y="11.5" width="26" height="4.5" fill="#D62839"/><rect x="6" y="5" width="3.4" height="5" rx="1" fill="#B8860B" opacity=".8"/></g>`,
+  robot:()=>`<g transform="translate(98 113)"><ellipse cy="14" rx="14" ry="3" fill="rgba(0,0,0,.2)"/><rect x="-10" y="-2" width="20" height="14" rx="3" fill="#BFC7CF" stroke="#5A6672" stroke-width="1.2"/><rect x="-12" y="-17" width="24" height="16" rx="4" fill="#D5DCE3" stroke="#5A6672" stroke-width="1.2"/><circle cx="-4.6" cy="-9.4" r="2.8" fill="#2FD0C5"/><circle cx="4.6" cy="-9.4" r="2.8" fill="#2FD0C5"/><path d="M-4 -4H4" stroke="#5A6672" stroke-width="1.4"/><path d="M0 -17V-23" stroke="#5A6672" stroke-width="1.4"/><circle cy="-24" r="2" fill="#D62839"/><rect x="-4" y="2" width="8" height="5" rx="1" fill="#F2B705"/></g>`,
+  cat:()=>`<g transform="translate(98 113)"><ellipse cy="14" rx="14" ry="3" fill="rgba(0,0,0,.2)"/><path d="M10 8Q22 8 20 -4" stroke="#F57C1F" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cy="4" rx="11" ry="9" fill="#F57C1F"/><circle cy="-8" r="9" fill="#F57C1F"/><path d="M-8 -13L-8 -22L-1 -15Z M8 -13L8 -22L1 -15Z" fill="#F57C1F"/><path d="M-6.4 -14L-6.4 -19L-3 -15.6Z M6.4 -14L6.4 -19L3 -15.6Z" fill="#F7A9A0"/><circle cx="-3.4" cy="-9" r="1.6" fill="#0B2233"/><circle cx="3.4" cy="-9" r="1.6" fill="#0B2233"/><path d="M-1.4 -5.4H1.4L0 -3.6Z" fill="#E87A8A"/><path d="M-9 -6L-14 -7M-9 -4L-14 -3M9 -6L14 -7M9 -4L14 -3" stroke="#fff" stroke-width=".8"/><path d="M-6 -2Q0 2 6 -2" stroke="#B4550E" stroke-width="1.6" fill="none" opacity=".5"/></g>`,
+  dog:()=>`<g transform="translate(98 113)"><ellipse cy="14" rx="14" ry="3" fill="rgba(0,0,0,.2)"/><ellipse cy="4" rx="11" ry="9" fill="#D9A85B"/><circle cy="-8" r="9.4" fill="#D9A85B"/><path d="M-9 -12Q-17 -8 -13 2Q-8 0 -7 -8Z M9 -12Q17 -8 13 2Q8 0 7 -8Z" fill="#9A6B2F"/><circle cx="-3.4" cy="-9" r="1.6" fill="#0B2233"/><circle cx="3.4" cy="-9" r="1.6" fill="#0B2233"/><ellipse cy="-4" rx="3.6" ry="2.6" fill="#2A1608"/><path d="M0 -1.4V1.6M-3 2Q0 4 3 2" stroke="#2A1608" stroke-width="1.2" fill="none"/><path d="M-4 14H4" stroke="#fff" opacity="0"/></g>`,
+  penguin:()=>`<g transform="translate(98 113)"><ellipse cy="14" rx="14" ry="3" fill="rgba(0,0,0,.2)"/><ellipse cy="0" rx="11.6" ry="15" fill="#1C2128"/><ellipse cy="3" rx="7.6" ry="11" fill="#F4F7FA"/><circle cx="-3.6" cy="-9" r="1.8" fill="#fff"/><circle cx="3.6" cy="-9" r="1.8" fill="#fff"/><circle cx="-3.4" cy="-9" r=".9" fill="#0B2233"/><circle cx="3.6" cy="-9" r=".9" fill="#0B2233"/><path d="M-3 -5.6L0 -2.6L3 -5.6Z" fill="#F57C1F"/><path d="M-11 -2Q-17 4 -12 10M11 -2Q17 4 12 10" stroke="#1C2128" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M-6 14L-9 16H-3ZM6 14L9 16H3Z" fill="#F57C1F"/></g>`,
+  owl:()=>`<g transform="translate(98 113)"><ellipse cy="14" rx="14" ry="3" fill="rgba(0,0,0,.2)"/><ellipse cy="2" rx="12" ry="14" fill="#9A6B2F"/><ellipse cy="5" rx="7.6" ry="9" fill="#E9D6A8"/><path d="M-10 -9L-12 -17L-5 -12ZM10 -9L12 -17L5 -12Z" fill="#9A6B2F"/><circle cx="-5" cy="-6" r="5" fill="#F4F7FA" stroke="#5B3A1C" stroke-width="1"/><circle cx="5" cy="-6" r="5" fill="#F4F7FA" stroke="#5B3A1C" stroke-width="1"/><circle cx="-5" cy="-6" r="2.2" fill="#0B2233"/><circle cx="5" cy="-6" r="2.2" fill="#0B2233"/><path d="M-2 -3L0 0L2 -3Z" fill="#F57C1F"/><path d="M-7 3Q-4 6 -1 3M1 3Q4 6 7 3M-5 8Q-2 11 1 8" stroke="#B89A5B" stroke-width="1" fill="none"/></g>`
+};
+const CAPE={capeR:['#D62839','#F2B705'],capeP:['#3A1A6B','#F2B705']};
+function genBack(id){
+  const c=CAPE[id];if(!c)return'';
+  const stars=id==='capeP'?[[24,112],[40,124],[84,118],[98,110],[60,128],[30,100],[92,128]].map(([x,y])=>star(x,y,2.6,c[1])).join(''):'';
+  return`<path d="M34 94L8 132Q60 140 112 132L86 94Z" fill="${c[0]}" stroke="${shade(c[0],.6)}" stroke-width="1.2"/><path d="M34 98L16 130M86 98L104 130M60 100V134" stroke="${shade(c[0],.7)}" stroke-width="1.4" opacity=".6"/>${stars}`;
+}
+function genFront(id){
+  if(CAPE[id])return`<path d="M44 94Q60 108 76 94" fill="none" stroke="${shade(CAPE[id][0],.6)}" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="102" r="4.4" fill="${CAPE[id][1]}" stroke="${shade(CAPE[id][1],.6)}" stroke-width="1"/>`;
+  return XART[id]?XART[id]():'';
+}
+const WGEN={};
+TOPS_GEN.concat(HATS_GEN,EXTRAS_GEN).forEach(x=>{WGEN[x.id]=x});
+
+/* ---------- Round 4: 93 new room prizes: seven new editable spots, 19 new posters, and new paint, floor and furniture choices ---------- */
+const TX=(x,y,t,c,sz,extra)=>`<text x="${x}" y="${y}" text-anchor="middle" style="fill:${c};font:800 ${sz}px Inter,system-ui,sans-serif;${extra||''}">${t}</text>`;
+const roomLine=(x1,y1,x2,y2,c,w)=>`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${c}" stroke-width="${w||1}" stroke-linecap="round"/>`;
+/* ----- banner: a string of pennants or flags across the top of the wall ----- */
+function bannerArt(id){
+  const x0=140,x1=560,at=t=>({x:x0+(x1-x0)*t,y:8+44*t*(1-t)});
+  let g=`<path d="M${x0} 8Q350 30 ${x1} 8" fill="none" stroke="#6B4423" stroke-width="1.6"/>`;
+  const FL={
+    MX:()=>`<rect width="17" height="12" fill="#fff"/><rect width="5.7" height="12" fill="#2E9E5B"/><rect x="11.3" width="5.7" height="12" fill="#D62839"/><circle cx="8.5" cy="6" r="1.8" fill="#B8860B"/>`,
+    ES:()=>`<rect width="17" height="12" fill="#F2B705"/><rect width="17" height="3.2" fill="#D62839"/><rect y="8.8" width="17" height="3.2" fill="#D62839"/>`,
+    CO:()=>`<rect width="17" height="12" fill="#F2B705"/><rect y="6" width="17" height="3" fill="#2F6FD0"/><rect y="9" width="17" height="3" fill="#D62839"/>`,
+    AR:()=>`<rect width="17" height="12" fill="#7CC4F0"/><rect y="4" width="17" height="4" fill="#fff"/><circle cx="8.5" cy="6" r="1.5" fill="#F2B705"/>`,
+    PE:()=>`<rect width="17" height="12" fill="#D62839"/><rect x="5.7" width="5.7" height="12" fill="#fff"/>`,
+    CL:()=>`<rect width="17" height="12" fill="#fff"/><rect y="6" width="17" height="6" fill="#D62839"/><rect width="6" height="6" fill="#1B3F9C"/>${star(3,3,1.8,'#fff')}`,
+    PR:()=>`<rect width="17" height="12" fill="#D62839"/><rect y="2.4" width="17" height="2.4" fill="#fff"/><rect y="7.2" width="17" height="2.4" fill="#fff"/><path d="M0 0L8 6L0 12Z" fill="#1B3F9C"/>${star(2.6,6,1.7,'#fff')}`,
+    CU:()=>`<rect width="17" height="12" fill="#fff"/><path d="M0 2.4H17M0 7.2H17" stroke="#1B3F9C" stroke-width="2.4"/><path d="M0 0L8 6L0 12Z" fill="#D62839"/>${star(2.6,6,1.7,'#fff')}`
+  };
+  const flags=['MX','ES','CO','AR','PE','CL','PR','CU'];
+  const n=id==='flags'?8:id==='numbers'?10:id==='letters'?6:id==='stars'?9:id==='footballs'?7:11;
+  for(let i=0;i<n;i++){
+    const p=at((i+.5)/n),x=p.x,y=p.y+1;
+    if(id==='flags')g+=`<g transform="translate(${x-8.5} ${y})"><g>${FL[flags[i]]()}</g><rect width="17" height="12" fill="none" stroke="rgba(0,0,0,.3)" stroke-width=".6"/></g>`;
+    else if(id==='numbers')g+=`<g transform="translate(${x-8} ${y})"><rect width="16" height="18" rx="2" fill="${[GC.red,GC.royal,GC.gold,GC.green,GC.orange][i%5]}"/>${TX(8,14,String(i),'#fff',13)}</g>`;
+    else if(id==='letters')g+=`<g transform="translate(${x-11} ${y})"><rect width="22" height="26" rx="3" fill="${[GC.teal,GC.gold,GC.black][i%3]}" stroke="rgba(0,0,0,.25)" stroke-width=".8"/>${TX(11,20,'EMMETT'[i],i%3===1?'#1C2128':'#fff',17)}</g>`;
+    else if(id==='stars')g+=roomLine(x,y-1,x,y+5,'#6B4423',1)+star(x,y+11,9,i%2?'#F2B705':'#fff')+star(x,y+11,9,'none');
+    else if(id==='footballs')g+=roomLine(x,y-1,x,y+5,'#6B4423',1)+`<g transform="translate(${x} ${y+13}) rotate(${i%2?-25:25})"><ellipse rx="10" ry="6.2" fill="#9A5B33" stroke="#2A1608" stroke-width="1"/><path d="M-3.4 0H3.4M-2 -1.8V1.8M0 -1.8V1.8M2 -1.8V1.8" stroke="#fff" stroke-width=".9"/></g>`;
+    else{
+      const col=id==='pennants'?[GC.teal,GC.gold,GC.black][i%3]:id==='rainbow'?[GC.red,GC.orange,GC.gold,GC.green,GC.sky,GC.purple][i%6]:[GC.green,GC.lime,GC.mint][i%3];
+      g+=`<path d="M${x-9} ${y}H${x+9}L${x} ${y+24}Z" fill="${col}" stroke="rgba(0,0,0,.2)" stroke-width=".7"/>`;
+      if(id==='dino')g+=`<g fill="#fff" opacity=".85"><ellipse cx="${x}" cy="${y+8}" rx="2.4" ry="2.8"/><circle cx="${x-3.4}" cy="${y+4}" r="1"/><circle cx="${x}" cy="${y+3.2}" r="1"/><circle cx="${x+3.4}" cy="${y+4}" r="1"/></g>`;
+    }
+  }
+  return g;
+}
+/* ----- ceiling mobile over the bed ----- */
+function ceilingArt(id){
+  const hx=212;
+  let g=`<path d="M${hx-34} 4H${hx+34}" stroke="#6B4423" stroke-width="2.4" stroke-linecap="round"/>`;
+  const hang=(x,len,art)=>roomLine(x,4,x,4+len,'#9A8B7A',.9)+`<g transform="translate(${x} ${4+len})">${art}</g>`;
+  const T={
+    planets:[[-30,26,`<circle r="9" fill="#E5674A"/><path d="M-8 -2Q0 3 8 -2" stroke="#B4442E" stroke-width="1.6" fill="none"/>`],[0,44,`<circle r="11" fill="#E8CB86"/><ellipse rx="17" ry="3.6" fill="none" stroke="#B8860B" stroke-width="2" transform="rotate(-16)"/>`],[30,30,`<circle r="8" fill="#4DA3FF"/><path d="M-6 -3Q0 1 6 -3" stroke="#fff" stroke-width="1.4" fill="none" opacity=".7"/>`]],
+    dinos:[[-30,26,`<ellipse rx="10" ry="6" fill="#3CB878"/><circle cx="9" cy="-6" r="5" fill="#3CB878"/><path d="M-10 0L-18 4L-10 -3Z" fill="#3CB878"/><circle cx="11" cy="-7" r="1" fill="#0B2233"/>`],[0,44,`<ellipse rx="12" ry="7" fill="#F2B705"/><path d="M-8 -6L-4 -12L0 -6L4 -12L8 -6Z" fill="#E08A00"/><circle cx="11" cy="-4" r="5" fill="#F2B705"/><circle cx="13" cy="-5" r="1" fill="#0B2233"/>`],[30,30,`<ellipse rx="10" ry="6" fill="#5CC2F2"/><path d="M-3 -6L0 -14L5 -6Z" fill="#2F9CC4"/><circle cx="9" cy="-4" r="4.6" fill="#5CC2F2"/>`]],
+    planes:[[-30,28,`<path d="M-12 4L14 -6L-4 10L-6 5Z" fill="#fff" stroke="#9AA7B5"/><path d="M-6 5L14 -6" stroke="#9AA7B5"/>`],[0,46,`<path d="M-12 4L14 -6L-4 10L-6 5Z" fill="#F2B705" stroke="#B8860B"/>`],[30,32,`<path d="M-12 4L14 -6L-4 10L-6 5Z" fill="#5CC2F2" stroke="#2F9CC4"/>`]],
+    clouds:[[-30,26,`<ellipse rx="12" ry="6" fill="#fff" stroke="#C9D1D6"/><ellipse cx="6" cy="-4" rx="8" ry="5" fill="#fff"/>`],[0,46,`<ellipse rx="14" ry="7" fill="#fff" stroke="#C9D1D6"/><ellipse cx="-6" cy="-5" rx="9" ry="6" fill="#fff"/><path d="M-6 9L-8 15M2 9L0 15M10 9L8 15" stroke="#5CC2F2" stroke-width="2" stroke-linecap="round"/>`],[30,30,`<ellipse rx="11" ry="5.6" fill="#fff" stroke="#C9D1D6"/><ellipse cx="4" cy="-4" rx="7" ry="4.6" fill="#fff"/>`]],
+    footballs:[[-30,26,`<ellipse rx="10" ry="6.2" fill="#9A5B33" stroke="#2A1608" transform="rotate(30)"/>`],[0,44,`<ellipse rx="11" ry="6.8" fill="#9A5B33" stroke="#2A1608" transform="rotate(-20)"/><path d="M-4 0H4M-2 -2V2M0 -2V2M2 -2V2" stroke="#fff" stroke-width="1" transform="rotate(-20)"/>`],[30,30,`<ellipse rx="10" ry="6.2" fill="#9A5B33" stroke="#2A1608" transform="rotate(25)"/>`]],
+    stars:[[-34,22,star(0,0,8,'#F2B705')],[-12,42,star(0,0,10,'#fff')],[12,30,star(0,0,9,'#F2B705')],[34,46,star(0,0,8,'#fff')]],
+    rockets:[[-30,26,`<path d="M0 -12C6 -6 6 4 5 8H-5C-6 4 -6 -6 0 -12Z" fill="#F4F7FA" stroke="#9AA7B5"/><circle cy="-2" r="2.4" fill="#4DA3FF"/><path d="M-5 5L-10 10L-5 9ZM5 5L10 10L5 9Z" fill="#E5674A"/>`],[0,44,`<path d="M0 -14C7 -7 7 5 6 10H-6C-7 5 -7 -7 0 -14Z" fill="#E5674A"/><circle cy="-3" r="2.8" fill="#fff"/><path d="M-6 6L-12 12L-6 10ZM6 6L12 12L6 10Z" fill="#F2B705"/>`],[30,30,`<path d="M0 -12C6 -6 6 4 5 8H-5C-6 4 -6 -6 0 -12Z" fill="#7B3FE4"/><circle cy="-2" r="2.4" fill="#fff"/>`]],
+    fish:[[-30,26,`<ellipse rx="10" ry="6" fill="#F57C1F"/><path d="M-10 0L-17 -5V5Z" fill="#F57C1F"/><circle cx="5" cy="-1" r="1.2" fill="#0B2233"/>`],[0,44,`<ellipse rx="12" ry="7" fill="#5CC2F2"/><path d="M-12 0L-19 -6V6Z" fill="#2F9CC4"/><circle cx="6" cy="-1" r="1.4" fill="#0B2233"/><path d="M-2 -6Q0 0 -2 6" stroke="#fff" stroke-width="1.4" fill="none"/>`],[30,30,`<ellipse rx="10" ry="6" fill="#F2B705"/><path d="M-10 0L-17 -5V5Z" fill="#E08A00"/><circle cx="5" cy="-1" r="1.2" fill="#0B2233"/>`]]
+  };
+  (T[id]||[]).forEach(([dx,len,art])=>{g+=hang(hx+dx,len,art)});
+  return g;
+}
+/* ----- board above the desk ----- */
+function boardArt(id){
+  const x=442,y=50,w=82,h=58;
+  let g='',fr='#8A5A33';
+  const frame=(fill,fc)=>RR(x-3,y-3,w+6,h+6,fc||fr,4,'stroke="rgba(0,0,0,.25)"')+RR(x,y,w,h,fill,2);
+  if(id==='cork'){g=frame('#C99A5B')+[[8,8,'#FFD84D'],[34,10,'#7CC4F0'],[56,6,'#F4A6B8'],[14,32,'#B6E3A0'],[44,32,'#FFD84D']].map(([a,b,c],i)=>`<rect x="${x+a}" y="${y+b}" width="20" height="18" fill="${c}" transform="rotate(${i*5-8} ${x+a+10} ${y+b+9})"/><circle cx="${x+a+10}" cy="${y+b+2}" r="1.8" fill="#D62839"/>`).join('')}
+  if(id==='whiteboard')g=frame('#F7FAFC','#C9D1D6')+TX(x+30,y+18,'6 × 7 = 42','#2F6FD0',10)+TX(x+30,y+34,'56 ÷ 8 = 7','#D62839',10)+TX(x+30,y+50,'½ + ¼ = ¾','#2E9E5B',10)+RR(x+6,y+h-3,24,3,'#9AA7B5',1);
+  if(id==='spanish')g=frame('#FFF3D6','#D62839')+TX(x+41,y+20,'¡Hola!','#D62839',16)+TX(x+41,y+37,'gracias','#1B2A55',11)+TX(x+41,y+51,'amigo','#E08A00',10);
+  if(id==='flmap')g=frame('#7CC4F0','#0E9AA7')+PP(`M${x+16} ${y+6}H${x+54}L${x+56} ${y+12}H${x+34}Q${x+34} ${y+16} ${x+38} ${y+18}Q${x+50} ${y+28} ${x+54} ${y+40}Q${x+56} ${y+52} ${x+48} ${y+54}Q${x+44} ${y+48} ${x+42} ${y+38}Q${x+36} ${y+26} ${x+30} ${y+18}L${x+16} ${y+14}Z`,'#F2E2B0','stroke="#8A5A33" stroke-width="1"')+`<circle cx="${x+46}" cy="${y+36}" r="2.4" fill="#D62839"/>`;
+  if(id==='chart')g=frame('#1B2A55','#232B33')+Array.from({length:15},(_,i)=>star(x+10+(i%5)*15,y+11+Math.floor(i/5)*17,5.4,i<9?'#F2B705':'rgba(255,255,255,.22)')).join('');
+  if(id==='score')g=frame('#0B1620','#4A525A')+TX(x+41,y+14,'GAME DAY','#7FA6BF',7)+TX(x+20,y+34,'21','#FFB400',18,'font-family:ui-monospace,monospace')+TX(x+62,y+34,'14','#FFB400',18,'font-family:ui-monospace,monospace')+TX(x+20,y+50,'HOME','#9FB6C7',7)+TX(x+62,y+50,'AWAY','#9FB6C7',7);
+  if(id==='calendar'){let c=frame('#fff','#D62839')+RR(x,y,w,12,'#D62839',2)+TX(x+41,y+9,'OCTOBER','#fff',8);for(let r=0;r<4;r++)for(let k=0;k<7;k++){const th=k===4;c+=RR(x+4+k*10.6,y+16+r*10.4,9,8.4,th?'#F2B705':'#EAF4FB',1.4)}g=c+TX(x+41,y+h-1,'Thursday = Español','#7A1F2B',6)}
+  if(id==='dinochart')g=frame('#F3E7C7','#6B4423')+TX(x+41,y+11,'DINO CHART','#6B4423',7)+[[12,'#3CB878',30],[27,'#F2B705',42],[42,'#E5674A',24],[57,'#5CC2F2',36]].map(([a,c,hh])=>RR(x+a,y+h-6-hh,11,hh,c,1.6)).join('')+`<path d="M${x+6} ${y+h-6}H${x+w-6}" stroke="#6B4423" stroke-width="1.4"/>`;
+  return g;
+}
+/* ----- things on the window sill (base line y=132, centered at 357) ----- */
+function sillArt(id){
+  const x=357,y=132;
+  const pot=(c)=>PP(`M${x-8} ${y-10}H${x+8}L${x+6} ${y}H${x-6}Z`,c);
+  switch(id){
+    case'cactus':return pot('#C8651B')+RR(x-4,y-30,8,21,'#3CB878',4)+RR(x-11,y-24,6,3.6,'#3CB878',1.8)+RR(x-11,y-26,3.6,8,'#3CB878',1.8)+RR(x+5,y-20,6,3.6,'#3CB878',1.8)+RR(x+7.4,y-24,3.6,8,'#3CB878',1.8)+`<path d="M${x} ${y-28}V${y-12}" stroke="#2A9560" stroke-width="1"/>`+`<circle cx="${x}" cy="${y-31}" r="2.4" fill="#F4A6B8"/>`;
+    case'succulent':return pot('#F4F7FA')+[-24,-12,0,12,24].map(a=>`<ellipse cx="${x}" cy="${y-16}" rx="3.4" ry="9" fill="#6FD6B0" stroke="#2A9560" stroke-width=".7" transform="rotate(${a} ${x} ${y-10})"/>`).join('');
+    case'sunflower':return PP(`M${x-6} ${y-14}H${x+6}L${x+5} ${y}H${x-5}Z`,'#7CC4F0','stroke="#2F9CC4"')+`<path d="M${x} ${y-14}V${y-38}" stroke="#2E9E5B" stroke-width="2.2"/><path d="M${x} ${y-24}Q${x-9} ${y-26} ${x-10} ${y-20}Q${x-4} ${y-18} ${x} ${y-24}Z" fill="#2E9E5B"/>`+Array.from({length:10},(_,i)=>`<ellipse cx="${x}" cy="${y-47}" rx="2.8" ry="6" fill="#F2B705" transform="rotate(${i*36} ${x} ${y-41})"/>`).join('')+`<circle cx="${x}" cy="${y-41}" r="5" fill="#5B3A1C"/>`;
+    case'trex':return PP(`M${x-14} ${y-6}Q${x-24} ${y-4} ${x-22} ${y-14}Q${x-17} ${y-10} ${x-10} ${y-12}Z`,'#3CB878')+EL(x-2,y-12,12,8,'#3CB878')+RR(x+4,y-30,12,10,'#3CB878',4)+RR(x+3,y-24,8,12,'#3CB878',3)+`<circle cx="${x+12}" cy="${y-26}" r="1.4" fill="#0B2233"/><path d="M${x+7} ${y-21}l1.4 2 1.4-2 1.4 2 1.4-2" stroke="#fff" fill="none" stroke-width=".9"/>`+RR(x-8,y-6,4,6,'#2A9560',1)+RR(x+2,y-6,4,6,'#2A9560',1)+`<path d="M${x+14} ${y-14}l3 2M${x+14} ${y-11}l3 1" stroke="#2A9560" stroke-width="1.4"/>`;
+    case'fossil':return RR(x-12,y-4,24,4,'#6B4423',1.4)+`<circle cx="${x}" cy="${y-16}" r="11.6" fill="#E8DCC0" stroke="#A58E57" stroke-width="1.4"/><path d="M${x} ${y-16}m0 0a2 2 0 1 1 3.4 1.4a4.4 4.4 0 1 1 -6.8 -2.6a7.4 7.4 0 1 1 11.4 4.6" fill="none" stroke="#A58E57" stroke-width="1.6" stroke-linecap="round"/>`+`<path d="M${x-8} ${y-4}L${x-5} ${y-7}M${x+8} ${y-4}L${x+5} ${y-7}" stroke="#6B4423" stroke-width="1.4"/>`;
+    case'rocket':return PP(`M${x} ${y-36}C${x+7} ${y-27} ${x+8} ${y-14} ${x+6} ${y-5}H${x-6}C${x-8} ${y-14} ${x-7} ${y-27} ${x} ${y-36}Z`,'#F4F7FA','stroke="#9AA7B5"')+`<circle cx="${x}" cy="${y-22}" r="3.4" fill="#4DA3FF" stroke="#2F6FD0"/>`+PP(`M${x-6} ${y-10}L${x-13} ${y}L${x-6} ${y-3}ZM${x+6} ${y-10}L${x+13} ${y}L${x+6} ${y-3}Z`,'#D62839')+RR(x-5,y-5,10,5,'#555',1);
+    case'shells':return[[-12,-4,'#F4A6B8'],[0,-3,'#F2E2B0'],[12,-4,'#F9D9C0']].map(([dx,dy,c],i)=>`<g transform="translate(${x+dx} ${y+dy-5}) rotate(${i*14-14})"><path d="M-6 6Q-8 -4 0 -8Q8 -4 6 6Z" fill="${c}" stroke="#B8865B" stroke-width="1"/><path d="M0 6V-7M-3 5L-4 -3M3 5L4 -3" stroke="#B8865B" stroke-width=".8"/></g>`).join('')+`<path d="M${x-18} ${y}H${x+18}" stroke="#E8CB86" stroke-width="3"/>`;
+    case'snowglobe':return RR(x-9,y-6,18,6,'#6B4423',2)+`<circle cx="${x}" cy="${y-17}" r="12" fill="rgba(180,225,255,.4)" stroke="#fff" stroke-width="1.6"/><path d="M${x-6} ${y-8}L${x} ${y-22}L${x+6} ${y-8}Z" fill="#fff" stroke="#9AA7B5" stroke-width=".8"/>`+[[-7,-22],[4,-26],[8,-17],[-4,-14],[0,-28]].map(([a,b])=>`<circle cx="${x+a}" cy="${y+b}" r="1" fill="#fff"/>`).join('')+`<path d="M${x-8} ${y-24}Q${x-5} ${y-27} ${x-2} ${y-26}" stroke="#fff" stroke-width="1.4" fill="none" opacity=".8"/>`;
+  }
+  return'';
+}
+/* ----- a toy or pillow on the bed (centered at 212, resting on the quilt) ----- */
+function bedtopArt(id){
+  const x=212,y=156;
+  switch(id){
+    case'teddy':return EL(x,y+4,17,4,'rgba(0,0,0,.18)')+EL(x,y-6,13,12,'#B8864B')+EL(x,y-4,8,8,'#E0B982')+`<circle cx="${x}" cy="${y-24}" r="10" fill="#B8864B"/><circle cx="${x-8}" cy="${y-32}" r="4" fill="#B8864B"/><circle cx="${x+8}" cy="${y-32}" r="4" fill="#B8864B"/><circle cx="${x-8}" cy="${y-32}" r="2" fill="#E0B982"/><circle cx="${x+8}" cy="${y-32}" r="2" fill="#E0B982"/><ellipse cx="${x}" cy="${y-21}" rx="4.4" ry="3.4" fill="#E0B982"/><circle cx="${x-3.4}" cy="${y-26}" r="1.2" fill="#0B2233"/><circle cx="${x+3.4}" cy="${y-26}" r="1.2" fill="#0B2233"/><circle cx="${x}" cy="${y-22}" r="1.4" fill="#2A1608"/>`+EL(x-14,y-6,4,7,'#B8864B')+EL(x+14,y-6,4,7,'#B8864B')+`<path d="M${x-7} ${y-12}L${x} ${y-8}L${x+7} ${y-12}L${x} ${y-14}Z" fill="#D62839"/>`;
+    case'dinoplush':return EL(x,y+4,19,4,'rgba(0,0,0,.18)')+PP(`M${x-14} ${y}Q${x-26} ${y+2} ${x-24} ${y-10}Q${x-18} ${y-5} ${x-10} ${y-8}Z`,'#3CB878')+EL(x,y-8,15,11,'#3CB878')+EL(x+2,y-5,9,6.4,'#BDEFC8')+`<circle cx="${x+10}" cy="${y-22}" r="8" fill="#3CB878"/><circle cx="${x+13}" cy="${y-24}" r="1.6" fill="#0B2233"/><path d="M${x+11} ${y-18}Q${x+14} ${y-16} ${x+17} ${y-18}" stroke="#0B2233" fill="none" stroke-width="1.2"/>`+[-8,-2,4,10].map(a=>`<path d="M${x+a} ${y-18}L${x+a+3} ${y-25}L${x+a+6} ${y-18}Z" fill="#2A9560"/>`).join('')+RR(x-8,y-1,5,5,'#2A9560',1.4)+RR(x+3,y-1,5,5,'#2A9560',1.4);
+    case'blanket':return PP(`M${x-24} ${y+2}Q${x} ${y-4} ${x+24} ${y+2}V${y-10}Q${x} ${y-16} ${x-24} ${y-10}Z`,'#2F6FD0')+[0,1,2,3].map(i=>`<path d="M${x-24+i*12+6} ${y-12+i*.4}V${y+1}" stroke="#F2B705" stroke-width="4" opacity=".9"/>`).join('')+`<path d="M${x-24} ${y-10}Q${x} ${y-16} ${x+24} ${y-10}" stroke="rgba(255,255,255,.5)" fill="none" stroke-width="1.4"/>`;
+    case'shark':return EL(x,y+4,22,4,'rgba(0,0,0,.18)')+PP(`M${x-24} ${y-2}Q${x-14} ${y-20} ${x+10} ${y-16}Q${x+26} ${y-12} ${x+24} ${y-2}Q${x} ${y+3} ${x-24} ${y-2}Z`,'#6E8CA8')+PP(`M${x-22} ${y-1}Q${x} ${y+3} ${x+22} ${y-1}Q${x} ${y-4} ${x-22} ${y-1}Z`,'#EAF4FB')+PP(`M${x-2} ${y-16}L${x+4} ${y-30}L${x+10} ${y-15}Z`,'#5F7E9A')+PP(`M${x-24} ${y-2}L${x-31} ${y-12}L${x-26} ${y-1}L${x-31} ${y+5}Z`,'#5F7E9A')+`<circle cx="${x+16}" cy="${y-9}" r="1.6" fill="#0B2233"/><path d="M${x+12} ${y-4}l1.2 2 1.2-2 1.2 2 1.2-2" stroke="#fff" fill="none" stroke-width=".9"/>`;
+    case'footpillow':return EL(x,y+4,22,4,'rgba(0,0,0,.18)')+`<g transform="rotate(-8 ${x} ${y-8})">`+EL(x,y-8,24,11,'#9A5B33','stroke="#2A1608" stroke-width="1.3"')+`<path d="M${x-7} ${y-8}H${x+7}M${x-4} ${y-12}V${y-4}M${x} ${y-12}V${y-4}M${x+4} ${y-12}V${y-4}" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M${x-17} ${y-14}Q${x-19} ${y-8} ${x-17} ${y-2}M${x+17} ${y-14}Q${x+19} ${y-8} ${x+17} ${y-2}" stroke="#fff" stroke-width="1.4" fill="none"/></g>`;
+    case'catplush':return EL(x,y+4,18,4,'rgba(0,0,0,.18)')+PP(`M${x+12} ${y-2}Q${x+26} ${y-2} ${x+22} ${y-16}`,'none','stroke="#8C8C99" stroke-width="5" stroke-linecap="round"')+EL(x,y-7,14,11,'#A8A8B8')+`<circle cx="${x}" cy="${y-24}" r="10" fill="#A8A8B8"/><path d="M${x-9} ${y-29}L${x-9} ${y-39}L${x-1} ${y-31}Z M${x+9} ${y-29}L${x+9} ${y-39}L${x+1} ${y-31}Z" fill="#A8A8B8"/><path d="M${x-7} ${y-30}L${x-7} ${y-36}L${x-3} ${y-31}Z M${x+7} ${y-30}L${x+7} ${y-36}L${x+3} ${y-31}Z" fill="#F4A6B8"/><circle cx="${x-3.6}" cy="${y-25}" r="1.4" fill="#0B2233"/><circle cx="${x+3.6}" cy="${y-25}" r="1.4" fill="#0B2233"/><path d="M${x-1.4} ${y-21}H${x+1.4}L${x} ${y-19.6}Z" fill="#E87A8A"/><path d="M${x-10} ${y-22}L${x-16} ${y-23}M${x+10} ${y-22}L${x+16} ${y-23}" stroke="#fff" stroke-width=".8"/>`;
+    case'robotplush':return EL(x,y+4,17,4,'rgba(0,0,0,.18)')+RR(x-13,y-18,26,20,'#BFC7CF',4,'stroke="#5A6672" stroke-width="1.2"')+RR(x-12,y-38,24,19,'#D5DCE3',5,'stroke="#5A6672" stroke-width="1.2"')+`<circle cx="${x-5}" cy="${y-29}" r="3.2" fill="#2FD0C5"/><circle cx="${x+5}" cy="${y-29}" r="3.2" fill="#2FD0C5"/><path d="M${x-4} ${y-23}H${x+4}M${x} ${y-38}V${y-44}" stroke="#5A6672" stroke-width="1.4"/><circle cx="${x}" cy="${y-45}" r="2.2" fill="#D62839"/><rect x="${x-5}" y="${y-13}" width="10" height="7" rx="1.4" fill="#F2B705"/>`;
+    case'controller':return EL(x,y+3,20,4,'rgba(0,0,0,.18)')+PP(`M${x-18} ${y-4}Q${x-20} ${y-14} ${x-10} ${y-14}H${x+10}Q${x+20} ${y-14} ${x+18} ${y-4}Q${x+16} ${y+2} ${x+11} ${y-2}H${x-11}Q${x-16} ${y+2} ${x-18} ${y-4}Z`,'#2A3138','stroke="#0B1118"')+`<path d="M${x-12} ${y-10}V${y-4}M${x-15} ${y-7}H${x-9}" stroke="#fff" stroke-width="2"/><circle cx="${x+10}" cy="${y-9}" r="1.8" fill="#D62839"/><circle cx="${x+14}" cy="${y-7}" r="1.8" fill="#2F6FD0"/><circle cx="${x+10}" cy="${y-5}" r="1.8" fill="#2E9E5B"/><circle cx="${x+6}" cy="${y-7}" r="1.8" fill="#F2B705"/>`;
+  }
+  return'';
+}
+/* ----- a chair in front of the desk (x 441 to 487) ----- */
+function chairArt(id){
+  const x=464,y=224;
+  const legs=(c,w)=>`<path d="M${x-16} ${y-30}V${y-2}M${x+16} ${y-30}V${y-2}" stroke="${c}" stroke-width="${w||3}" stroke-linecap="round"/>`;
+  switch(id){
+    case'wood':return EL(x,y+1,24,3.6,'rgba(0,0,0,.2)')+legs('#8A5A33',4)+RR(x-19,y-34,38,7,'#B9854F',2)+RR(x-16,y-62,32,28,'#B9854F',3)+`<path d="M${x-8} ${y-58}V${y-38}M${x} ${y-58}V${y-38}M${x+8} ${y-58}V${y-38}" stroke="#8A5A33" stroke-width="2"/>`;
+    case'office':return EL(x,y+1,24,3.6,'rgba(0,0,0,.2)')+`<path d="M${x} ${y-24}V${y-8}M${x-20} ${y-3}H${x+20}" stroke="#4A525A" stroke-width="3.4" stroke-linecap="round"/><circle cx="${x-20}" cy="${y-1}" r="3" fill="#232B33"/><circle cx="${x+20}" cy="${y-1}" r="3" fill="#232B33"/><circle cx="${x}" cy="${y-1}" r="3" fill="#232B33"/>`+RR(x-20,y-34,40,10,'#2F6FD0',5)+RR(x-16,y-64,32,30,'#2F6FD0',6)+`<path d="M${x-10} ${y-58}Q${x} ${y-62} ${x+10} ${y-58}" stroke="rgba(255,255,255,.45)" stroke-width="2" fill="none"/>`;
+    case'gaming':return EL(x,y+1,26,3.6,'rgba(0,0,0,.2)')+`<path d="M${x} ${y-22}V${y-6}M${x-20} ${y-2}H${x+20}" stroke="#1C2128" stroke-width="3.6" stroke-linecap="round"/>`+RR(x-22,y-36,44,12,'#1C2128',5)+RR(x-18,y-74,36,40,'#1C2128',8)+RR(x-12,y-82,24,12,'#232B33',5)+`<path d="M${x-13} ${y-64}V${y-40}M${x+13} ${y-64}V${y-40}" stroke="#D62839" stroke-width="4" stroke-linecap="round"/><path d="M${x-22} ${y-34}Q${x-30} ${y-30} ${x-26} ${y-22}M${x+22} ${y-34}Q${x+30} ${y-30} ${x+26} ${y-22}" stroke="#D62839" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    case'stool':return EL(x,y+1,22,3.4,'rgba(0,0,0,.2)')+`<path d="M${x-12} ${y-26}L${x-16} ${y-1}M${x+12} ${y-26}L${x+16} ${y-1}M${x} ${y-26}V${y-3}" stroke="#4A525A" stroke-width="3" stroke-linecap="round"/>`+EL(x,y-28,18,6,'#E08A00')+EL(x,y-31,18,6,'#F5A623');
+    case'bean':return EL(x,y+1,26,3.6,'rgba(0,0,0,.2)')+PP(`M${x-24} ${y-2}C${x-28} ${y-26} ${x-12} ${y-40} ${x+2} ${y-40}C${x+20} ${y-40} ${x+28} ${y-24} ${x+24} ${y-2}Q${x} ${y+4} ${x-24} ${y-2}Z`,'#7B3FE4')+`<path d="M${x-14} ${y-30}Q${x-6} ${y-38} ${x+4} ${y-36}" stroke="#fff" stroke-width="3" fill="none" opacity=".3" stroke-linecap="round"/><path d="M${x-8} ${y-4}Q${x} ${y} ${x+8} ${y-4}" stroke="rgba(0,0,0,.25)" fill="none" stroke-width="2"/>`;
+    case'racing':return EL(x,y+1,26,3.6,'rgba(0,0,0,.2)')+`<path d="M${x} ${y-22}V${y-6}M${x-20} ${y-2}H${x+20}" stroke="#1C2128" stroke-width="3.6" stroke-linecap="round"/>`+RR(x-22,y-36,44,12,'#0E9AA7',5)+RR(x-18,y-72,36,38,'#0E9AA7',8)+`<path d="M${x} ${y-70}V${y-38}" stroke="#F2B705" stroke-width="5"/><path d="M${x-22} ${y-34}Q${x-28} ${y-28} ${x-24} ${y-22}M${x+22} ${y-34}Q${x+28} ${y-28} ${x+24} ${y-22}" stroke="#1C2128" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    case'throne':return EL(x,y+1,26,3.6,'rgba(0,0,0,.2)')+legs('#B8860B',4)+RR(x-22,y-36,44,10,'#D62839',3,'stroke="#8E1424"')+RR(x-18,y-80,36,46,'#F2B705',6,'stroke="#B8860B" stroke-width="1.4"')+PP(`M${x-18} ${y-80}L${x-12} ${y-92}L${x-4} ${y-82}L${x} ${y-94}L${x+4} ${y-82}L${x+12} ${y-92}L${x+18} ${y-80}Z`,'#F2B705','stroke="#B8860B"')+RR(x-12,y-72,24,32,'#D62839',4)+`<circle cx="${x}" cy="${y-56}" r="4" fill="#F2B705"/>`;
+    case'ballstool':return EL(x,y+1,22,3.4,'rgba(0,0,0,.2)')+`<circle cx="${x}" cy="${y-18}" r="18" fill="#F4F7FA" stroke="#5A6672" stroke-width="1.4"/><path d="M${x} ${y-24}L${x+5.4} ${y-20}L${x+3.4} ${y-13.6}H${x-3.4}L${x-5.4} ${y-20}Z" fill="#1C2128"/><path d="M${x} ${y-24}V${y-34}M${x+5.4} ${y-20}L${x+14} ${y-24}M${x+3.4} ${y-13.6}L${x+9} ${y-6}M${x-3.4} ${y-13.6}L${x-9} ${y-6}M${x-5.4} ${y-20}L${x-14} ${y-24}" stroke="#1C2128" stroke-width="1.4"/>`;
+  }
+  return'';
+}
+/* ----- decal on the wall above the headboard (x 135 to 290, y 34 to 88) ----- */
+function headwallArt(id){
+  switch(id){
+    case'letters':return'EMMETT'.split('').map((ch,i)=>`<g transform="translate(${142+i*24} 44)"><rect width="20" height="28" rx="3" fill="${[GC.teal,GC.gold,GC.black][i%3]}" stroke="rgba(0,0,0,.25)"/>${TX(10,22,ch,i%3===1?'#1C2128':'#fff',19)}</g>`).join('');
+    case'goalpost':return RR(138,70,148,12,'#2E8B4E',3)+`<path d="M212 70V44M190 24V44H234V24" fill="none" stroke="#F2B705" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`+[150,172,194,216,238,260].map(x=>roomLine(x,70,x,82,'#fff',1.6)).join('')+TX(212,64,'END ZONE','#fff',7,'letter-spacing:1px');
+    case'orion':return RR(138,28,150,60,'#1B2A55',8)+[[170,40],[190,50],[200,58],[212,56],[224,58],[234,70],[206,74],[256,46]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${i===0||i===6?2.6:1.8}" fill="#FFF3B0"/>`).join('')+`<path d="M170 40L190 50L200 58L212 56L224 58L234 70M200 58L206 74M224 58L256 46" stroke="rgba(255,243,176,.6)" stroke-width="1" fill="none"/>`+[[150,52],[160,76],[270,70],[280,50]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.2" fill="#fff" opacity=".8"/>`).join('');
+    case'mountains':return PP('M138 88L174 44L192 66L214 36L246 76L262 58L288 88Z','#7C8794')+PP('M174 44L184 56L176 58L168 54Z M214 36L224 52L214 52L206 48Z','#fff')+PP('M138 88L160 66L182 88Z M236 88L262 58L288 88Z','#5E6E7C');
+    case'skyline':return[[142,34,18],[162,48,14],[178,28,16],[196,52,12],[210,40,18],[230,56,14],[246,36,16],[264,50,20]].map(([x,h,w],i)=>RR(x,88-h,w,h,['#3A4770','#2F3B5E','#46547F'][i%3],1)+Array.from({length:Math.floor(h/10)},(_,k)=>RR(x+3,88-h+4+k*10,3,4,'#FFE08A',.6)+RR(x+w-6,88-h+4+k*10,3,4,'#FFE08A',.6)).join('')).join('');
+    case'tracks':return[[150,76,-20],[176,62,10],[202,76,-10],[228,60,15],[254,74,-12]].map(([x,y,a])=>`<g transform="translate(${x} ${y}) rotate(${a})" fill="#3E8E4A"><ellipse rx="6" ry="7"/><ellipse cx="-8" cy="-9" rx="2.6" ry="4"/><ellipse cx="0" cy="-11" rx="2.6" ry="4"/><ellipse cx="8" cy="-9" rx="2.6" ry="4"/></g>`).join('');
+    case'soccerwall':return`<circle cx="212" cy="62" r="30" fill="#F4F7FA" stroke="#5A6672" stroke-width="1.6"/><path d="M212 50L224 58L219 72H205L200 58Z" fill="#1C2128"/><path d="M212 50V34M224 58L240 52M219 72L230 84M205 72L194 84M200 58L184 52" stroke="#1C2128" stroke-width="1.8"/>`;
+    case'bienvenidos':return RR(150,46,124,32,'#B9854F',4,'stroke="#8A5A33" stroke-width="2"')+RR(155,51,114,22,'#F3E7C7',2)+TX(212,67,'¡Bienvenidos!','#7A1F2B',12)+`<path d="M162 46V38M262 46V38" stroke="#6B4423" stroke-width="1.6"/>`;
+  }
+  return'';
+}
+const WALL_BACK=c=>c.headwall&&c.headwall!=='none'?`<g transform="translate(90.6 17) scale(.72)">${headwallArt(c.headwall)}</g>`:'';
+const WALL_ART=c=>{let s='';
+  if(c.banner&&c.banner!=='none')s+=bannerArt(c.banner);
+  if(c.board&&c.board!=='none')s+=boardArt(c.board);
+  if(c.ceiling&&c.ceiling!=='none')s+=ceilingArt(c.ceiling);
+  return s};
+const FRONT_ART=c=>{let s='';
+  if(c.sill&&c.sill!=='none')s+=`<g transform="translate(357 132) scale(1.5) translate(-357 -132)">${sillArt(c.sill)}</g>`;
+  if(c.bedtop&&c.bedtop!=='none')s+=`<g transform="translate(212 158) scale(1.35) translate(-212 -158)">${bedtopArt(c.bedtop)}</g>`;
+  if(c.chair&&c.chair!=='none')s+=chairArt(c.chair);
+  return s};
+/* ----- 19 new posters (44 by 56) ----- */
+const POSTER_NEW={
+  mult:()=>RR(0,0,44,56,'#FFF8E1')+RR(0,0,44,9,'#2F6FD0')+TX(22,7,'TIMES','#fff',6)+Array.from({length:16},(_,i)=>TX(6+(i%4)*10.6,21+Math.floor(i/4)*9.6,String((i%4+1)*(Math.floor(i/4)+1)),(i%5)?'#1B2A55':'#D62839',6.4)).join(''),
+  planets2:()=>RR(0,0,44,56,'#0B1033')+[[10,12,5,'#E8CB86'],[22,20,3.4,'#4DA3FF'],[32,12,4.4,'#E5674A'],[14,32,3,'#C9A27B'],[28,38,6.4,'#F2B705']].map(([x,y,r,c])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`).join('')+`<ellipse cx="10" cy="12" rx="8.6" ry="1.8" fill="none" stroke="#fff" stroke-width=".7" opacity=".7"/>`+TX(22,52,'THE PLANETS','#fff',5.4),
+  esgreet:()=>RR(0,0,44,56,'#D62839')+PP('M6 10H38Q42 10 42 14V28Q42 32 38 32H20L12 40V32H6Q2 32 2 28V14Q2 10 6 10Z','#fff')+TX(22,25,'¡HOLA!','#D62839',9.6)+TX(22,48,'ESPAÑOL','#F2B705',7.4),
+  esflags:()=>RR(0,0,44,56,'#F4F7FA')+[[4,6,'#2E9E5B','#fff','#D62839'],[24,6,'#F2B705','#D62839','#F2B705'],[4,20,'#7CC4F0','#fff','#7CC4F0'],[24,20,'#D62839','#fff','#D62839'],[4,34,'#F2B705','#2F6FD0','#D62839'],[24,34,'#fff','#fff','#D62839']].map(([x,y,a,b,c])=>`<rect x="${x}" y="${y}" width="16" height="12" fill="${b}"/><rect x="${x}" y="${y}" width="5.4" height="12" fill="${a}"/><rect x="${x+10.6}" y="${y}" width="5.4" height="12" fill="${c}"/>`).join('')+TX(22,53,'BANDERAS','#1B2A55',5.6),
+  world:()=>RR(0,0,44,56,'#2F9CC4')+PP('M6 12Q12 8 18 12L16 20Q10 24 8 20Z','#6DBF5B')+PP('M10 26Q16 24 18 30L16 42Q12 46 10 40Z','#6DBF5B')+PP('M22 10Q30 6 38 12L36 22Q30 24 26 20Z','#6DBF5B')+PP('M26 26Q34 24 36 32L32 40Q28 38 26 32Z','#6DBF5B')+TX(22,52,'THE WORLD','#fff',6),
+  flmapp:()=>RR(0,0,44,56,'#7CC4F0')+PP('M8 10H34L36 15H20Q20 19 24 21Q34 28 36 38Q38 48 32 50Q28 44 27 36Q22 28 17 22L8 18Z','#F2E2B0','stroke="#8A5A33" stroke-width=".8"')+`<circle cx="32" cy="36" r="2.2" fill="#D62839"/>`+TX(22,54,'FLORIDA','#1B2A55',6),
+  manatee:()=>RR(0,0,44,56,'#2F9CC4')+RR(0,40,44,16,'#1E7A9E')+PP('M6 30Q8 18 22 18Q38 18 40 30Q40 40 28 42Q20 42 14 38L6 40Z','#8E9AA6')+`<circle cx="31" cy="26" r="1.4" fill="#0B2233"/><path d="M33 31Q36 33 38 31" stroke="#0B2233" fill="none" stroke-width=".9"/><path d="M20 36Q24 42 28 38" stroke="#6E7A86" fill="none" stroke-width="2" stroke-linecap="round"/>`+TX(22,52,'MANATEE','#fff',6.2),
+  gator:()=>RR(0,0,44,56,'#2E9E5B')+RR(0,38,44,18,'#1E7A47')+PP('M4 36Q10 28 22 30L38 28Q42 30 40 34L24 38Q14 42 4 40Z','#3E8E2E')+`<path d="M24 34l1.6 2 1.4-2.2 1.6 2.2 1.4-2.2M16 38l1.4-2 1.4 2" stroke="#fff" stroke-width=".9" fill="none"/><circle cx="12" cy="31" r="1.8" fill="#F2B705"/><circle cx="12" cy="31" r=".8" fill="#0B2233"/>`+[10,16,22,28,34].map(x=>`<path d="M${x} 29L${x+2} 25L${x+4} 29Z" fill="#2A7A2A"/>`).join('')+TX(22,52,'GATOR','#fff',6.4),
+  pelican:()=>RR(0,0,44,56,'#7CC4F0')+RR(0,42,44,14,'#2F9CC4')+EL(20,30,12,8,'#F4F7FA')+PP('M30 26Q42 22 40 30Q36 30 30 32Z','#F2B705')+PP('M32 30Q40 30 40 36Q34 38 30 34Z','#F2B705')+`<circle cx="28" cy="25" r="1.2" fill="#0B2233"/><path d="M12 30Q4 26 8 20Q14 24 18 28Z" fill="#C9D1D6"/><path d="M14 38V44M22 38V44" stroke="#F57C1F" stroke-width="2"/>`+TX(22,52,'PELICAN','#fff',6),
+  jag:()=>RR(0,0,44,56,'#0E4D5C')+PP('M4 44Q6 24 22 22Q38 22 40 40Q30 36 22 40Q12 36 4 44Z','#D7A22A')+PP('M12 26L14 14L22 22ZM32 26L30 14L22 22Z','#D7A22A')+`<circle cx="17" cy="29" r="2" fill="#fff"/><circle cx="27" cy="29" r="2" fill="#fff"/><circle cx="17" cy="29" r="1" fill="#101820"/><circle cx="27" cy="29" r="1" fill="#101820"/><path d="M20 35H24L22 37Z" fill="#101820"/>`+[[10,40],[34,40],[20,24],[26,24],[8,32]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.8" fill="#101820"/>`).join('')+TX(22,52,'JAGUAR','#D7A22A',6.4),
+  trike:()=>RR(0,0,44,56,'#F2B705')+PP('M6 40Q6 26 22 26Q36 26 38 40Z','#3CB878')+PP('M30 30Q42 24 42 34L36 36Z','#3CB878')+PP('M33 28L38 14L38 28ZM38 26L44 18L42 30Z','#F4F7FA','stroke="#9AA7B5" stroke-width=".6"')+PP('M30 22L32 16L35 22Z','#2A9560')+`<circle cx="36" cy="31" r="1.2" fill="#0B2233"/>`+RR(12,38,5,9,'#2A9560',2)+RR(26,38,5,9,'#2A9560',2)+TX(22,53,'TRICERATOPS','#7A4E2D',5),
+  astro:()=>RR(0,0,44,56,'#101A3C')+[[6,8],[36,12],[8,44],[38,40]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".9" fill="#fff"/>`).join('')+`<circle cx="22" cy="22" r="11" fill="#F4F7FA" stroke="#9AA7B5" stroke-width="1.2"/><rect x="14" y="17" width="16" height="11" rx="5" fill="#2F6FD0"/><path d="M17 20Q20 18 24 19" stroke="#fff" stroke-width="1.2" fill="none"/>`+RR(12,32,20,14,'#F4F7FA',4,'stroke="#9AA7B5"')+RR(18,36,8,5,'#D62839',1.4)+TX(22,53,'ASTRONAUT','#fff',5.4),
+  volcano:()=>RR(0,0,44,56,'#5CC2F2')+PP('M2 56L16 22H28L42 56Z','#7A4E2D')+PP('M16 22L22 28L28 22Z','#E5674A')+PP('M18 22Q22 8 26 22Z','#F57C1F')+`<circle cx="22" cy="10" r="3.4" fill="#C9D1D6"/><circle cx="17" cy="6" r="2.6" fill="#C9D1D6"/>`+TX(22,52,'VOLCANO','#fff',6.2),
+  sharkp:()=>RR(0,0,44,56,'#2F9CC4')+RR(0,36,44,20,'#1E7A9E')+PP('M2 32Q12 22 26 26L40 24Q42 30 38 34Q22 38 2 32Z','#6E8CA8')+PP('M14 26L19 14L25 26Z','#5F7E9A')+`<circle cx="32" cy="28" r="1.4" fill="#0B2233"/><path d="M30 33l1.4 2 1.4-2 1.4 2 1.4-2" stroke="#fff" fill="none" stroke-width=".9"/>`+TX(22,52,'SHARK','#fff',6.4),
+  soccerp:()=>RR(0,0,44,56,'#2E8B4E')+`<path d="M0 40H44M22 40V56" stroke="#fff" stroke-width="1" opacity=".6"/><circle cx="22" cy="24" r="12" fill="#F4F7FA" stroke="#5A6672" stroke-width="1.2"/><path d="M22 18L27 21.6L25 27.6H19L17 21.6Z" fill="#1C2128"/><path d="M22 18V12M27 21.6L33 19M25 27.6L29 32M19 27.6L15 32M17 21.6L11 19" stroke="#1C2128" stroke-width="1"/>`+TX(22,52,'FÚTBOL','#fff',6.4),
+  numline:()=>RR(0,0,44,56,'#FFF8E1')+RR(4,26,36,3,'#1B2A55',1.4)+Array.from({length:7},(_,i)=>roomLine(6+i*5.4,22,6+i*5.4,32,'#1B2A55',1)+TX(6+i*5.4,41,String(i),i===3?'#D62839':'#1B2A55',6)).join('')+PP('M22 10L26 18H18Z','#D62839')+TX(22,52,'NUMBER LINE','#1B2A55',5.2),
+  abc:()=>RR(0,0,44,56,'#F4A6B8')+['A','B','C','D'].map((l,i)=>`<g transform="translate(${5+(i%2)*19} ${6+Math.floor(i/2)*22})"><rect width="16" height="18" rx="3" fill="${[GC.red,GC.royal,GC.gold,GC.green][i]}"/>${TX(8,14,l,'#fff',12)}</g>`).join('')+TX(22,53,'SPELLING','#7A1F2B',6),
+  enye:()=>RR(0,0,44,56,'#F2B705')+TX(22,38,'Ñ','#D62839',34)+TX(22,50,'eñe','#7A1F2B',8),
+  castle:()=>RR(0,0,44,56,'#7CC4F0')+RR(4,26,36,22,'#E8CB86',0,'stroke="#B8860B" stroke-width=".8"')+[4,12,20,28,36].map(x=>RR(x,22,5,6,'#E8CB86',0,'stroke="#B8860B" stroke-width=".6"')).join('')+RR(17,36,10,12,'#7A4E2D',5)+RR(8,12,9,20,'#D9B77A','','stroke="#B8860B" stroke-width=".8"')+RR(27,12,9,20,'#D9B77A',0,'stroke="#B8860B" stroke-width=".8"')+PP('M7 12L12.5 4L18 12Z','#D62839')+PP('M26 12L31.5 4L37 12Z','#D62839')+TX(22,54,'ESPAÑA','#7A1F2B',6)
+};
+/* ----- new color choices for the existing spots ----- */
+Object.assign(WALLC,{lime:'#DCEFA6',lavender:'#D9CCF2',coral:'#F9C6B8',navy:'#2D3F6E',mint:'#BFEBD9'});
+
+/* ---------- Round 4: registering the 193 new prizes. 365 prizes in all. ----------
+   Every new prize is won through school subjects only (math, spelling, Spanish, geography). Football stars do not count.
+   Prizes are ranked from easy to hard; the coolest ones come last and often need one subject, not just a pile of stars. */
+const bestSchoolStreak=()=>{const ds=[...new Set(S.sessions.filter(s=>subjOf(s)!=='nfl').map(s=>dayNo(s.ts)))].sort((a,b)=>a-b);let best=0,run=0;ds.forEach((d,i)=>{run=i&&d===ds[i-1]+1?run+1:1;if(run>best)best=run});return best};
+Object.assign(NEEDVAL,{school:schoolStars,esw:()=>esMastered().length,sstreak:bestSchoolStreak});
+Object.assign(NEEDLAB,{es:'Spanish ',school:'school '});
+const _needText=needText;
+needText=function(it){
+  const [k,n]=it.need||[];
+  if(k==='school')return`Earn ${n} school stars`;
+  if(k==='esw')return`Master ${n} Spanish words`;
+  if(k==='sstreak')return`Do schoolwork ${n} days in a row`;
+  if(k==='exam'&&it.gen)return`Score 85% or better on ${n} practice exam${n>1?'s':''}`;
+  return _needText(it);
+};
+/* new room colors for existing spots */
+Object.assign(FLOORC,{cherry:['#9A4B32','#843E28'],sand:['#E8D9B0','#D6C592']});
+Object.assign(DOORC,{red:'#C8102E',navy:'#1B2A55'});
+Object.assign(RACKC,{teal:'#0A7E8C'});
+Object.assign(DESKC,{navy:'#1B2A55',red:'#B31B1B'});
+Object.assign(FRAMEC,{navy:'#1B2A55',green:'#2E7D4F'});
+const NEWP=[];
+const addP=(kind,slot,id,name,cool,extra)=>NEWP.push(Object.assign({kind,slot,id,name,cool},extra||{}));
+const COOL_TOP={thunder:3,blaze:3,storm:3,num99:3,neoncam:3,circuit:3,arctic:2,desert:2,tiedye:2,goldstar:2};
+TOPS_GEN.forEach(x=>addP('closet','top',x.id,x.name,COOL_TOP[x.id]||1));
+const COOL_HAT={royal:5,knight:5,viking:5,dinohood:5,halo:4,devil:4,tophat:4,grad:4,cowboy:3,pilot:3,miner:3,antlers:3,propeller:3,catears:3};
+HATS_GEN.forEach(x=>addP('closet','head',x.id,x.name,COOL_HAT[x.id]||2));
+const COOL_X={capeR:5,capeP:5,robot:5,owl:4,penguin:4,dog:4,cat:4,medalS:4,medalB:3,compass:3,planet:3,mic:3,goggles:3};
+EXTRAS_GEN.forEach(x=>addP('closet','extra',x.id,x.name,COOL_X[x.id]||2));
+const NEWROOM={
+  banner:['Wall banner',[['pennants','Teal and gold pennants',2],['flags','Flags of Spanish-speaking countries',4],['rainbow','Rainbow pennants',2],['dino','Dino pennants',2],['stars','Star garland',3],['numbers','Number banner',3],['letters','Name banner',4],['footballs','Football garland',3]]],
+  ceiling:['Ceiling mobile',[['planets','Planet mobile',3],['dinos','Dino mobile',3],['planes','Paper planes',2],['clouds','Rain cloud mobile',2],['footballs','Football mobile',3],['stars','Star mobile',3],['rockets','Rocket mobile',4],['fish','Fish mobile',3]]],
+  board:['Board above the desk',[['cork','Cork board',1],['whiteboard','Math whiteboard',2],['spanish','Spanish word board',3],['flmap','Florida map board',3],['chart','Star chart',2],['score','Game day scoreboard',4],['calendar','Calendar',2],['dinochart','Dino chart',3]]],
+  sill:['Window sill',[['cactus','Cactus',1],['succulent','Succulent',2],['sunflower','Sunflower',3],['trex','Toy T. rex',3],['fossil','Fossil on a stand',4],['rocket','Model rocket',4],['shells','Florida seashells',2],['snowglobe','Snow globe',3]]],
+  bedtop:['On the bed',[['teddy','Teddy bear',1],['dinoplush','Dino plush',2],['blanket','Folded blanket',1],['shark','Shark plush',3],['footpillow','Football pillow',2],['catplush','Cat plush',2],['robotplush','Robot plush',4],['controller','Game controller',3]]],
+  chair:['Desk chair',[['wood','Wood chair',1],['office','Office chair',2],['gaming','Gaming chair',4],['stool','Orange stool',1],['bean','Bean seat',2],['racing','Racing seat',4],['throne','Golden throne',5],['ballstool','Soccer ball stool',3]]],
+  headwall:['Wall above the bed',[['letters','Name letters',3],['goalpost','End zone decal',3],['orion','Constellation',4],['mountains','Mountains',2],['skyline','City skyline',3],['tracks','Dino tracks',2],['soccerwall','Giant soccer ball',2],['bienvenidos','Bienvenidos sign',4]]]
+};
+const POSTERS_NEW=[['mult','Multiplication chart',1],['planets2','The planets',2],['esgreet','¡Hola! poster',2],['esflags','Spanish flags',3],['world','World map',2],['flmapp','Florida map',2],['manatee','Manatee',2],['gator','Gator',2],['pelican','Pelican',2],['jag','Jaguar',4],['trike','Triceratops',3],['astro','Astronaut',4],['volcano','Volcano',3],['sharkp','Shark',3],['soccerp','Soccer',2],['numline','Number line',1],['abc','Alphabet blocks',1],['enye','The letter Ñ',3],['castle','Spanish castle',3]];
+const NEWCOLORS=[
+  ['wall','lime','Lime','#DCEFA6',0],['wall','lavender','Lavender','#D9CCF2',0],['wall','coral','Coral','#F9C6B8',1],['wall','navy','Navy','#2D3F6E',2],['wall','mint','Mint','#BFEBD9',0],
+  ['floor','cherry','Cherry wood','#9A4B32',2],['floor','sand','Sand wood','#E8D9B0',1],
+  ['door','red','Red','#C8102E',1],['door','navy','Navy','#1B2A55',2],['rack','teal','Teal','#0A7E8C',1],
+  ['desk','navy','Navy','#1B2A55',2],['desk','red','Red','#B31B1B',1],['bedframe','navy','Navy','#1B2A55',2],['bedframe','green','Green','#2E7D4F',1],
+  ['dresser','navy','Navy','#1B2A55',2],['dresser','red','Red','#B31B1B',1],['sheets','red','Red','#C8102E',1],['sheets','purple','Purple','#7B3FE4',2]
+];
+Object.entries(NEWROOM).forEach(([slot,[label,opts]])=>opts.forEach(([id,name,cool])=>addP('room',slot,id,name,cool)));
+POSTERS_NEW.forEach(([id,name,cool])=>addP('room','poster',id,name,cool));
+NEWCOLORS.forEach(([slot,id,name,c,cool])=>addP('room',slot,id,name,cool,{c}));
+/* rank: easy first, cool last. A small scramble keeps each tier from being one block of the same kind. */
+NEWP.forEach((p,i)=>{p.rank=p.cool*1000+((i*53)%97)*9+i%7});
+NEWP.sort((a,b)=>a.rank-b.rank);
+const PRIZE_AT=r=>Math.round((150+110*r+.38*r*r)/10)*10;
+const SUBROT=['math','spell','es','geo'],MROT=['esw','words','caps','exam','sstreak'];
+const clampN=(v,lo,hi)=>Math.max(lo,Math.min(hi,Math.round(v)));
+NEWP.forEach((p,r)=>{
+  const at=PRIZE_AT(r);
+  let need;
+  if(r%11===5){
+    const k=MROT[Math.floor(r/11)%MROT.length];
+    need=k==='esw'?[k,clampN(6+r*.8,6,170)]:k==='words'?[k,clampN(6+r*.55,6,100)]:k==='caps'?[k,clampN(3+r*.2,3,45)]:k==='exam'?[k,clampN(1+Math.floor(r/12),1,16)]:[k,clampN(2+Math.floor(r/10),2,21)];
+  }else if(r%7===3)need=[SUBROT[Math.floor(r/7)%SUBROT.length],Math.max(30,Math.round(at/3.4/10)*10)];
+  else need=['school',at];
+  p.need=need;p.at=at;
+});
+/* the closet prizes join the wardrobe list; the room prizes join their spots. New spots start with a "None" choice. */
+NEWP.filter(p=>p.kind==='closet').forEach(p=>{
+  ITEMS.push({id:p.id,slot:p.slot,name:p.name,at:null,need:p.need,eq:p.at,gen:1});
+});
+Object.entries(NEWROOM).forEach(([slot,[label]])=>{ROOMSLOTS[slot]=[label,[NONE]];ROOM_DEFAULT[slot]='none'});
+NEWP.filter(p=>p.kind==='room').forEach(p=>{
+  const opt={id:p.id,name:p.name,need:p.need,c:p.c};
+  if(p.slot==='poster')['p1','p2','p3','p4'].forEach(k=>ROOMSLOTS[k][1].push(opt));
+  else ROOMSLOTS[p.slot][1].push(opt);
+});
+ROOMGROUPS[0][2].push('bedtop','headwall');ROOMGROUPS[2][2].push('banner','board');ROOMGROUPS[3][2].push('sill');ROOMGROUPS[4][2].push('chair');ROOMGROUPS.push(['ceil','Ceiling',['ceiling']]);
+
 render();
 initDb();
 </script>
