@@ -394,8 +394,17 @@ const store={
   get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 };
-const dayKey=ts=>new Date(ts).toLocaleDateString('en-CA');
-const fmtDate=ts=>new Date(ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+/* Every date in the lab uses Eastern time, so a day starts and ends at midnight in New York on any device. */
+const TZ='America/New_York';
+const _etf=new Intl.DateTimeFormat('en-US',{timeZone:TZ,year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric',hourCycle:'h23'});
+const nowMs=()=>(typeof window!=='undefined'&&window.__NOW)||Date.now();
+function etp(ts){const o={};_etf.formatToParts(new Date(ts)).forEach(p=>{if(p.type!=='literal')o[p.type]=+p.value});return o}
+/* a Date whose local fields read as the Eastern wall clock, so getDay(), getMonth() and getDate() give Eastern answers */
+const etDate=ts=>{const p=etp(ts);return new Date(p.year,p.month-1,p.day,p.hour,p.minute,p.second)};
+const etNow=()=>etDate(nowMs());
+const dayNo=ts=>{const p=etp(ts);return Math.round(Date.UTC(p.year,p.month-1,p.day)/86400000)};
+const dayKey=ts=>{const p=etp(ts);return p.year+'-'+String(p.month).padStart(2,'0')+'-'+String(p.day).padStart(2,'0')};
+const fmtDate=ts=>new Date(ts).toLocaleDateString('en-US',{timeZone:TZ,month:'short',day:'numeric'});
 
 /* ---------- problem types ---------- */
 /*GEN-START*/
@@ -719,6 +728,7 @@ function saveLocalCopy(){store.set('bl.sessions',S.sessions.slice(0,300));store.
 /* Firebase web config (public by design; the API key is restricted to this site in Google Cloud Console). */
 const FB_CONFIG={apiKey:"AIzaSyD6D8wWi_da8IdeQ7FVxvdoNC0n5Ezm3wQ",authDomain:"brain-lab-b0e8c.firebaseapp.com",projectId:"brain-lab-b0e8c",storageBucket:"brain-lab-b0e8c.firebasestorage.app",messagingSenderId:"866143565838",appId:"1:866143565838:web:bcd2ee26cb82241e55a45f"};
 async function loadFirestore(){
+  if(window.__NODB)throw new Error('sync off for tests');
   const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
   const [A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-firestore.js')]);
   if(/REPLACE/.test(FB_CONFIG.apiKey))throw new Error('not configured');
@@ -789,10 +799,10 @@ const nflSess=()=>S.sessions.filter(s=>s.mode==='nfl');
 function stats(){
   /* football is extra: its sessions give stars (plus collection prizes) but do not count toward the school streak */
   const ss=S.sessions.filter(s=>s.mode!=='nfl'),stars=totalStars();
-  const days=new Set(ss.map(s=>dayKey(s.ts)));
-  let streak=0;const d=new Date();
-  if(!days.has(dayKey(d)))d.setDate(d.getDate()-1);
-  while(days.has(dayKey(d))){streak++;d.setDate(d.getDate()-1)}
+  const days=new Set(ss.map(s=>dayNo(s.ts)));
+  let streak=0,d=dayNo(nowMs());
+  if(!days.has(d))d--;
+  while(days.has(d)){streak++;d--}
   const items=mathSess().flatMap(s=>(s.items||[]).map(i=>Object.assign({ts:s.ts,mode:s.mode},i)));
   return{stars,streak,items,sessions:ss.length};
 }
@@ -855,7 +865,7 @@ function start(mode,skill){
   const used=new Set(),qs=[];
   types.forEach((t,i)=>{let q,k=0;do{q=makeQ(t,fmts[i]);k++}while(used.has(q.text)&&k<25);used.add(q.text);qs.push(q)});
   S.from='math';
-  run={mode,skill:skill||null,qs,i:0,t0:Date.now(),answers:qs.map(()=>''),review:false,used:qs.map(()=>0),tickAt:Date.now(),started:mode!=='exam'||!timerOn(),
+  run={mode,skill:skill||null,qs,i:0,t0:nowMs(),answers:qs.map(()=>''),review:false,used:qs.map(()=>0),tickAt:nowMs(),started:mode!=='exam'||!timerOn(),
     st:qs.map(()=>({tries:0,hint:false,done:false,ok:false,wrong:[],err:null,msg:null,given:''}))};
   S.view='run';render();
 }
@@ -917,7 +927,7 @@ function drive(stars){
 }
 /* The season: where the real NFL calendar is today. Only the date moves it. */
 function season(now){
-  const D=now||new Date(),t=D.getTime(),S=SEASON,DAY=86400000;
+  const D=now||etNow(),t=D.getTime(),S=SEASON,DAY=86400000;
   const day=new Date(D.getFullYear(),D.getMonth(),D.getDate());
   const md=d=>`${MON[d.getMonth()]} ${d.getDate()}`,n=Math.round((new Date(2027,1,14)-day)/DAY);
   const r={idx:-1,stage:'Offseason',week:0,line:'',sbDays:Math.max(0,n)};
@@ -939,9 +949,9 @@ function season(now){
   return r;
 }
 /* Halloween: automatic seasonal theme, nothing to earn. Runs October 1 to November 2. */
-function halloween(){const d=new Date(),m=d.getMonth();return m===9||(m===10&&d.getDate()<=2)}
+function halloween(){const d=etNow(),m=d.getMonth();return m===9||(m===10&&d.getDate()<=2)}
 function hwMessage(){
-  const d=new Date(),t=new Date(d.getFullYear(),9,31),n=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-t)/86400000);
+  const d=etNow(),t=new Date(d.getFullYear(),9,31),n=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-t)/86400000);
   return n<0?`${-n} day${n===-1?'':'s'} until Halloween. Spooky season is here!`:n===0?'Happy Halloween! Have a spooktacular night.':'Hope you had a spooktacular Halloween!';
 }
 const pumpkinSvg=w=>`<svg viewBox="0 0 40 36" width="${w||40}" aria-hidden="true"><ellipse cx="20" cy="21" rx="17" ry="14" fill="#F57C1F"/><ellipse cx="12" cy="21" rx="8" ry="13.5" fill="#E86A10"/><ellipse cx="28" cy="21" rx="8" ry="13.5" fill="#E86A10"/><ellipse cx="20" cy="21" rx="7" ry="14" fill="#FF9A3C"/><path d="M19 8Q18 3 22 1L23.4 3Q21 5 22 8Z" fill="#3E8E2E"/><path d="M11 19L15 15.6L16.4 21ZM29 19L25 15.6L23.6 21Z" fill="#2A1608"/><path d="M12 26Q20 33 28 26L26 24L23 27L20 24L17 27L14 24Z" fill="#2A1608"/></svg>`;
@@ -1020,7 +1030,7 @@ const FACTS_HW=[
 /* one fact per day, in a scrambled order that does not repeat until the whole pool has been shown */
 function factPool(){return(halloween()?FACTS_HW.concat(FACTS):FACTS).concat(typeof FL_FACTS!=='undefined'?FL_FACTS.map(f=>f[0]+' '+f[1]):[])}
 function factOfDay(offset){
-  const P=factPool(),N=P.length,d=new Date();
+  const P=factPool(),N=P.length,d=etNow();
   const n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000)+(offset||0);
   let k=7;const gcd=(a,b)=>b?gcd(b,a%b):a;while(gcd(k,N)!==1)k++;
   return P[((n*k)%N+N)%N];
@@ -1200,7 +1210,7 @@ function examPill(r){
 function timerBar(r){const l=leftSecs(r);return`<div class="tbar"><i id="tbar" class="${l<=30?'warn':''}" style="width:${Math.round(100*l/EXAM_SECS)}%"></i></div>`}
 setInterval(()=>{
   if(!run)return;
-  const now=Date.now(),d=now-run.tickAt;run.tickAt=now;
+  const now=nowMs(),d=now-run.tickAt;run.tickAt=now;
   if(run.mode!=='exam'||!timerOn()||S.view!=='run'||run.review||!run.started)return;
   const i=run.i;if(run.used[i]>=EXAM_SECS*1000)return;
   run.used[i]=Math.min(EXAM_SECS*1000,run.used[i]+d);
@@ -1501,7 +1511,7 @@ function startSpell(game,words){
   words=words||spPick(S.splist);
   if(!words.length)return;
   S.from='lesson';
-  sp={game,words,i:0,t0:Date.now(),items:game==='hunt'?[]:words.map(w=>spInit(game,w)),hunt:game==='hunt'?huntGen(words):null};
+  sp={game,words,i:0,t0:nowMs(),items:game==='hunt'?[]:words.map(w=>spInit(game,w)),hunt:game==='hunt'?huntGen(words):null};
   if(game==='hunt'&&!sp.hunt){sp=null;return}
   S.view='sprun';render();autoSay();
 }
@@ -1595,7 +1605,7 @@ function finishSpell(){
     });
   const correct=items.filter(i=>i.ok).length;
   const pbk=withPlaybook('spell',sessStars('spell',g==='test'?'test':'play',credit(items)));
-  const sess={ts:Date.now(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-sp.t0)/1000)),stars:pbk.stars,
+  const sess={ts:nowMs(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-sp.t0)/1000)),stars:pbk.stars,
     items:items.map(i=>({t:'sp',g,w:i.w,ok:i.ok,h:i.h,err:i.err}))};
   saveSession(sess);
   const now=stats().stars;
@@ -1697,7 +1707,7 @@ const RULES=[
 ];
 const FB_CHEERS=['Touchdown!','First down!','Great catch!','Nice throw!','Hut hut hike!','Big play!'];
 const NFL_DAILY=3;
-const fbDay=()=>dayKey(Date.now());
+const fbDay=()=>dayKey(nowMs());
 
 /* mastery, collection and prizes are all worked out from saved sessions, so they sync between homes */
 function nflInfo(list){
@@ -1793,7 +1803,7 @@ let nq=null,fd=null,fbres=null;
 function startQuiz(game){
   const qs=game==='rules'?pickRules(8):pickTeamQs(10);
   S.from='fb';
-  nq={game,qs,i:0,t0:Date.now(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,cheer:''}))};
+  nq={game,qs,i:0,t0:nowMs(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,cheer:''}))};
   S.view='nqrun';render();
 }
 function nqPick(idx){
@@ -1813,7 +1823,7 @@ function startDraft(){
     return{div:d,ans,show:shuffle([...ans,...decoys]),sel:new Set(),tries:0,done:false,ok:false,msg:null,bad:[]};
   });
   S.from='fb';
-  fd={rounds,i:0,t0:Date.now()};
+  fd={rounds,i:0,t0:nowMs()};
   S.view='fdrun';render();
 }
 function fdToggle(id){
@@ -1834,7 +1844,7 @@ function finishNfl(game,items,missed){
   const aw=nflAward(items);
   const correct=items.filter(i=>i.ok).length;
   const started=game==='draft'?fd.t0:nq.t0;
-  const sess={ts:Date.now(),mode:'nfl',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-started)/1000)),stars:aw.total,
+  const sess={ts:nowMs(),mode:'nfl',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-started)/1000)),stars:aw.total,
     items:items.map(i=>({t:'nfl',g:game,c:i.c,k:i.k,ok:i.ok,h:i.h||0,err:null}))};
   const hadItems=ITEMS.filter(x=>x.nfl&&nflHas(x.id,infoB)).map(x=>x.id);
   saveSession(sess);
@@ -1963,11 +1973,11 @@ function homeView(){
     <div class="who"><h2>${isBday()?'Happy Birthday, Emmett!':halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
     <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${sessCounts().all.total}</b><span>sessions</span></div></div>
     <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
-  ${halloween()?`<section class="hwcard">${pumpkinSvg(46)}<div><b>Halloween season!</b><span>${hwMessage()}</span></div>${batSvg(34)}</section>`:''}
+  ${holidayHtml()}
   ${playbookHtml()}
   <div class="sect">Pick a subject</div>
   <section class="subjgrid">
-    <button class="subj wide" style="--c1:${SUBCOL.es[0]};--c2:${SUBCOL.es[1]}" data-act="nav" data-v="es"><span class="ribbon">${isThu(Date.now())?'THURSDAY ×6':'×4 STARS'}</span><span class="sic">${ICON.es}</span><h3>Spanish</h3><span class="d">${isThu(Date.now())?'¡Hoy es jueves! Every Spanish star counts 1.5 times today.':'The most stars and yards of any subject. Words, listening and writing.'}</span></button>
+    <button class="subj wide" style="--c1:${SUBCOL.es[0]};--c2:${SUBCOL.es[1]}" data-act="nav" data-v="es"><span class="ribbon">${isThu(nowMs())?'THURSDAY ×6':'×4 STARS'}</span><span class="sic">${ICON.es}</span><h3>Spanish</h3><span class="d">${isThu(nowMs())?'¡Hoy es jueves! Every Spanish star counts 1.5 times today.':'The most stars and yards of any subject. Words, listening and writing.'}</span></button>
     <button class="subj" style="--c1:${SUBCOL.math[0]};--c2:${SUBCOL.math[1]}" data-act="nav" data-v="math"><span class="ribbon">×2 STARS</span><span class="sic">${ICON.math}</span><h3>Math</h3><span class="d">${lastMath?`Last: ${lastMath.correct} of ${lastMath.total} on ${fmtDate(lastMath.ts)}`:'Long division, fractions, mean and more.'}</span></button>
     <button class="subj" style="--c1:${SUBCOL.spell[0]};--c2:${SUBCOL.spell[1]}" data-act="nav" data-v="spell"><span class="ribbon">×2 STARS</span><span class="sic">${ICON.spell}</span><h3>Spelling</h3><span class="d">${esc(cur.name)}: ${mastered} of ${cur.words.length} words mastered.</span></button>
     <button class="subj wide" style="--c1:${SUBCOL.geo[0]};--c2:${SUBCOL.geo[1]}" data-act="nav" data-v="geo"><span class="sic">${ICON.geo}</span><h3>Geography</h3><span class="d">${geoMastered().length} of 50 state capitals mastered. Plus a Florida corner.</span></button>
@@ -1975,6 +1985,7 @@ function homeView(){
   ${counterHtml()}
   ${fbOn()?`<div class="sect">Just for fun</div><section class="modes">${m('fb','football','Football Club',`${nflInfo(nflSess()).teamsM.length} of 32 team cards won. Bonus prizes inside!`)}</section>`:''}
   ${last?`<p class="mute" style="padding-inline:6px">Last activity: ${esc(sessName(last))}, ${last.correct} of ${last.total} on ${fmtDate(last.ts)}.</p>`:''}
+  ${calendarHtml()}
   <section class="spark"><b>Fun fact</b><p>${esc(fact)}</p></section>
   ${affirmHtml()}
   ${tabbar('home')}`;
@@ -2451,7 +2462,7 @@ function geoBuild(game,region){
 }
 function geoStart(game){
   const qs=geoBuild(game,S.geoRegion||'all');
-  geo={game,qs,i:0,t0:Date.now(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null}))};
+  geo={game,qs,i:0,t0:nowMs(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null}))};
   S.from='geo';S.view='grun';render();
 }
 function geoRight(q,v){
@@ -2485,7 +2496,7 @@ function geoFinish(){
   const items=geo.qs.map((q,i)=>{const st=geo.st[i];return{t:'geo',g:geo.game,w:q.k,k:q.fl?'fl':q.state.r,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap0=closetSnap(),mBefore=geoMastered().map(s=>s.ab);
   const pbk=withPlaybook('geo',sessStars('geo',geo.game==='gtest'?'test':'play',credit(items)));
-  const sess={ts:Date.now(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-geo.t0)/1000)),stars:pbk.stars,items};
+  const sess={ts:nowMs(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-geo.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);
   const now=stats().stars;
   geo.result=Object.assign({},sess,{
@@ -2635,7 +2646,6 @@ const ROOMSLOTS={
 };
 const ROOMGROUPS=[['bed','Bed',['sheets','pillow']],['floor','Floor',['rug','laundry','beanbag']],['walls','Walls',['wall','p1','p2','p3','p4','pack','lights','hoop']],['window','Window',['curtains','telescope']],['desk','Desk',['lamp','deskA','deskB','shelf']],['dresser','Dresser',['dresser','globe']]];
 function roomOpt(slot,id){return ROOMSLOTS[slot][1].find(x=>x.id===id)||ROOMSLOTS[slot][1][0]}
-const dayNo=ts=>Math.floor((ts-new Date(ts).getTimezoneOffset()*60000)/86400000);
 function capDay(list,cap){const d={};list.forEach(s=>{const k=dayNo(s.ts);d[k]=(d[k]||0)+(s.stars||0)});return Object.values(d).reduce((n,v)=>n+Math.min(v,cap),0)}
 function bestStreak(){const ds=[...new Set(S.sessions.map(s=>dayNo(s.ts)))].sort((a,b)=>a-b);let best=0,run=0;ds.forEach((d,i)=>{run=i&&d===ds[i-1]+1?run+1:1;if(run>best)best=run});return best}
 const examsGood=()=>S.sessions.filter(s=>s.mode==='exam'&&pct(s)>=85).length;
@@ -2913,7 +2923,7 @@ function subjOf(s){
   if(s.mode==='spell')return(s.items||[]).length&&s.items[0].t==='es'?'es':'spell';/* older Spanish sessions saved before Spanish had its own type */
   return s.mode==='geo'?'geo':s.mode==='nfl'?'nfl':'math';
 }
-const isThu=ts=>new Date(ts).getDay()===4;
+const isThu=ts=>etDate(ts).getDay()===4;
 /* the most stars one subject can add in a day, and all subjects together */
 const SUBCAP={math:100,spell:100,geo:70,es:150,nfl:70},DAYCAP=250;
 const capFor=(sub,ts)=>sub==='es'&&isThu(ts)?220:SUBCAP[sub];
@@ -2931,13 +2941,13 @@ const HELP_CREDIT=0.5;
 const credit=items=>items.reduce((n,i)=>n+(i.ok?(i.h?HELP_CREDIT:1):0),0);
 function sessStars(sub,kind,correct){
   let s=sub==='es'?(kind==='test'?correct*5+10:correct*4+8):sub==='geo'?(kind==='test'?correct*3+8:correct*2+3):(kind==='test'?correct*4+10:correct*2+4);
-  if(sub==='es'&&isThu(Date.now()))s=Math.round(s*1.5);
+  if(sub==='es'&&isThu(nowMs()))s=Math.round(s*1.5);
   if(isBday())s*=2;
   return Math.min(100,Math.round(s));
 }
 /* Today's Playbook: one math session, one spelling session, and one Spanish or geography session in a day earns a bonus */
 const PLAYBOOK_BONUS=25;
-function todaySubs(list){const k=dayNo(Date.now()),set=new Set();(list||S.sessions).forEach(s=>{if(dayNo(s.ts)===k)set.add(subjOf(s))});return set}
+function todaySubs(list){const k=dayNo(nowMs()),set=new Set();(list||S.sessions).forEach(s=>{if(dayNo(s.ts)===k)set.add(subjOf(s))});return set}
 const playbookDone=set=>set.has('math')&&set.has('spell')&&(set.has('es')||set.has('geo'));
 function withPlaybook(sub,stars){
   const had=todaySubs(),now=new Set(had);now.add(sub);
@@ -2946,7 +2956,7 @@ function withPlaybook(sub,stars){
 }
 /* ----- the session counter ----- */
 function sessCounts(){
-  const k=dayNo(Date.now()),c={};
+  const k=dayNo(nowMs()),c={};
   SUBJECTS.forEach(([id])=>c[id]={total:0,today:0});
   S.sessions.forEach(s=>{const o=c[subjOf(s)];o.total++;if(dayNo(s.ts)===k)o.today++});
   c.all={total:S.sessions.length,today:Object.values(c).reduce((n,o)=>n+o.today,0)};
@@ -2965,7 +2975,7 @@ function playbookHtml(){
   const done=playbookDone(set);
   return`<section class="playbook ${done?'done':''}"><div class="row between"><h3>Today's Playbook</h3><span class="pill">${done?'Bonus won!':'+'+PLAYBOOK_BONUS+' bonus stars'}</span></div>
   <div class="pbs">${item(set.has('math'),'Math')}${item(set.has('spell'),'Spelling')}${item(set.has('es')||set.has('geo'),'Spanish or Geography')}</div>
-  <p class="mute">${done?'All three finished today. Great work!':'Finish one session of each to score the bonus.'}${isThu(Date.now())?' <b>Thursday: Spanish stars are worth 1.5 times as much today.</b>':''}</p></section>`;
+  <p class="mute">${done?'All three finished today. Great work!':'Finish one session of each to score the bonus.'}${isThu(nowMs())?' <b>Thursday: Spanish stars are worth 1.5 times as much today.</b>':''}</p></section>`;
 }
 /* ----- prizes: one list for everything Emmett can win ----- */
 function closetOpen(x,inf,stars){
@@ -3322,7 +3332,7 @@ function finish(){
   });
   const correct=items.filter(i=>i.ok).length;
   const pbk=withPlaybook('math',sessStars('math',exam?'test':'play',credit(items)));
-  const sess={ts:Date.now(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-run.t0)/1000)),stars:pbk.stars,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err}))};
+  const sess={ts:nowMs(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-run.t0)/1000)),stars:pbk.stars,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err}))};
   saveSession(sess);
   const now=stats().stars;
   const unlocked=closetNew(snap0);
@@ -3504,9 +3514,9 @@ function act(a,v,d){
       if(r.mode==='exam'){if(r.i<r.qs.length-1){r.i++;render()}else{r.review=true;render()}}
       else if(r.i<r.qs.length-1){r.i++;render()}else finish();
       break;
-    case'begin':r.started=true;r.tickAt=Date.now();render();break;
+    case'begin':r.started=true;r.tickAt=nowMs();render();break;
     case'submitExam':finish();break;
-    default:if(a==='bdaypop')confetti();else if(a==='tdopen')tdOpen();else if(a.startsWith('td'))tdAct(a,v);else v2act(a,v,d);
+    default:if(r6act(a,v,d))break;if(a==='bdaypop')confetti();else if(a==='tdopen')tdOpen();else if(a.startsWith('td'))tdAct(a,v);else v2act(a,v,d);
   }
 }
 
@@ -3604,7 +3614,7 @@ function esBuild(game){
 }
 function esStart(game){
   const qs=esBuild(game);if(!qs.length)return;
-  es={game,qs,i:0,t0:Date.now(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null,placed:[],accent:false}))};
+  es={game,qs,i:0,t0:nowMs(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null,placed:[],accent:false}))};
   S.from='es';S.view='esrun';render();
   if(qs[0].say)sayEs(qs[0].say);
 }
@@ -3643,10 +3653,10 @@ function esFinish(){
   const g=es.game,items=es.qs.map((q,i)=>{const st=es.st[i];return{t:'es',g,w:q.k,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap=closetSnap(),mBefore=esMastered().map(w=>w.id);
   const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',credit(items)));
-  const sess={ts:Date.now(),mode:'es',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-es.t0)/1000)),stars:pbk.stars,items};
+  const sess={ts:nowMs(),mode:'es',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-es.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);S.bump='es';
   const now=stats().stars;
-  es.result=Object.assign({},sess,{pb:pbk.bonus,thu:isThu(Date.now()),
+  es.result=Object.assign({},sess,{pb:pbk.bonus,thu:isThu(nowMs()),
     missed:es.qs.map((q,i)=>({q,st:es.st[i]})).filter(x=>!x.st.ok),
     newly:esMastered().filter(w=>!mBefore.includes(w.id)).map(w=>w.es),
     unlocked:closetNew(snap),
@@ -3656,7 +3666,7 @@ function esFinish(){
 }
 /* ----- screens ----- */
 function esView(){
-  const st=esStats(),m=esMastered().length,cur=esName(),thu=isThu(Date.now());
+  const st=esStats(),m=esMastered().length,cur=esName(),thu=isThu(nowMs());
   const lcard=l=>{const mm=l.words.filter(w=>esLevel(st[w.id])==='m').length,p=Math.round(100*mm/l.words.length);
     return`<button class="skill ${(S.eslesson||ES_LESSONS[0].id)===l.id?'cur':''}" data-act="eslesson" data-v="${l.id}"><b>${esc(l.name)}</b><span class="track2"><span class="fill" style="width:${p}%"></span></span><small>${esc(l.note)} · ${mm} of ${l.words.length} mastered</small></button>`};
   const gm=([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="esgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`;
@@ -4054,6 +4064,7 @@ const WALL_ART=c=>{let s='';
   if(c.banner&&c.banner!=='none')s+=bannerArt(c.banner);
   if(c.board&&c.board!=='none')s+=boardArt(c.board);
   if(c.ceiling&&c.ceiling!=='none')s+=ceilingArt(c.ceiling);
+  if(c.calendar&&c.calendar!=='none')s+=calArt(c.calendar);
   return s};
 const FRONT_ART=c=>{let s='';
   if(c.sill&&c.sill!=='none')s+=`<g transform="translate(357 132) scale(1.5) translate(-357 -132)">${sillArt(c.sill)}</g>`;
@@ -4189,7 +4200,7 @@ const HW_FACTS=[
   'Halloween is on October 31 every year, no matter what day of the week it is.'
 ];
 hwMessage=function(){
-  const d=new Date(),t=new Date(d.getFullYear(),9,31),n=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-t)/86400000);
+  const d=etNow(),t=new Date(d.getFullYear(),9,31),n=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-t)/86400000);
   const head=n<0?`${-n} day${n===-1?'':'s'} until Halloween.`:n===0?'Happy Halloween! Have a spooktacular night.':'Hope you had a spooktacular Halloween!';
   const fact=HW_FACTS[((-n%HW_FACTS.length)+HW_FACTS.length)%HW_FACTS.length];
   return`${head} <b>Fun fact:</b> ${fact}`;
@@ -4202,7 +4213,7 @@ const AFFIRM=[
   ['Curiosity','I ask questions because that is how I learn.'],['Curiosity','I wonder why and how. Great thinkers always do.'],['Curiosity','Every day I can learn something new.'],['Curiosity','I explore ideas the way an astronaut explores space.'],['Curiosity','My mistakes teach me something when I get curious about them.'],['Curiosity','I look closely, I think deeply and I discover.'],['Curiosity','I love learning new words, in English and in Spanish.'],['Curiosity','I wonder how things work, then I find out.'],['Curiosity','There is always more to discover about dinosaurs, space and the world.'],['Curiosity','A good question is as powerful as a good answer.'],['Curiosity','I am curious about people. Everyone has a story.'],['Curiosity','I read, I listen and I stay curious.'],['Curiosity','When I do not understand, I ask, “How can I figure this out?”'],['Curiosity','“I can’t” becomes “I can’t yet” when I stay curious.'],['Curiosity','Learning a new language opens doors around the world.'],['Curiosity','I test ideas and learn from the results, like a scientist.'],['Curiosity','Every new thing I learn makes my brain stronger.'],['Curiosity','I follow my curiosity, so I am never bored.']
 ];
 function affirmOfDay(){
-  const N=AFFIRM.length,d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);
+  const N=AFFIRM.length,d=etNow(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);
   let k=11;const gcd=(a,b)=>b?gcd(b,a%b):a;while(gcd(k,N)!==1)k++;
   return AFFIRM[((n*k)%N+N)%N];
 }
@@ -4216,34 +4227,6 @@ function braceletHtml(kind){
   const list=kind==='math'?badges(stats()):spBadges();
   return`<div class="sect">Your ${kind==='math'?'math':'spelling'} bracelet</div><section class="card"><div class="bracelet">${list.map(b=>`<div class="bead ${b.on?'':'off'}" title="${esc(b.n)}">${b.l}</div>`).join('')}</div>
     <div class="dl">${list.map(b=>`<div class="${b.on?'':'off'}"><b>${b.on?'★ ':''}${esc(b.n)}</b><span>${esc(b.d)}</span></div>`).join('')}</div></section>`;
-}
-/* ----- Emmett's birthday: December 17, 2015 ----- */
-const isBday=()=>{const t=new Date();return t.getMonth()===11&&t.getDate()===17};
-const bdayAge=()=>new Date().getFullYear()-2015;
-const ordinal=n=>n+(n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
-function bdayDaysLeft(){
-  const n=new Date(),today=new Date(n.getFullYear(),n.getMonth(),n.getDate());let t=new Date(n.getFullYear(),11,17);
-  if(t<today)t=new Date(n.getFullYear()+1,11,17);
-  return Math.round((t-today)/86400000);
-}
-const bdayGiftSeen=()=>store.get('bl.bday'+new Date().getFullYear(),false);
-function bdayCard(){
-  if(isBday()){
-    const gid=bdayGift();if(gid)S.bdayGiftId=gid;
-    return`<section class="bday"><div class="bdbal" aria-hidden="true">${[['#E5412D',0],['#F2B705',.2],['#2F6FD0',.1],['#12875B',.3],['#7B3FE4',.15]].map(([c,d])=>`<i style="background:${c};animation-delay:${d}s"></i>`).join('')}</div>
-    <h2>HAPPY ${ordinal(bdayAge()).toUpperCase()} BIRTHDAY, EMMETT!</h2>
-    <p>Today is all about you. <b>Every star counts double all day,</b> there is a birthday gift waiting in your closet and on your shelves, and the whole lab is celebrating.${S.bdayGiftId?` <b>Birthday gift: ${esc(CRIT[S.bdayGiftId].n)} is on your shelf!</b>`:''}${new Date().getDay()===4?' It is even Spanish Thursday. ¡Feliz cumpleaños!':' ¡Feliz cumpleaños!'}</p>
-    <div class="row"><button class="btn" data-act="bdaypop">Pop the confetti</button></div></section>`;
-  }
-  const d=bdayDaysLeft();
-  if(d<=30)return`<section class="bday soon"><div><b>${d} day${d===1?'':'s'} until your ${ordinal(new Date().getFullYear()-2015+(new Date()>new Date(new Date().getFullYear(),11,17)?1:0))} birthday!</b><span>December 17 is going to be a big day in the lab.</span></div></section>`;
-  return'';
-}
-/* the day-of gift: a rare creature, once */
-function bdayGift(){
-  if(!isBday()||bdayGiftSeen())return null;
-  store.set('bl.bday'+new Date().getFullYear(),true);
-  return tdPrize('2pt');
 }
 /* ----- creature collection: Jurassic dinosaurs and Pokémon, drawn as original little figurines ----- */
 const CRIT_SKIN='#3E9B4F';
@@ -4426,10 +4409,232 @@ function shelfDraw(c,extra){
 }
 WGEN.bdayhat={id:'bdayhat',name:'Birthday party hat',slot:'head',s:'party',c1:GC.gold,c2:GC.red};
 ITEMS.push({id:'bdayhat',slot:'head',name:'Birthday party hat',at:0,bday:1});
-const bdayUnlocked=()=>new Date()>=new Date(2026,11,17);
 /* soft depth over the whole room: crown molding and a gentle vignette */
 function roomPolish(){
   return`<defs><radialGradient id="rm-vg" cx=".5" cy=".55" r=".78"><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></radialGradient><linearGradient id="rm-cm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#C9D1D6" stop-opacity=".9"/></linearGradient></defs><rect x="0" y="0" width="780" height="7" fill="url(#rm-cm)"/><rect x="0" y="7" width="780" height="2" fill="rgba(0,0,0,.18)"/><rect width="780" height="330" fill="url(#rm-vg)" pointer-events="none"/>`;
+}
+
+/* ================= Round 6, part A: holidays, calendars and the birthday (all Eastern time) ================= */
+const R6CSS=`
+.holi{display:flex;gap:12px;align-items:center;background:linear-gradient(120deg,var(--c1),var(--c2));color:#fff;border-radius:22px;padding:12px 16px;box-shadow:var(--shadow)}
+.holi .hem{font-size:2rem;line-height:1}.holi div{flex:1;min-width:0}.holi b{display:block;font-size:1.05rem}.holi span{opacity:.95;font-size:.9rem;font-weight:600}
+.holi small{display:block;opacity:.8;font-size:.78rem;margin-top:2px}
+.cal{display:flex;flex-direction:column;gap:10px}
+.calhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.calhead h3{flex:1;text-align:center}
+.calhead button{min-width:44px;min-height:44px;border-radius:14px;background:var(--card2);box-shadow:inset 0 0 0 1px var(--line);font-weight:800;font-size:1.2rem}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.calgrid .dow{font-size:.7rem;font-weight:800;color:var(--mute);text-align:center;text-transform:uppercase;letter-spacing:.06em}
+.calgrid .dow.thu{color:#E5412D}
+.cd{position:relative;min-height:52px;border-radius:12px;background:var(--card2);box-shadow:inset 0 0 0 1px var(--line);padding:4px 2px 3px;display:flex;flex-direction:column;align-items:center;gap:1px;font-weight:700;font-size:.86rem}
+.cd.blank{background:none;box-shadow:none}
+.cd.thu{box-shadow:inset 0 0 0 1.5px rgba(229,65,45,.5)}
+.cd.today{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.cd .em{font-size:1rem;line-height:1}
+.cd .dots{display:flex;gap:2px;margin-top:auto}.cd .dots i{width:6px;height:6px;border-radius:50%;background:var(--good)}
+.cd.today .dots i{background:#fff}
+.cd.fut{opacity:.8}
+.callegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.78rem;color:var(--mute);font-weight:600}
+.calev{display:flex;flex-direction:column;gap:6px;font-size:.92rem}
+.calev div{display:flex;gap:8px;align-items:center}.calev b{min-width:3.4em}
+`;
+(function(){const s=document.createElement('style');s.id='r6css';s.textContent=R6CSS;document.head.appendChild(s)})();
+
+/* ----- date helpers (every date here is an Eastern date) ----- */
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DOWS=['S','M','T','W','T','F','S'];
+const nthDow=(y,m,dow,n)=>{const o=(dow-new Date(y,m,1).getDay()+7)%7;return new Date(y,m,1+o+(n-1)*7)};
+const lastDow=(y,m,dow)=>{const last=new Date(y,m+1,0);return new Date(y,m,last.getDate()-((last.getDay()-dow+7)%7))};
+function easterDate(y){/* the Gregorian Easter algorithm */
+  const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),mo=Math.floor((h+l-7*m+114)/31),da=((h+l-7*m+114)%31)+1;
+  return new Date(y,mo-1,da);
+}
+const daysBetween=(a,b)=>Math.round((new Date(b.getFullYear(),b.getMonth(),b.getDate())-new Date(a.getFullYear(),a.getMonth(),a.getDate()))/86400000);
+
+/* ----- the holidays: each one counts down, then celebrates. Every fact is well known and easy to check. ----- */
+const HOLI=[
+  {id:'newyear',name:"New Year's Day",em:'🎆',c:['#10245A','#C9A227'],win:7,date:y=>new Date(y,0,1),facts:[
+    'January is named for Janus, a Roman god with two faces: one looking back and one looking forward.',
+    'The ball drop in Times Square in New York City began in 1907.',
+    'The Rose Parade in Pasadena, California, has been held on New Year’s Day since 1890.',
+    'People have celebrated the new year for about 4,000 years. The ancient Babylonians held a festival in spring.']},
+  {id:'mlk',name:'Martin Luther King Jr. Day',em:'🕊️',c:['#1B3F8F','#3F6FD8'],win:7,date:y=>nthDow(y,0,1,3),facts:[
+    'Dr. King was born on January 15, 1929, in Atlanta, Georgia.',
+    'He gave his “I Have a Dream” speech on August 28, 1963, in Washington, D.C.',
+    'Dr. King won the Nobel Peace Prize in 1964, when he was 35 years old.',
+    'MLK Day became a federal holiday in 1983 and was first observed in 1986.']},
+  {id:'superbowl',name:'Super Bowl LXI',em:'🏈',c:['#0B3A6E','#C8102E'],win:14,date:y=>y===2027?new Date(2027,1,14):null,facts:[
+    'Super Bowl LXI is at SoFi Stadium in Inglewood, California.',
+    'The first Super Bowl was played on January 15, 1967. The Green Bay Packers beat the Kansas City Chiefs 35 to 10.',
+    'The Lombardi Trophy is made by Tiffany & Co. out of sterling silver. It is about 22 inches tall.',
+    'A touchdown is worth 6 points, a field goal is worth 3, and a safety is worth 2.']},
+  {id:'presidents',name:"Presidents' Day",em:'🇺🇸',c:['#1B2A55','#B31B1B'],win:7,date:y=>nthDow(y,1,1,3),facts:[
+    'George Washington was our first president. He served from 1789 to 1797.',
+    'Abraham Lincoln was born on February 12, 1809.',
+    'Mount Rushmore shows four presidents: Washington, Jefferson, Theodore Roosevelt and Lincoln.',
+    'Washington’s birthday is February 22, and the holiday is on the third Monday of February.']},
+  {id:'stpat',name:"St. Patrick's Day",em:'☘️',c:['#0B5A3B','#2E9E5B'],win:7,date:y=>new Date(y,2,17),facts:[
+    'Chicago has dyed its river green for St. Patrick’s Day since 1962.',
+    'St. Patrick’s Day is March 17, the day Saint Patrick is remembered in Ireland.',
+    'A clover with three leaves is called a shamrock. Four-leaf clovers are rare.']},
+  {id:'easter',name:'Easter',em:'🐣',c:['#4B3FD0','#E8B923'],win:7,date:y=>easterDate(y),facts:[
+    'Easter falls on a different date each year, usually between March 22 and April 25.',
+    'The White House Easter Egg Roll has been held since 1878.',
+    'Easter is always on a Sunday.']},
+  {id:'mothers',name:"Mother's Day",em:'💐',c:['#8A2C5F','#E0568E'],win:7,date:y=>nthDow(y,4,0,2),facts:[
+    'Mother’s Day is the second Sunday in May.',
+    'The first Mother’s Day observances were in 1908, and President Wilson made it a national holiday in 1914.']},
+  {id:'memorial',name:'Memorial Day',em:'🇺🇸',c:['#1B2A55','#B31B1B'],win:7,date:y=>lastDow(y,4,1),facts:[
+    'Memorial Day honors Americans who died while serving in the military.',
+    'It used to be called Decoration Day.',
+    'Memorial Day is the last Monday in May, and it marks the unofficial start of summer.']},
+  {id:'fathers',name:"Father's Day",em:'🧢',c:['#0B3A6E','#2F8FA0'],win:7,date:y=>nthDow(y,5,0,3),facts:[
+    'Father’s Day is the third Sunday in June.',
+    'The first Father’s Day church service was held in Spokane, Washington, in 1910.',
+    'Father’s Day became an official national holiday in 1972.']},
+  {id:'july4',name:'Independence Day',em:'🎇',c:['#1B2A55','#C8102E'],win:10,date:y=>new Date(y,6,4),facts:[
+    'The Declaration of Independence was adopted on July 4, 1776.',
+    'Thomas Jefferson was the main writer of the Declaration of Independence.',
+    'John Adams and Thomas Jefferson both died on July 4, 1826, exactly 50 years after the Declaration.',
+    'The American flag has 50 stars, one for each state.']},
+  {id:'labor',name:'Labor Day',em:'🛠️',c:['#2A3138','#D7A22A'],win:7,date:y=>nthDow(y,8,1,1),facts:[
+    'Labor Day honors working people. It is the first Monday in September.',
+    'The first Labor Day parade was held in New York City in 1882.',
+    'Labor Day became a federal holiday in 1894.']},
+  {id:'halloween',name:'Halloween',em:'🎃',c:['#2B1650','#B4550E'],win:31,date:y=>new Date(y,9,31),facts:null},
+  {id:'veterans',name:'Veterans Day',em:'🎖️',c:['#1B2A55','#B31B1B'],win:7,date:y=>new Date(y,10,11),facts:[
+    'Veterans Day honors everyone who has served in the United States military.',
+    'It is on November 11 because fighting in World War I stopped on the 11th hour of the 11th day of the 11th month in 1918.',
+    'Veterans Day used to be called Armistice Day. It was renamed in 1954.']},
+  {id:'thanksgiving',name:'Thanksgiving',em:'🦃',c:['#7A3B12','#D9822B'],win:30,date:y=>nthDow(y,10,4,4),facts:[
+    'Thanksgiving is the fourth Thursday in November.',
+    'President Lincoln proclaimed a national day of Thanksgiving in 1863.',
+    'The Macy’s Thanksgiving Day Parade in New York City has been held since 1924.',
+    'The Detroit Lions have played on Thanksgiving Day almost every year since 1934.',
+    'The Pilgrims and the Wampanoag shared a three-day harvest feast in 1621.',
+    'Ripe cranberries bounce, which is one way farmers test them.']},
+  {id:'christmas',name:'Christmas',em:'🎄',c:['#0B4A2A','#B31B1B'],win:30,date:y=>new Date(y,11,25),facts:[
+    'Christmas became a federal holiday in the United States in 1870.',
+    'NORAD has tracked Santa’s trip every year since 1955. It began with a phone number printed by mistake.',
+    'Rudolph the Red-Nosed Reindeer first appeared in 1939 in a booklet made for a department store.',
+    'Christmas trees, as we know them, started in Germany hundreds of years ago.']},
+  {id:'nye',name:"New Year's Eve",em:'🥳',c:['#10245A','#C9A227'],win:5,date:y=>new Date(y,11,31),facts:[
+    'The Times Square ball is covered in crystal made by Waterford.',
+    '“Auld Lang Syne,” sung at midnight, comes from a poem by the Scottish poet Robert Burns.',
+    'The ball drop in Times Square began in 1907.']}
+];
+const holidayFacts=h=>h.id==='halloween'?HW_FACTS:h.facts;
+/* the holiday that is happening today or coming up soonest inside its countdown window */
+function nextHoliday(now){
+  now=now||etNow();const y=now.getFullYear(),out=[];
+  [y,y+1].forEach(yy=>HOLI.forEach(h=>{const d=h.date(yy);if(!d)return;const n=daysBetween(now,d);if(n>=0&&n<=h.win)out.push({h,d,n})}));
+  out.sort((a,b)=>a.n-b.n);
+  return out[0]||null;
+}
+function holidayHtml(){
+  const x=nextHoliday();if(!x)return'';
+  const {h,n}=x,F=holidayFacts(h),fact=F[(n+h.id.length)%F.length];
+  if(h.id==='halloween')return`<section class="hwcard">${pumpkinSvg(46)}<div><b>Halloween season!</b><span>${hwMessage()}</span></div>${batSvg(34)}</section>`;
+  const head=n===0?`Happy ${h.name}!`:`${n} day${n===1?'':'s'} until ${h.name}.`;
+  return`<section class="holi" style="--c1:${h.c[0]};--c2:${h.c[1]}"><span class="hem" aria-hidden="true">${h.em}</span><div><b>${esc(head)}</b><span><b style="display:inline">Fun fact:</b> ${esc(fact)}</span></div></section>`;
+}
+/* Halloween keeps its own message in the countdown, then hands over to the next holiday on its own */
+hwMessage=function(){
+  const d=etNow(),n=daysBetween(d,new Date(d.getFullYear(),9,31));
+  const head=n<0?`Hope you had a spooktacular Halloween!`:n===0?'Happy Halloween! Have a spooktacular night.':`${n} day${n===1?'':'s'} until Halloween.`;
+  const F=HW_FACTS;return`${head} <b>Fun fact:</b> ${F[((n%F.length)+F.length)%F.length]}`;
+};
+
+/* ----- Emmett's birthday, December 17. The year he was born is kept in his private profile, not in the code. ----- */
+const birthYear=()=>{const b=store.get('bl.birth',null);return/^\d{4}$/.test(String(b))?Number(b):null};
+const isBday=()=>{const t=etNow();return t.getMonth()===11&&t.getDate()===17};
+const isBelated=()=>{const t=etNow();return t.getMonth()===11&&t.getDate()>=18&&t.getDate()<=24};
+const bdayAge=()=>{const y=birthYear();return y?etNow().getFullYear()-y:null};
+const ordinal=n=>n+(n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
+function bdayDaysLeft(){
+  const n=etNow(),today=new Date(n.getFullYear(),n.getMonth(),n.getDate());let t=new Date(n.getFullYear(),11,17);
+  if(t<today)t=new Date(n.getFullYear()+1,11,17);
+  return Math.round((t-today)/86400000);
+}
+const bdayClaimed=y=>(store.get('bl.by',[])).includes(y);
+function bdayCard(){
+  const y=etNow().getFullYear(),bornY=birthYear(),next=bornY?ordinal(y-bornY+(etNow()>new Date(y,11,17)?1:0)):'next';
+  if(isBday()||isBelated()){
+    const gid=bdayGift();if(gid)S.bdayGiftId=gid;
+    const ageTxt=bdayAge()?` ${ordinal(bdayAge()).toUpperCase()}`:'';
+    const gift=S.bdayGiftId?` <b>Birthday gift: ${esc(CRIT[S.bdayGiftId].n)} is on your shelf!</b>`:'';
+    return`<section class="bday"><div class="bdbal" aria-hidden="true">${[['#E5412D',0],['#F2B705',.2],['#2F6FD0',.1],['#12875B',.3],['#7B3FE4',.15]].map(([c,d])=>`<i style="background:${c};animation-delay:${d}s"></i>`).join('')}</div>
+    <h2>${isBday()?`HAPPY${ageTxt} BIRTHDAY, EMMETT!`:`BELATED${ageTxt} BIRTHDAY, EMMETT!`}</h2>
+    <p>${isBday()?`Today is all about you. <b>Every star counts double all day,</b> there is a birthday gift waiting in your closet and on your shelves, and the whole lab is celebrating.${gift}${etNow().getDay()===4?' It is even Spanish Thursday. ¡Feliz cumpleaños!':' ¡Feliz cumpleaños!'}`:`The party is not over! Your birthday gift and your birthday hat stay with you all week.${gift} ¡Feliz cumpleaños!`}</p>
+    <div class="row"><button class="btn" data-act="bdaypop">Pop the confetti</button></div></section>`;
+  }
+  const d=bdayDaysLeft();
+  if(d<=30)return`<section class="bday soon"><div><b>${d} day${d===1?'':'s'} until your ${next} birthday!</b><span>December 17 is going to be a big day in the lab.</span></div></section>`;
+  return'';
+}
+/* the gift: a rare creature, once a year, on the birthday or any day that week */
+function bdayGift(){
+  if((!isBday()&&!isBelated())||bdayClaimed(etNow().getFullYear()))return null;
+  store.set('bl.by',[...store.get('bl.by',[]),etNow().getFullYear()]);
+  const id=tdPrize('2pt');touchProfile();return id;
+}
+const bdayUnlocked=()=>etNow()>=new Date(2026,11,17);
+
+/* ----- the calendar on the home screen ----- */
+function holidaysOfMonth(y,m){
+  const out=new Map();
+  HOLI.forEach(h=>{const d=h.date(y);if(d&&d.getMonth()===m)out.set(d.getDate(),{n:h.name,em:h.em})});
+  if(m===11)out.set(17,{n:'Emmett’s birthday',em:'🎂'});
+  return out;
+}
+function calendarHtml(){
+  const now=etNow(),off=S.calOff||0,first=new Date(now.getFullYear(),now.getMonth()+off,1),y=first.getFullYear(),m=first.getMonth();
+  const dim=new Date(y,m+1,0).getDate(),lead=first.getDay(),cur=y===now.getFullYear()&&m===now.getMonth();
+  const did={};S.sessions.forEach(s=>{if(subjOf(s)==='nfl')return;const d=etDate(s.ts);if(d.getFullYear()===y&&d.getMonth()===m)did[d.getDate()]=(did[d.getDate()]||0)+1});
+  const hol=holidaysOfMonth(y,m);
+  let cells='';
+  for(let i=0;i<lead;i++)cells+='<div class="cd blank"></div>';
+  for(let d=1;d<=dim;d++){
+    const dow=(lead+d-1)%7,h=hol.get(d),today=cur&&d===now.getDate();
+    const dots=Math.min(3,did[d]||0);
+    cells+=`<div class="cd ${dow===4?'thu':''} ${today?'today':''}" ${h?`title="${esc(h.n)}"`:''} aria-label="${MONTHS[m]} ${d}${h?', '+esc(h.n):''}${did[d]?', '+did[d]+' session'+(did[d]>1?'s':''):''}"><span>${d}</span>${h?`<span class="em">${h.em}</span>`:''}${dots?`<span class="dots">${'<i></i>'.repeat(dots)}</span>`:''}</div>`;
+  }
+  const evs=[...hol.entries()].sort((a,b)=>a[0]-b[0]).map(([d,h])=>`<div><b>${MONTHS[m].slice(0,3)} ${d}</b><span>${h.em} ${esc(h.n)}</span></div>`).join('');
+  const thu=[];for(let d=1;d<=dim;d++)if((lead+d-1)%7===4)thu.push(d);
+  return`<section class="card cal"><div class="calhead"><button data-act="calmo" data-v="-1" aria-label="Previous month">‹</button><h3>${MONTHS[m]} ${y}</h3><button data-act="calmo" data-v="1" aria-label="Next month">›</button></div>
+  <div class="calgrid">${DOWS.map((c,i)=>`<div class="dow ${i===4?'thu':''}">${c}</div>`).join('')}${cells}</div>
+  <div class="callegend"><span>● a day you practiced</span><span style="color:#E5412D">▭ Thursday: Spanish stars ×1.5</span></div>
+  ${evs?`<div class="calev">${evs}</div>`:''}
+  ${off?`<div class="row"><button class="btn quiet" data-act="calmo" data-v="0">Back to this month</button></div>`:''}</section>`;
+}
+
+/* ----- the calendar on the bedroom wall ----- */
+const CALSKIN={plain:['#1B3F8F','#F4F7FA'],football:['#2E8B4E','#F4F7FA'],dino:['#3E9B4F','#FFF8E1'],space:['#1B2A55','#E8EEF8']};
+function calArt(skin){
+  const k=CALSKIN[skin]||CALSKIN.plain,now=etNow(),y=now.getFullYear(),m=now.getMonth(),dim=new Date(y,m+1,0).getDate(),lead=new Date(y,m,1).getDay();
+  const X=444,Y=66,W=64,H=66,did=new Set(),cs=(W-10)/6,rs=7.8;
+  S.sessions.forEach(s=>{const d=etDate(s.ts);if(d.getFullYear()===y&&d.getMonth()===m)did.add(d.getDate())});
+  let g=`<g filter="url(#f-sh)"><rect x="${X}" y="${Y}" width="${W}" height="${H}" rx="3" fill="${k[1]}" stroke="rgba(0,0,0,.25)" stroke-width=".8"/></g><rect x="${X}" y="${Y}" width="${W}" height="13" rx="3" fill="${k[0]}"/><rect x="${X}" y="${Y+8}" width="${W}" height="5" fill="${k[0]}"/>`;
+  g+=`<circle cx="${X+11}" cy="${Y-1}" r="1.6" fill="#C9D1D6"/><circle cx="${X+W-11}" cy="${Y-1}" r="1.6" fill="#C9D1D6"/>`;
+  g+=TX(X+W/2,Y+9.4,MONTHS[m].slice(0,3).toUpperCase()+' '+y,'#fff',5.4);
+  DOWS.forEach((c,i)=>{g+=TX(X+5+i*cs,Y+19.5,c,i===4?'#C8102E':'#5A6B7A',3.6)});
+  for(let d=1;d<=dim;d++){
+    const i=lead+d-1,cx=X+5+(i%7)*cs,cy=Y+26.5+Math.floor(i/7)*rs;
+    if(d===now.getDate())g+=`<circle cx="${cx}" cy="${cy-1.2}" r="3.5" fill="#D62839"/>`;
+    g+=TX(cx,cy,String(d),d===now.getDate()?'#fff':'#1B2A3A',3.7);
+    if(did.has(d)&&d!==now.getDate())g+=`<circle cx="${cx}" cy="${cy+1.5}" r=".9" fill="#12875B"/>`;
+  }
+  return g;
+}
+ROOM_DEFAULT.calendar='plain';
+ROOMSLOTS.calendar=['Wall calendar',[{id:'plain',name:'Classic',need:null,c:'#1B3F8F'},{id:'football',name:'Football season',need:null,c:'#2E8B4E'},{id:'dino',name:'Dino',need:null,c:'#3E9B4F'},{id:'space',name:'Space',need:null,c:'#1B2A55'}]];
+ROOMGROUPS[2][2].push('calendar');
+
+function r6act(a,v,d){
+  switch(a){
+    case'calmo':S.calOff=v==='0'?0:(S.calOff||0)+Number(v);render();return true;
+  }
+  return false;
 }
 
 render();
