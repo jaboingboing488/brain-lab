@@ -1,0 +1,18 @@
+const R=window.RESULT;R.fail=[];S.home='iPad';
+const spoken=[];window.speechSynthesis.speak=u=>spoken.push([u.lang,u.text]);window.speechSynthesis.cancel=()=>{};
+const bars=[];
+start('smart');bars.push(['math',!!document.getElementById('r6read')]);act('r6read');R.mathSpoken=spoken.splice(0).map(x=>x[1]).join(' | ').slice(0,200);
+S.view='home';geoStart('pcap');bars.push(['geo',!!document.getElementById('r6read')]);act('r6read');R.geoSpoken=spoken.splice(0).map(x=>x[1]).join(' | ').slice(0,160);
+S.view='home';esStart('es2en');bars.push(['es',!!document.getElementById('r6read')]);act('r6read');R.esSpoken=spoken.splice(0).map(x=>x[0]+':'+x[1]);
+S.view='home';esStart('en2es');act('r6read');R.es2=spoken.splice(0).map(x=>x[0]+':'+x[1]);
+S.view='home';startSpell('scramble');bars.push(['spell',!!document.getElementById('r6read')]);act('r6read');R.spSpoken=spoken.splice(0).map(x=>x[1]);
+S.view='home';startSpell('spot');bars.push(['spot',!!document.getElementById('r6read')]);
+S.view='home';startQuiz('quiz');bars.push(['nq',!!document.getElementById('r6read')]);act('r6read');R.nqSpoken=spoken.splice(0).length;
+act('r6auto');R.auto=S.settings.autoRead;
+S.view='home';start('smart');R.autoRead=spoken.length;
+R.bars=bars;
+if(bars.some(b=>!b[1]))R.fail.push('missing read button '+JSON.stringify(bars));
+if(!R.mathSpoken.includes('times')&&!R.mathSpoken.length)R.fail.push('math spoken');
+if(!R.esSpoken.some(x=>x.startsWith('es')))R.fail.push('spanish voice for the Spanish word');
+if(R.autoRead<1)R.fail.push('auto read');
+R.mathSay=mathSay('Find 3/4 + 1/2 × 6 and the GCF of 12 and 18 (12 ÷ 5 = 2 R 2).');

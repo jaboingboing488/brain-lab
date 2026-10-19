@@ -1,0 +1,24 @@
+name: checks
+
+# Runs on every push and pull request: syntax, privacy checks, the question generator and the
+# in-browser tests (scoring, sync merge, holidays, birthday, read aloud, phone layouts).
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Show the Chrome that is already on the runner
+        run: google-chrome --version
+      - name: Run every check
+        run: python tests/run_checks.py

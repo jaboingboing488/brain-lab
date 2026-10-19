@@ -1,0 +1,5 @@
+# nothing private belongs in this repo: the family link and the real rules live outside it
+private/
+*.pyc
+__pycache__/
+.DS_Store
