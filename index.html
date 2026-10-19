@@ -4816,6 +4816,8 @@ async function initDb(){
   }catch(e){S.sync='local';render()}
 }
 /* one time: bring the sessions and profile from the old, open location into the private space */
+let famProfileResolve=null;
+const famProfileKnown=new Promise(res=>{famProfileResolve=res});
 async function migrateOld(){
   if(store.get('bl.mig',false)||!db||!db.oldSessions||window.__MIGRATING)return;
   window.__MIGRATING=true;
@@ -4823,7 +4825,9 @@ async function migrateOld(){
     const os=await db.oldSessions();
     os.docs.forEach(d=>{if(!sessCache.has(d.id)){const s=Object.assign({id:d.id},d.data());db.save(s).catch(()=>{})}});
     const op=await db.oldProfile();
-    if(op.exists()&&mergeProfile(op.data()))touchProfile();
+    /* a profile already saved in the family space is newer and wins: the old one is only used to start an empty space */
+    const haveNew=await Promise.race([famProfileKnown,new Promise(res=>setTimeout(()=>res(false),4000))]);
+    if(!haveNew&&op.exists()&&mergeProfile(op.data()))touchProfile();
     store.set('bl.mig',true);
   }catch(e){/* the old location is closed or empty: nothing to move */}
   window.__MIGRATING=false;
@@ -4882,6 +4886,7 @@ const normP=d=>JSON.stringify(d,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)
 function initProfileSync(){
   if(!db.profile)return;
   db.profile(snap=>{
+    if(famProfileResolve){famProfileResolve(snap.exists());famProfileResolve=null}
     if(!snap.exists()){if(!store.get('bl.profileTs',0))store.set('bl.profileTs',Date.now());pushProfile();return}
     const p=snap.data(),ch=mergeProfile(p);
     if(ch&&PROFILE_SAFE.includes(S.view))render();
