@@ -1594,7 +1594,7 @@ function finishSpell(){
       return{w:it.w,ok,h:it.helped?1:0,err:!ok&&(g==='cards'||g==='sent')&&it.given?spErr(it.given,it.w):null,given:it.given||''};
     });
   const correct=items.filter(i=>i.ok).length;
-  const pbk=withPlaybook('spell',sessStars('spell',g==='test'?'test':'play',correct));
+  const pbk=withPlaybook('spell',sessStars('spell',g==='test'?'test':'play',credit(items)));
   const sess={ts:Date.now(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-sp.t0)/1000)),stars:pbk.stars,
     items:items.map(i=>({t:'sp',g,w:i.w,ok:i.ok,h:i.h,err:i.err}))};
   saveSession(sess);
@@ -1730,7 +1730,7 @@ function hotCount(items){let run=0,n=0;items.forEach(i=>{if(i.ok&&!i.h){run++;if
 function nflAward(items){
   const today=nflSess().filter(s=>dayKey(s.ts)===fbDay());
   if(today.length>=NFL_DAILY)return{parts:[],total:0,capped:true};
-  const correct=items.filter(i=>i.ok).length,parts=[['Right answers',correct],['Kickoff bonus',2]];
+  const correct=items.filter(i=>i.ok).length,parts=[['Right answers',Math.round(credit(items))],['Kickoff bonus',2]];
   if(items.length>=4&&items.every(i=>i.ok&&!i.h))parts.push(['Perfect game',5]);
   const hot=hotCount(items);if(hot)parts.push(['Hot streak x'+hot,hot*2]);
   if(!today.length)parts.push(['Daily double',3]);
@@ -2072,7 +2072,7 @@ function resultsView(){
   <div><div class="bigscore"><span style="color:var(--gold)">★</span> +${s.stars}</div><span class="mute">stars earned</span></div></div>
   ${podiumSvg(p)}
   ${s.items.filter(i=>i.to).length?`<p class="mute">${s.items.filter(i=>i.to).length} question${s.items.filter(i=>i.to).length>1?'s':''} ran out of time.</p>`:''}
-  ${s.items.filter(i=>i.ok&&i.h).length?`<p class="mute">${s.items.filter(i=>i.ok&&i.h).length} of your right answers used a hint or a second try.</p>`:''}
+  ${s.items.filter(i=>i.ok&&i.h).length?`<p class="mute">${s.items.filter(i=>i.ok&&i.h).length} of your right answers used a hint or a second try, so they earned half the stars.</p>`:''}
   <p>${msg}</p>
   ${wins.map(w=>`<div class="fb good">${esc(w)}</div>`).join('')}
   <section class="spark"><b>Fun fact</b><p>${esc(fact)}</p></section>
@@ -2253,7 +2253,7 @@ function spResultsView(){
   <section class="card"><h2>${test?'Test complete!':'Nice practice!'}</h2>
   <div class="row" style="gap:22px"><div><div class="bigscore">${s.correct}/${s.total}</div><span class="mute">${p}% right</span></div>
   <div><div class="bigscore"><span style="color:var(--gold)">★</span> +${s.stars}</div><span class="mute">stars earned</span></div></div>
-  ${helped?`<p class="mute">${helped} of your right words used a hint or a second try.</p>`:''}
+  ${helped?`<p class="mute">${helped} of your right words used a hint or a second try, so they earned half the stars.</p>`:''}
   <p>${msg}</p>${wins.map(w=>`<div class="fb good">${esc(w)}</div>`).join('')}
   <section class="spark"><b>Fun fact</b><p>${esc(fact)}</p></section>
   ${missed.length?`<h3>Words to look at again</h3>${missed.map(i=>`<div class="card" style="box-shadow:inset 0 0 0 1px var(--line);padding:14px">${i.given?diffHtml(i.given,i.w):`<div class="diff"><div><small>Word</small><br>${esc(i.w)}</div></div>`}${i.err?`<p class="mute">${esc(SP_ERR[i.err]||'')}</p>`:''}</div>`).join('')}`:'<div class="fb good">Every word right. Perfect!</div>'}
@@ -2485,7 +2485,7 @@ function geoSubmit(v){
 function geoFinish(){
   const items=geo.qs.map((q,i)=>{const st=geo.st[i];return{t:'geo',g:geo.game,w:q.k,k:q.fl?'fl':q.state.r,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap0=closetSnap(),mBefore=geoMastered().map(s=>s.ab);
-  const pbk=withPlaybook('geo',sessStars('geo',geo.game==='gtest'?'test':'play',correct));
+  const pbk=withPlaybook('geo',sessStars('geo',geo.game==='gtest'?'test':'play',credit(items)));
   const sess={ts:Date.now(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-geo.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);
   const now=stats().stars;
@@ -2927,11 +2927,14 @@ const SCHOOL=['math','spell','es','geo'];
 const schoolStars=()=>starsFrom(S.sessions,SCHOOL);
 const totalStars=()=>starsFrom(S.sessions)+nflInfo(nflSess()).bonus;
 /* stars for one finished session: math and spelling pay about double what they used to; Spanish pays the most */
+/* a right answer is worth full credit on the first try with no hint; help (a hint or a second try) earns half */
+const HELP_CREDIT=0.5;
+const credit=items=>items.reduce((n,i)=>n+(i.ok?(i.h?HELP_CREDIT:1):0),0);
 function sessStars(sub,kind,correct){
   let s=sub==='es'?(kind==='test'?correct*5+10:correct*4+8):sub==='geo'?(kind==='test'?correct*3+8:correct*2+3):(kind==='test'?correct*4+10:correct*2+4);
   if(sub==='es'&&isThu(Date.now()))s=Math.round(s*1.5);
   if(isBday())s*=2;
-  return Math.min(100,s);
+  return Math.min(100,Math.round(s));
 }
 /* Today's Playbook: one math session, one spelling session, and one Spanish or geography session in a day earns a bonus */
 const PLAYBOOK_BONUS=25;
@@ -3319,7 +3322,7 @@ function finish(){
     return{t:q.type,k:q.kind,ok:st.ok,h:st.helped?1:0,err:st.err||(hintOnly?'Needed a hint: '+TYPES[q.type].label:null),given:st.given};
   });
   const correct=items.filter(i=>i.ok).length;
-  const pbk=withPlaybook('math',sessStars('math',exam?'test':'play',correct));
+  const pbk=withPlaybook('math',sessStars('math',exam?'test':'play',credit(items)));
   const sess={ts:Date.now(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-run.t0)/1000)),stars:pbk.stars,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err}))};
   saveSession(sess);
   const now=stats().stars;
@@ -3641,7 +3644,7 @@ function esTilePlace(i){
 function esFinish(){
   const g=es.game,items=es.qs.map((q,i)=>{const st=es.st[i];return{t:'es',g,w:q.k,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap=closetSnap(),mBefore=esMastered().map(w=>w.id);
-  const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',correct));
+  const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',credit(items)));
   const sess={ts:Date.now(),mode:'es',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-es.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);S.bump='es';
   const now=stats().stars;

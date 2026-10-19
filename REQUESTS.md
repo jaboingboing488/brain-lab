@@ -141,3 +141,6 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 - Preseason end date is unconfirmed, so it runs until the Sep 9 kickoff.
 - Three leaked test sessions in Firestore `sessions` ("Mom's home") must be deleted by the owner; the rules block client deletes.
 - Not tested: iPad/Safari, light mode, live-site sync after the poster 4 room setting was added.
+
+## Round 6
+- Built: a right answer that used a hint or a second try earns half the stars of a clean first-try answer (math, spelling, Spanish, geography, football). Mastery is unchanged.
