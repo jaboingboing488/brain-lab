@@ -25,28 +25,34 @@ A practice and exam-simulator site for a 5th grader. One file, no build step. Ap
 ## Florida fact sources
 Britannica, EBSCO, World Atlas, VisitFlorida, Wikipedia (St. Augustine, counties, Britton Hill, St. Johns River, Lake Okeechobee). Kennedy Space Center and Apollo 11 (July 16, 1969) are standard NASA history.
 
-## Privacy
+## Privacy and the family space
 
-No last name, school, teacher or grades in this repo. The only personal detail is the first name used in the greeting. The sync database holds scores, skill names, mistake labels and the avatar choices, and it is readable by anyone who knows the project's address, so it deliberately holds nothing identifying.
+Nothing identifying is in this repo: no last name, school, teacher, grades or birth year (the birth year lives in the private profile and arrives through the family link). Practice history and the profile are saved under a long secret path in Firestore, `fam/<secret>/...`. Only devices opened through the family link know the secret, and the real key is not in this repo (`firestore.rules` holds the placeholder `__FAMILY_KEY__`).
+
+The family link looks like `https://jaboingboing488.github.io/brain-lab/#k=<secret>&b=<birth year>`. Open it once on each device. On an iPad Home Screen app, paste it in Parent area > Settings > "Link this device". The old open `sessions` and `profile` collections are read-only until the one-time move into the family space is done; then delete them in the Firebase console.
 
 ## Files
 
 | File | What it is |
 |---|---|
 | `index.html` | The whole app |
-| `firestore.rules` | Security rules: sessions are add-only with validated fields, one profile document, everything else denied |
-| `tests/generator.test.js` | Checks the question generator: `node tests/generator.test.js` |
+| `sw.js`, `manifest.webmanifest`, icons | Installable app and offline use |
+| `firestore.rules` | Security rules with the `__FAMILY_KEY__` placeholder. The ready-to-paste version is kept outside the repo. |
+| `tools/weekly-report.js` | Builds the weekly report and the monthly CSV for the Drive log |
+| `tests/run_checks.py` | Runs every check: `python tests/run_checks.py` (needs Python, Node and Chrome) |
+| `tests/harness.py`, `tests/browser/*.js` | Run a script inside the real page in headless Chrome, with the date pretended and the cloud switched off |
+| `.github/workflows/checks.yml` | Runs the checks on every push |
 
 ## Setup
 
 1. Host `index.html` on GitHub Pages (Settings → Pages → `main` / root).
 2. Create a Firebase project, add a Firestore database, register a web app, and paste its config into `FB_CONFIG` near the top of the script in `index.html`.
-3. Publish `firestore.rules` in the Firebase console (Firestore Database → Rules).
+3. Put the real family key in place of `__FAMILY_KEY__` in a private copy of `firestore.rules` and publish that copy in the Firebase console (Firestore Database → Rules). Never commit the private copy.
 4. Restrict the Firebase API key to the site's address in Google Cloud Console (Credentials → the browser key → Websites).
 
 ## Monthly review (every 30 days)
 
-Check that the site loads and says Synced, Firebase usage is inside the free Spark limits, and that Firestore holds only `sessions` and `profile`.
+Check that the site loads and says Synced, Firebase usage is inside the free Spark limits, that Firestore holds only `fam/<secret>`, and that the weekly email and the Drive log arrived.
 
 ## Fun fact sources
 

@@ -142,5 +142,33 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 - Three leaked test sessions in Firestore `sessions` ("Mom's home") must be deleted by the owner; the rules block client deletes.
 - Not tested: iPad/Safari, light mode, live-site sync after the poster 4 room setting was added.
 
-## Round 6
-- Built: a right answer that used a hint or a second try earns half the stars of a clean first-try answer (math, spelling, Spanish, geography, football). Mastery is unchanged.
+## Round 6 (Oct 18)
+
+| Request | Status |
+|---|---|
+| A right answer on the second try or with a hint earns less | Built: half the stars (math, spelling, Spanish, geography, football). Mastery is unchanged. |
+| No skipping questions | Built: the Skip button is gone. |
+| Each activity scores once a day | Built: later rounds of the same activity are real practice but add no stars; mode cards show "Scored today". Tests still count toward mastery. |
+| Harry Potter grade-4 spelling list if no school list by Nov 4 | Built: 20 words, switches on by itself on Nov 4 2026 unless a school list was added |
+| Two homes must not overwrite each other | Built: every setting keeps its own change time; creatures, lists and kicks merge instead of replacing |
+| Session history without slowing things down | Built: the full history is kept on the device; each visit reads only the last 7 days from the cloud (a full refresh every 30 days). The old 1000-session limit that could drop stars is gone. |
+| Spaced review for every section | Built: math, spelling, Spanish and geography. Misses and hints come back after 1, 3, 7, 14 and 30 days, until five clean answers in a row. |
+| Adaptive math | Built: three levels per skill from the last 8 answers; practice only, exams stay standard |
+| "What you learned" screen after each session | Built |
+| Read aloud for every question | Built: English or Spanish voice, plus an auto-read switch |
+| Eastern time | Built: all days, Thursdays, the birthday and streaks use America/New_York |
+| Calendar in the room and on Home | Built: a wall calendar (4 free looks) and a month calendar with holidays and practice days |
+| Holidays: Thanksgiving, birthday, Christmas, New Year and the rest | Built: 17 countdowns with fun facts; the card hands over by itself. Belated birthday week Dec 18 to 24. |
+| Weekly progress email and a Google Sheets log in Drive | Built: report script and Drive log. The routine needs one paste of the family key (see private notes). |
+| Privacy and security | Built: private family space behind a secret link; the birth year left the public code. Rules must be published. |
+| Updated star banners, hint design, Today's Mission | Built: banners say "about", hints one step at a time or one wrong answer crossed out, the map hint glows six states |
+| GitHub Action for checks | Built: `.github/workflows/checks.yml` runs `tests/run_checks.py` |
+| Phone and tablet | Checked at 320, 360 and 820 px widths; fixed a Halloween-season bug that made the whole page bold and tight; More tab on phones; installable app with offline support |
+| Housekeeping | Old build scripts and test copies moved to `tools/archive`; nothing points at temp folders any more |
+
+## Open items
+
+- Season dates need a yearly update (`SEASON` in the code).
+- Not tested on a real iPad or iPhone; only in Chrome at phone and tablet sizes.
+- The GitHub Action has not run on GitHub yet.
+- The old open `sessions` and `profile` collections stay readable until the owner deletes them in the console after the move.
