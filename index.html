@@ -1289,7 +1289,31 @@ const SP_GAMES={
 };
 const SP_ERR={blank:'Left blank',missing:'Left out a letter',extra:'Added an extra letter',swap:'Swapped two letters',vowel:'Wrong vowel',otherl:'Wrong letter',double:'Doubled a letter the wrong way',ie:'Mixed up ie and ei',ending:'Wrong word ending'};
 const customLists=()=>store.get('bl.lists',[]);
-const spLists=()=>LESSONS.concat(customLists());
+/* ================= Round 6, part H: a Harry Potter word list for fourth grade. It appears on November 4 unless the school list has been added. ================= */
+const HP_FROM=new Date(2026,10,4);
+const HP_LESSON={id:'hp4',name:'Wizarding words',note:'Grade 4 words from the Harry Potter books',pat:null,
+  rule:['These are words you find in the Harry Potter books. Many are real, everyday English words with a bit of magic: potion, dungeon, courage.','Break the long ones into chunks: mys-te-ri-ous, in-vis-i-ble, tour-na-ment, pro-phe-cy.'],
+  tip:'Say the word the silly way on purpose, like cor-ri-dor or mis-chief, then write it. Say the tricky chunk out loud as you write it.',
+  words:['wizard','potion','cauldron','broomstick','dungeon','corridor','cloak','platform','enchanted','mysterious','invisible','creature','dragon','goblin','tournament','champion','courage','prophecy','mischief','adventure']};
+Object.assign(SENT,{
+  wizard:'The wizard raised his wand and the lights flickered.',potion:'She stirred the bubbling potion with a long spoon.',cauldron:'A big iron cauldron sat over the fire.',
+  broomstick:'The player zoomed across the field on a broomstick.',dungeon:'The dungeon was cold, dark and damp.',corridor:'We hurried down the long corridor to class.',
+  cloak:'He pulled his cloak tight against the wind.',platform:'The train waited at the platform.',enchanted:'They found an enchanted forest full of glowing trees.',
+  mysterious:'A mysterious letter arrived in the mail.',invisible:'The magic cloak made him invisible.',creature:'A strange creature crept out of the shadows.',
+  dragon:'The dragon curled up on a pile of gold.',goblin:'The goblin counted the coins twice.',tournament:'Four schools joined the big tournament.',
+  champion:'She was the champion of the whole school.',courage:'It takes courage to stand up for a friend.',prophecy:'The old prophecy told of a great battle.',
+  mischief:'The twins were always up to mischief.',adventure:'Every good book is an adventure.'
+});
+/* the list switches on by itself on or after November 4, 2026, but only if no school list has been added by then */
+function hpOn(){
+  if(store.get('bl.hp',false))return true;
+  if(etNow()<HP_FROM||customLists().length)return false;
+  store.set('bl.hp',true);
+  if(S.splist===LESSONS[0].id){S.splist=HP_LESSON.id;store.set('bl.splist',HP_LESSON.id);setTimeout(touchProfile,0)}
+  return true;
+}
+
+const spLists=()=>LESSONS.concat(hpOn()?[HP_LESSON]:[],customLists());
 const spellSess=()=>S.sessions.filter(s=>subjOf(s)==='spell');
 const allWords=()=>[...new Set(spLists().flatMap(l=>l.words))];
 const sentOf=w=>SENT[w]||null;
@@ -2047,7 +2071,7 @@ function spellView(){
   <p class="mute" style="padding-inline:6px">All the games use the words from <b>${esc(cur.name)}</b>. Pick a different lesson below to change the words.</p>
   <section class="modes">${Object.entries(SP_GAMES).map(([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="spgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`).join('')}</section>
   <div class="sect">Lessons</div>
-  <section class="skills">${LESSONS.map(card).join('')}</section>
+  <section class="skills">${LESSONS.concat(hpOn()?[HP_LESSON]:[]).map(card).join('')}</section>
   ${custom.length?`<div class="sect">My lists</div><section class="skills">${custom.map(card).join('')}</section>`:''}
   <div class="sect">Mixed practice</div>
   <section class="modes">
