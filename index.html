@@ -5075,6 +5075,8 @@ ICON.more='<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2" fill="currentCo
 (function(){const s=document.createElement('style');s.id='r6cssM';s.textContent=`
 .tab.more{display:none}
 @media(max-width:560px){.tab.wide{display:none}.tab.more{display:flex}.tabbar .tab{font-size:.62rem}}
+@media(max-width:400px){.cnt .cn{letter-spacing:.04em;overflow-wrap:anywhere}.choice{font-size:1.3rem;padding:12px 6px;overflow-wrap:anywhere}.sz small,.sz b{white-space:normal;overflow-wrap:anywhere}}
+@media(max-width:360px){.tabbar .tab{font-size:.52rem;min-width:0;padding-inline:0}.tabbar .tab span{max-width:100%;overflow:hidden}.choice{font-size:1.1rem}.sz b{font-size:.62rem}.sz small{font-size:.54rem}}
 `;document.head.appendChild(s)})();
 function moreView(){
   const m=(k,ic,ti,d)=>`<button class="mode" data-act="nav" data-v="${k}"><span class="ic">${ICON[ic]}</span><span><h3>${ti}</h3><span class="d">${d}</span></span>${ICON.next}</button>`;
