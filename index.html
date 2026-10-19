@@ -1578,7 +1578,7 @@ function finishSpell(){
   const unlocked=closetNew(snap0);
   const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
   sp.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,rep:pbk.repeat,room:roomWins(sess)});
-  S.view='spresults';render();
+  S.learn=learnSpell(sp.result.items,sp.result,pbk.repeat);S.view='spresults';render();
 }
 function spBadges(){
   const ss=spellSess(),st=wordStats();
@@ -2471,7 +2471,7 @@ function geoFinish(){
     unlocked:closetNew(snap0),pb:pbk.bonus,rep:pbk.repeat,
     stop:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),
     room:roomWins(sess)});
-  S.view='gres';render();
+  S.learn=learnQs('geo',geo.qs,geo.st,geo.result,pbk.repeat);S.view='gres';render();
 }
 /* ----- views ----- */
 const lvClass={n:'',l:'l',m:'m'};
@@ -3243,7 +3243,7 @@ function logTab(){
 let lastView=null;
 function render(){
   let h;
-  switch(S.view){
+  if(S.learn&&RESULT_VIEWS.includes(S.view))h=learnedView();else switch(S.view){
     case'run':h=runView();break;
     case'results':h=resultsView();break;
     case'math':h=mathView();break;
@@ -3271,7 +3271,7 @@ function render(){
   decorate();
   document.body.classList.toggle('hw',halloween());
   if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view;if(CELE_VIEWS.includes(S.view)||(isBday()&&S.view==='home'))confetti()}
-  if(S.tdNew&&CELE_VIEWS.includes(S.view)){S.tdNew=false;setTimeout(tdOpen,700)}
+  if(S.tdNew&&!S.learn&&CELE_VIEWS.includes(S.view)){S.tdNew=false;setTimeout(tdOpen,700)}
   if(!CELE_VIEWS.includes(S.view))S.bump=null;
   const a=document.getElementById('ans')||document.getElementById('spin')||document.getElementById('gans')||document.getElementById('gcopy')||document.getElementById('esans')||document.getElementById('escopy');
   if(a&&!a.disabled)a.focus({preventScroll:true});
@@ -3296,7 +3296,7 @@ function finish(){
   const now=stats().stars;
   const unlocked=closetNew(snap0);
   const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
-  run.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,rep:pbk.repeat,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
+  run.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,rep:pbk.repeat,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.learn=learnMath(run,items,run.result,pbk.repeat);S.view='results';render();
 }
 function guidedSubmit(val){
   const q=run.qs[run.i],st=run.st[run.i];
@@ -3621,7 +3621,7 @@ function esFinish(){
     unlocked:closetNew(snap),
     stop:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),
     room:roomWins(sess)});
-  S.view='esres';render();
+  S.learn=learnQs('es',es.qs,es.st,es.result,pbk.repeat);S.view='esres';render();
 }
 /* ----- screens ----- */
 function esView(){
@@ -4926,8 +4926,70 @@ DECOR.push(function(){
   if(S.view==='parent'&&S.unlocked&&S.tab==='settings'&&!document.getElementById('famcard')){const t=document.querySelector('.tabbar');if(t)t.insertAdjacentHTML('beforebegin',familyCard())}
 });
 
+/* ================= Round 6, part D: "What you learned" after every session ================= */
+(function(){const s=document.createElement('style');s.id='r6cssD';s.textContent=`
+.learn h2{font-size:1.5rem}
+.learn .nail{display:flex;flex-wrap:wrap;gap:8px}
+.learn .nail span{background:var(--good-bg);color:var(--good);border-radius:999px;padding:5px 12px;font-weight:800;font-size:.86rem}
+.learn .again{display:flex;flex-direction:column;gap:6px;background:var(--card2);border-radius:16px;padding:12px 14px;box-shadow:inset 0 0 0 1px var(--line)}
+.learn .again b{font-size:1rem}.learn .again .how{color:var(--mute);font-size:.9rem}
+.learn .again.helped{box-shadow:inset 0 0 0 1.5px var(--gold)}
+.learn .next{border-left:5px solid var(--accent);padding-left:12px}
+`;document.head.appendChild(s)})();
+
+const RESULT_VIEWS=['results','spresults','gres','esres'];
+const LEARN_TITLE={math:'What you learned in math',spell:'What you learned in spelling',es:'Lo que aprendiste in Spanish',geo:'What you learned in geography'};
+function learnBase(sub,sess,rep){return{sub,title:LEARN_TITLE[sub],correct:sess.correct,total:sess.total,stars:sess.stars,repeat:!!rep,nailed:[],again:[]}}
+function learnMath(r,items,sess,rep){
+  const L=learnBase('math',sess,rep),by={};
+  r.qs.forEach((q,i)=>{
+    const it=items[i],k=TYPES[q.type].label,o=by[k]||(by[k]={c:0,n:0});o.n++;if(it.ok&&!it.h)o.c++;
+    if(!it.ok||it.h)L.again.push({head:q.text,line:'Answer: '+q.ans,how:q.steps[0],helped:!!it.ok});
+  });
+  L.nailed=Object.entries(by).filter(([k,o])=>o.c===o.n).map(([k,o])=>`${k}: ${o.c} of ${o.n} on the first try`);
+  L.again=L.again.slice(0,5);
+  return L;
+}
+function learnSpell(items,sess,rep){
+  const L=learnBase('spell',sess,rep);
+  L.nailed=items.filter(i=>i.ok&&!i.h).map(i=>i.w);
+  L.again=items.filter(i=>!i.ok||i.h).slice(0,8).map(i=>({word:i.w,given:i.given,err:i.err,helped:!!i.ok,sent:SENT[i.w]||''}));
+  return L;
+}
+function learnQs(sub,qs,sts,sess,rep){
+  const L=learnBase(sub,sess,rep);
+  qs.forEach((q,i)=>{
+    const st=sts[i],clean=st.ok&&!st.h;
+    const name=sub==='es'?q.w.es+' = '+q.w.en:q.ans;
+    if(clean)L.nailed.push(sub==='geo'?(q.state?q.state.cap+', '+q.state.name:q.ans):name);
+    else L.again.push({head:q.prompt,line:q.why,how:'',helped:!!st.ok});
+  });
+  L.nailed=[...new Set(L.nailed)].slice(0,12);L.again=L.again.slice(0,6);
+  return L;
+}
+function learnedView(){
+  const L=S.learn,dr=drive(stats().stars);
+  const again=L.again.map(a=>{
+    if(L.sub==='spell')return`<div class="again ${a.helped?'helped':''}">${a.given&&!a.helped?diffHtml(a.given,a.word):`<b>${esc(a.word)}</b>`}${a.helped?`<span class="how">You got it, with help. Say it, then write it once more.</span>`:a.err?`<span class="how">${esc(SP_ERR[a.err]||'')}</span>`:''}${a.sent?`<span class="how">“${esc(a.sent)}”</span>`:''}</div>`;
+    return`<div class="again ${a.helped?'helped':''}"><b>${esc(a.head)}</b><span>${esc(a.line||'')}</span>${a.how?`<span class="how">How to start: ${esc(a.how)}</span>`:''}</div>`;
+  }).join('');
+  const nailed=L.nailed.length?`<h3>You nailed these</h3><div class="nail">${L.nailed.map(n=>`<span>${esc(n)}</span>`).join('')}</div>`:'';
+  const next=L.again.length?`<p class="next">${L.again.length} ${L.again.length===1?'thing comes':'things come'} back in Spaced review tomorrow, right when your brain is about to forget. That is how it sticks.</p>`:`<p class="next">Nothing from this session needs review. That is a clean sheet!</p>`;
+  return`<div class="navbar"><span></span><span class="mid">What you learned</span><span></span></div>
+  <section class="card learn"><h2>${esc(L.title)}</h2>
+  <div class="row" style="gap:22px"><div><div class="bigscore">${L.correct}/${L.total}</div><span class="mute">right</span></div>
+  <div><div class="bigscore"><span style="color:var(--gold)">★</span> +${L.stars}</div><span class="mute">stars earned</span></div></div>
+  ${L.repeat?`<div class="fb try">You already scored stars for this activity today, so this round added no stars. It still counts as real practice. Try a different activity to earn more.</div>`:''}
+  ${nailed}
+  ${L.again.length?`<h3>Let's lock these in</h3>${again}`:`<div class="fb good">No misses and no hints. Perfect!</div>`}
+  ${next}
+  <p class="mute">${dr.toTd} more stars to your next touchdown.</p>
+  <div class="row"><button class="btn" data-act="learncont">Continue</button></div></section>`;
+}
+
 function r6act(a,v,d){
   switch(a){
+    case'learncont':S.learn=null;window.scrollTo(0,0);render();return true;
     case'rvstart':reviewStart(v);return true;
     case'famshow':S.famShow=!S.famShow;render();return true;
     case'famcopy':try{navigator.clipboard.writeText(famUrl()).then(()=>{S.famMsg='Copied.';render()}).catch(()=>{S.famShow=true;S.famMsg='Copy it from here.';render()})}catch(e){S.famShow=true;render()}return true;
