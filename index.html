@@ -4325,7 +4325,7 @@ function tdDraw(){
     <button class="tdopt hot" data-act="tdkick" data-v="2pt"><b>Two-point conversion</b><span>A harder question. Win a rare one.</span></button></div><div class="row">${close}</div>`;
   if(q.step==='subject')h=`<h2>${q.kind==='fg'?'Field goal':'Two-point conversion'}</h2><p>Pick the subject for your question:</p><div class="tdopts">${tdSubs.map(([k,l])=>`<button class="tdopt" data-act="tdsubj" data-v="${k}"><b>${l}</b></button>`).join('')}</div><div class="row">${close}</div>`;
   if(q.step==='q'){const k=q.q;
-    h=`<h2>${q.kind==='fg'?'Field goal':'Two-point conversion'}: ${tdSubs.find(s=>s[0]===q.subj)[1]}</h2><p class="qtext word">${esc(k.prompt)}</p>${k.say?`<div class="row"><button class="btn tint" data-act="tdsay">${ICON.speaker}Hear it</button></div>`:''}`+
+    h=`<h2>${q.kind==='fg'?'Field goal':'Two-point conversion'}: ${tdSubs.find(s=>s[0]===q.subj)[1]}</h2><p class="qtext word">${esc(k.prompt)}</p><div class="row">${k.say?`<button class="btn tint" data-act="tdsay">${ICON.speaker}Hear it</button>`:''}<button class="btn tint" data-act="tdread">${ICON.speaker}Read aloud</button></div>`+
     (k.mc?`<div class="choices w">${k.mc.map(c=>`<button class="choice" data-act="tdans" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:`<div class="row"><input class="ans wide" id="tdin" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your answer" placeholder="Type your answer"></div><div class="row"><button class="btn" data-act="tdcheck">Kick it</button></div>`)+`<p class="mute">One try. Take your time.</p>`;}
   if(q.step==='result'){
     h=q.ok?`<h2>${q.kind==='fg'?'It’s good!':'Two points! It’s good!'}</h2><div class="tdprize">${q.prize?critBig(q.prize):''}</div><p>${q.prize?`You won <b>${esc(CRIT[q.prize].n)}</b>! It is on a shelf in your room now.`:'You already have every creature. Amazing!'}</p>`
@@ -4987,8 +4987,89 @@ function learnedView(){
   <div class="row"><button class="btn" data-act="learncont">Continue</button></div></section>`;
 }
 
+/* ================= Round 6, part E: every question can be read aloud ================= */
+(function(){const s=document.createElement('style');s.id='r6cssE';s.textContent=`
+.readbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.readbar .btn{min-height:42px;padding:8px 16px;font-size:.92rem}
+.readbar .auto.on{background:var(--accent);color:var(--accent-ink)}
+`;document.head.appendChild(s)})();
+
+/* speak a list of [text, language] pieces one after the other, using an English or a Spanish voice */
+function sayParts(parts){
+  if(!canSpeak())return;
+  try{
+    const ss=window.speechSynthesis;ss.cancel();
+    parts.forEach(([t,lang])=>{
+      if(!t)return;
+      const u=new SpeechSynthesisUtterance(t);
+      if(lang==='es'){
+        const vs=ss.getVoices().filter(v=>/^es[-_]/i.test(v.lang));
+        esVoice=esVoice||vs.find(v=>/es[-_](US|MX)/i.test(v.lang))||vs[0]||null;
+        u.lang=esVoice?esVoice.lang:'es-MX';if(esVoice)u.voice=esVoice;u.rate=.8;
+      }else{u.lang='en-US';const v=pickVoice();if(v)u.voice=v;u.rate=.9}
+      ss.speak(u);
+    });
+  }catch(e){}
+}
+/* math symbols and short forms, said the way a teacher would say them */
+const mathSay=s=>String(s)
+  .replace(/×/g,' times ').replace(/÷/g,' divided by ').replace(/\+/g,' plus ').replace(/−/g,' minus ')
+  .replace(/(\d)\s*-\s*(\d)/g,'$1 minus $2').replace(/(\d+)\s*\/\s*(\d+)/g,'$1 over $2').replace(/%/g,' percent').replace(/=/g,' equals ')
+  .replace(/\bGCF\b/g,'greatest common factor').replace(/\bLCM\b/g,'least common multiple').replace(/\bR (\d)/g,'remainder $1')
+  .replace(/_{2,}/g,' blank ').replace(/\s+/g,' ').trim();
+const choicesSay=(list,lang)=>list.flatMap((c,i)=>i+1===list.length&&list.length>1?[['or','en'],[String(c)+'.',lang||'en']]:[[String(c)+'.',lang||'en']]);
+/* what to read for the question on the screen */
+function readParts(){
+  const v=S.view;
+  if(v==='run'&&run){
+    const q=run.qs[run.i],p=[[mathSay(q.text),'en']];
+    if(q.fmt==='mc')p.push(['The choices are.','en'],...choicesSay(q.choices.map(mathSay)));
+    return p;
+  }
+  if(v==='grun'&&geo){
+    const q=geo.qs[geo.i],p=[[q.prompt,'en']];
+    if(q.kind==='mc')p.push(['The choices are.','en'],...choicesSay(q.choices));
+    return p;
+  }
+  if(v==='esrun'&&es){
+    const q=es.qs[es.i],m=/“([^”]+)”/.exec(q.prompt),p=[];
+    if(q.prompt.startsWith('What does')&&m){p.push(['What does','en'],[m[1],'es'],['mean?','en'])}
+    else p.push([q.prompt,'en']);
+    if(q.say)p.push([q.say,'es']);
+    if(q.kind==='mc'){p.push(['The choices are.','en']);p.push(...choicesSay(q.choices,q.prompt.startsWith('How do you say')?'es':'en'))}
+    return p;
+  }
+  if(v==='sprun'&&sp&&sp.items&&sp.items[sp.i]){
+    const w=sp.items[sp.i].w,s=sentOf(w);
+    return[[w,'en'],[s||'','en'],[w,'en']];
+  }
+  if(v==='nqrun'&&nq){const q=nq.qs[nq.i];return[[q.prompt,'en'],['The choices are.','en'],...choicesSay(q.opts)]}
+  const el=document.querySelector('.qtext');
+  return el?[[el.textContent,'en']]:[];
+}
+const autoReadOn=()=>!!S.settings.autoRead;
+let lastRead='';
+const READ_VIEWS=['run','grun','esrun','sprun','nqrun','fdrun'];
+DECOR.push(function(){
+  if(!READ_VIEWS.includes(S.view)||!canSpeak())return;
+  const card=document.querySelector('.card');if(!card||document.getElementById('r6read'))return;
+  const bar=`<div class="readbar"><button id="r6read" class="btn tint" data-act="r6read">${ICON.speaker}Read aloud</button><button class="btn quiet auto ${autoReadOn()?'on':''}" data-act="r6auto" aria-pressed="${autoReadOn()}">Auto-read: ${autoReadOn()?'on':'off'}</button></div>`;
+  const track=card.querySelector('.track');
+  if(track)track.insertAdjacentHTML('afterend',bar);else card.insertAdjacentHTML('afterbegin',bar);
+  const key=S.view+':'+(run&&S.view==='run'?run.i:geo&&S.view==='grun'?geo.i:es&&S.view==='esrun'?es.i:sp&&S.view==='sprun'?sp.i:nq&&S.view==='nqrun'?nq.i:fd?fd.i:0);
+  if(autoReadOn()&&key!==lastRead){lastRead=key;sayParts(readParts())}
+  if(!autoReadOn())lastRead=key;
+});
+
 function r6act(a,v,d){
   switch(a){
+    case'r6read':sayParts(readParts());return true;
+    case'r6auto':S.settings.autoRead=!S.settings.autoRead;store.set('bl.settings',S.settings);lastRead='';render();return true;
+    case'tdread':{const k=tdq&&tdq.q;if(!k)return true;const p=[];const m=/“([^”]+)”/.exec(k.prompt);
+      if(tdq.subj==='es'&&k.prompt.startsWith('What does')&&m)p.push(['What does','en'],[m[1],'es'],['mean?','en']);else p.push([k.prompt,'en']);
+      if(k.say&&tdq.subj==='es')p.push([k.say,'es']);
+      if(k.mc){p.push(['The choices are.','en']);p.push(...choicesSay(k.mc,tdq.subj==='es'&&k.prompt.startsWith('How do you say')?'es':'en'))}
+      sayParts(p);return true}
     case'learncont':S.learn=null;window.scrollTo(0,0);render();return true;
     case'rvstart':reviewStart(v);return true;
     case'famshow':S.famShow=!S.famShow;render();return true;
