@@ -1,8 +1,10 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0076B6">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brain Lab"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://a.espncdn.com; connect-src 'self' https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://a.espncdn.com; connect-src 'self' https://firestore.googleapis.com; base-uri 'none'; manifest-src 'self'; worker-src 'self'; form-action 'none'; object-src 'none'">
 <title>Brain Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap">
@@ -4920,6 +4922,8 @@ function download(name,text){
 function familyCard(){
   return`<section class="card" id="famcard"><h3>Family link and your data</h3>
   <p class="mute">${FAM?'This device is linked to your private family space. Open the family link once on every phone, iPad and computer so all homes share the same stars, room and history.':'This device is not linked yet, so nothing is saved to the cloud. Open your family link on this device once. Practice is still saved on this device.'}</p>
+  ${FAM?'':`<div class="row"><input class="txt" id="linkIn" placeholder="Paste the family link here" aria-label="Family link" style="flex:1;min-width:200px"><button class="btn" data-act="famlink">Link this device</button></div>`}
+  ${S.famMsg&&!FAM?`<p class="mute">${esc(S.famMsg)}</p>`:''}
   ${FAM?`<div class="row"><button class="btn tint" data-act="famshow">${S.famShow?'Hide the link':'Show the family link'}</button><button class="btn quiet" data-act="famcopy">Copy the link</button></div>${S.famShow?`<p class="mute" style="word-break:break-all"><b>${esc(famUrl())}</b></p>`:''}${S.famMsg?`<p class="mute">${esc(S.famMsg)}</p>`:''}`:''}
   <div class="row"><button class="btn quiet" data-act="csv" data-v="sessions">Download session log (CSV)</button><button class="btn quiet" data-act="csv" data-v="items">Download answer log (CSV)</button></div>
   <label class="row">Year Emmett was born <input class="txt" id="birthY" inputmode="numeric" maxlength="4" style="width:90px" value="${birthYear()||''}"><button class="btn quiet" data-act="setbirth">Save</button></label>
@@ -5088,6 +5092,8 @@ function r6act(a,v,d){
       sayParts(p);return true}
     case'learncont':S.learn=null;window.scrollTo(0,0);render();return true;
     case'rvstart':reviewStart(v);return true;
+    case'famlink':{const v=(document.getElementById('linkIn')||{value:''}).value,k=/k=([A-Za-z0-9]{12,48})/.exec(v)||/^\s*([A-Za-z0-9]{12,48})\s*$/.exec(v),b=/b=(\d{4})/.exec(v);
+      if(k){store.set('bl.fam',k[1]);if(b)store.set('bl.birth',Number(b[1]));location.reload()}else{S.famMsg='That does not look like the family link. Paste the whole link.';render()}return true}
     case'famshow':S.famShow=!S.famShow;render();return true;
     case'famcopy':try{navigator.clipboard.writeText(famUrl()).then(()=>{S.famMsg='Copied.';render()}).catch(()=>{S.famShow=true;S.famMsg='Copy it from here.';render()})}catch(e){S.famShow=true;render()}return true;
     case'csv':download(v==='sessions'?'brain-lab-sessions.csv':'brain-lab-answers.csv',v==='sessions'?csvSessions():csvItems());return true;
@@ -5096,6 +5102,8 @@ function r6act(a,v,d){
   }
   return false;
 }
+
+if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
 render();
 initDb();
