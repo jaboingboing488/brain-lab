@@ -125,7 +125,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .tbar i{display:block;height:100%;background:var(--accent);transition:width 1s linear}
 .tbar i.warn{background:var(--warn)}
 .paper{background:var(--warn-bg);color:var(--warn);border-radius:16px;padding:10px 14px;font-weight:700;font-size:.93rem}
-.choices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .choice{background:var(--card2);box-shadow:inset 0 0 0 2px var(--line);border-radius:20px;padding:16px;font-family:var(--f-num);font-weight:700;font-size:1.65rem;min-height:70px}
 .choice:hover:not(:disabled){box-shadow:inset 0 0 0 3px var(--accent)}
 .choice.sel{background:var(--accent-soft);box-shadow:inset 0 0 0 3px var(--accent)}
@@ -213,7 +213,8 @@ button.lt{cursor:pointer;padding:0}
 .diff .x{color:var(--warn);text-decoration:underline wavy}
 .diff .m{color:var(--good);background:var(--good-bg);border-radius:4px;padding:0 2px}
 .diff small{font-family:var(--f-ui);color:var(--mute);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
-.choices.w .choice{font-family:var(--f-ui);font-size:1.3rem}
+.choices.w .choice{font-family:var(--f-ui);font-size:1.3rem;overflow-wrap:anywhere;hyphens:auto}
+@media(max-width:400px){.choices.w .choice{font-size:1.1rem;padding:12px 8px}}
 .chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-weight:700}
 .chk .y{color:var(--good)}.chk .n{color:var(--warn)}
 textarea.txt{font:inherit;padding:12px 14px;border:0;border-radius:14px;background:var(--card2);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line);width:100%;min-height:76px;resize:vertical}
@@ -285,10 +286,10 @@ button.gt:hover:not(:disabled){box-shadow:inset 0 0 0 2px var(--accent)}
 .tabbar .tab{font-size:.56rem;min-width:0}.tabbar>div{gap:0}
 body{padding-bottom:calc(112px + env(safe-area-inset-bottom,0px))!important}
 .hero{position:relative}.hwdeco{position:absolute;top:8px;right:12px;display:flex;gap:4px;align-items:flex-start;pointer-events:none}.hwdeco svg:nth-child(2){margin-top:6px}
-body.hw .hero{background:linear-gradient(140deg,#3a1a5e,#0A3D6B)}
+body.hwn .hero{background:linear-gradient(140deg,#3a1a5e,#0A3D6B)}
 .hwcard{display:flex;gap:12px;align-items:center;background:linear-gradient(120deg,#2B1650,#5A2D8C 60%,#B4550E);color:#fff;border-radius:22px;padding:12px 16px;box-shadow:var(--shadow)}
 .hwcard b{display:block;font-size:1.05rem}.hwcard span{opacity:.92;font-size:.9rem;font-weight:600}.hwcard div{flex:1;min-width:0}
-body.hw .tab.on{color:#FF9A3C}
+body.hwn .tab.on{color:#FF9A3C}
 @media print{.navbar,.tabbar,.noprint{display:none!important}body{background:#fff;color:#000;padding-block:0}.card{box-shadow:none;border:1px solid #999;break-inside:avoid}.hero{display:none}}
 /* ---- Round 4: subject tiles, session counter, playbook, Spanish, celebration ---- */
 .subjgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -1915,8 +1916,9 @@ const fbOn=()=>S.settings.football!==false;
 const syncPill=()=>`<span class="pill plain"><i class="dot ${S.sync==='live'?'':'off'}"></i>${S.sync==='live'?'Synced':S.sync==='unlinked'?'Not linked':'This device only'}</span>`;
 function nav(title,right){return`<div class="navbar">${syncPill()}<span class="mid">${esc(title)}</span>${right||'<span></span>'}</div>`}
 function tabbar(on){
-  const t=(k,l)=>`<button class="tab ${on===k?'on':''}" data-act="nav" data-v="${k}" aria-label="${l}">${ICON[k]}<span>${l}</span></button>`;
-  return`<nav class="tabbar" aria-label="Main"><div>${t('home','Home')}${t('math','Math')}${t('spell','Spelling')}${t('es','Spanish')}${t('geo','Geography')}${fbOn()?t('fb','Football'):''}${t('room','Room')}${t('parent','Parent')}</div></nav>`;
+  const t=(k,l,c)=>`<button class="tab ${c||''} ${on===k?'on':''}" data-act="nav" data-v="${k}" aria-label="${l}">${ICON[k]}<span>${l}</span></button>`;
+  const more=`<button class="tab more ${['fb','parent','more'].includes(on)?'on':''}" data-act="nav" data-v="more" aria-label="More">${ICON.more}<span>More</span></button>`;
+  return`<nav class="tabbar" aria-label="Main"><div>${t('home','Home')}${t('math','Math')}${t('spell','Spelling')}${t('es','Spanish')}${t('geo','Geography')}${fbOn()?t('fb','Football','wide'):''}${t('room','Room')}${t('parent','Parent','wide')}${more}</div></nav>`;
 }
 function homePicker(){
   return`<section class="card"><h2>Where are you practicing today?</h2><p class="mute">This helps Mom and Dad see where each session happened.</p>
@@ -3148,7 +3150,7 @@ function parentView(){
     ${S.pinErr?'<div class="fb try">That PIN is not right. Try again.</div>':''}</section>`+tabbar('parent');
   }
   const seg=`<div class="seg">${[['progress','Progress'],['log','Practice log'],['settings','Settings']].map(([k,l])=>`<button class="${S.tab===k?'on':''}" data-act="tab" data-v="${k}">${l}</button>`).join('')}</div>`;
-  const sub=S.tab==='progress'?`<div class="seg">${[['math','Math'],['spell','Spelling'],['es','Spanish'],['geo','Geography'],['fb','Football']].map(([k,l])=>`<button class="${S.psub===k?'on':''}" data-act="psub" data-v="${k}">${l}</button>`).join('')}</div>`:'';
+  const sub=S.tab==='progress'?`<div class="seg wrap">${[['math','Math'],['spell','Spelling'],['es','Spanish'],['geo','Geography'],['fb','Football']].map(([k,l])=>`<button class="${S.psub===k?'on':''}" data-act="psub" data-v="${k}">${l}</button>`).join('')}</div>`:'';
   return head+seg+sub+(S.tab==='progress'?(S.psub==='fb'?fbProgress():S.psub==='es'?esProgress():S.psub==='spell'?spellProgress():S.psub==='geo'?geoProgress():progressTab()):S.tab==='log'?logTab():settingsTab())+tabbar('parent');
 }
 
@@ -3264,12 +3266,13 @@ function render(){
     case'sprun':h=spRunView();break;
     case'spresults':h=spResultsView();break;
     case'parent':h=parentView();break;
+    case'more':h=moreView();break;
     case'closet':h=closetView();break;
     default:h=homeView();
   }
   $app.innerHTML=h;
   decorate();
-  document.body.classList.toggle('hw',halloween());
+  document.body.classList.toggle('hwn',halloween());
   if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view;if(CELE_VIEWS.includes(S.view)||(isBday()&&S.view==='home'))confetti()}
   if(S.tdNew&&!S.learn&&CELE_VIEWS.includes(S.view)){S.tdNew=false;setTimeout(tdOpen,700)}
   if(!CELE_VIEWS.includes(S.view))S.bump=null;
@@ -5060,6 +5063,19 @@ DECOR.push(function(){
   if(autoReadOn()&&key!==lastRead){lastRead=key;sayParts(readParts())}
   if(!autoReadOn())lastRead=key;
 });
+
+
+/* ----- on a phone the tab bar shows six tabs and a More tab (Football Club and the Parent area) ----- */
+ICON.more='<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg>';
+(function(){const s=document.createElement('style');s.id='r6cssM';s.textContent=`
+.tab.more{display:none}
+@media(max-width:560px){.tab.wide{display:none}.tab.more{display:flex}.tabbar .tab{font-size:.62rem}}
+`;document.head.appendChild(s)})();
+function moreView(){
+  const m=(k,ic,ti,d)=>`<button class="mode" data-act="nav" data-v="${k}"><span class="ic">${ICON[ic]}</span><span><h3>${ti}</h3><span class="d">${d}</span></span>${ICON.next}</button>`;
+  return nav('More')+`<div class="largehead"><h1>More</h1></div>
+  <section class="modes">${fbOn()?m('fb','football','Football Club',`${nflInfo(nflSess()).teamsM.length} of 32 team cards won. Just for fun, with bonus prizes.`):''}${m('parent','parent','Parent area','Progress, practice log, settings and the family link. Needs the parent PIN.')}</section>`+tabbar('more');
+}
 
 function r6act(a,v,d){
   switch(a){

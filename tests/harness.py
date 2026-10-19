@@ -14,7 +14,7 @@ def find_chrome():
 ap = argparse.ArgumentParser()
 ap.add_argument('test'); ap.add_argument('--now'); ap.add_argument('--seed'); ap.add_argument('--size', default='500x900')
 ap.add_argument('--shot'); ap.add_argument('--html', default=os.path.join(os.path.dirname(__file__), '..', 'index.html'))
-ap.add_argument('--wait', type=int, default=900)
+ap.add_argument('--wait', type=int, default=900); ap.add_argument('--dpr', default='1'); ap.add_argument('--frame')
 a = ap.parse_args()
 html = open(a.html, encoding='utf-8').read()
 pre = ['window.__NODB=1;']  # tests never reach the live sync service
@@ -27,7 +27,7 @@ pre.append('window.__ERR=[];window.addEventListener("error",function(e){window._
 test = open(a.test, encoding='utf-8').read()
 post = ('<script>setTimeout(async function(){try{window.RESULT={};' + test +
         '\n}catch(e){window.RESULT={fail:["THROW "+e.message+" "+String(e.stack||"").slice(0,240)]}}'
-        'document.body.setAttribute("data-zzres",JSON.stringify({r:window.RESULT,err:window.__ERR}))},%d)</script>' % a.wait)
+        '(window.parent!==window?window.parent:window).document.body.setAttribute("data-zzres",JSON.stringify({r:window.RESULT,err:window.__ERR}))},%d)</script>' % a.wait)
 i = html.index('<script>')
 html = html[:i] + '<script>' + ''.join(pre) + '</script>' + html[i:]
 j = html.rindex('</body>')
@@ -35,11 +35,16 @@ html = html[:j] + post + html[j:]
 d = tempfile.mkdtemp(prefix='blt')
 f = os.path.join(d, 't.html'); open(f, 'w', encoding='utf-8').write(html)
 w, h = a.size.split('x')
-cmd = [find_chrome(), '--headless=new', '--disable-gpu', '--no-sandbox', '--hide-scrollbars', '--window-size=%s,%s' % (w, h),
-       '--user-data-dir=' + os.path.join(d, 'prof'), '--virtual-time-budget=6000']
+target = f
+if a.frame:
+    fw, fh = a.frame.split('x')
+    target = os.path.join(d, 'w.html')
+    open(target, 'w', encoding='utf-8').write('<!doctype html><body style="margin:0;background:#888"><iframe src="t.html" style="width:%spx;height:%spx;border:0;display:block"></iframe></body>' % (fw, fh))
+cmd = [find_chrome(), os.environ.get('HEADLESS','--headless=new'), '--disable-gpu', '--no-sandbox', '--allow-file-access-from-files', '--hide-scrollbars', '--window-size=%s,%s' % (w, h),
+       '--force-device-scale-factor=' + a.dpr, '--user-data-dir=' + os.path.join(d, 'prof'), '--virtual-time-budget=6000']
 if a.shot: cmd.append('--screenshot=' + os.path.abspath(a.shot))
 else: cmd.append('--dump-dom')
-cmd.append('file:///' + f.replace(chr(92), '/'))
+cmd.append('file:///' + target.replace(chr(92), '/'))
 p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
 if a.shot:
     print('screenshot', a.shot); shutil.rmtree(d, ignore_errors=True); sys.exit(0)
