@@ -858,14 +858,14 @@ function planTypes(mode,n){
   while(out.length<n)out=out.concat(shuffle(base));
   return out.slice(0,n);
 }
-function start(mode,skill){
-  const n=mode==='exam'&&!skill?examLen():sessLen();
-  const types=skill?Array(n).fill(skill):mode==='exam'?examSkills(n):planTypes(mode,n);
+function start(mode,skill,forceTypes,rv){
+  const n=forceTypes?forceTypes.length:mode==='exam'&&!skill?examLen():sessLen();
+  const types=forceTypes||(skill?Array(n).fill(skill):mode==='exam'?examSkills(n):planTypes(mode,n));
   const fmts=shuffle(types.map((_,i)=>i%2?'mc':'type'));
   const used=new Set(),qs=[];
-  types.forEach((t,i)=>{let q,k=0;do{q=makeQ(t,fmts[i]);k++}while(used.has(q.text)&&k<25);used.add(q.text);qs.push(q)});
+  types.forEach((t,i)=>{let q,k=0;do{q=mode==='exam'?makeQ(t,fmts[i]):makeQL(t,fmts[i],mathLevel(t));k++}while(used.has(q.text)&&k<25);used.add(q.text);qs.push(q)});
   S.from='math';
-  run={mode,skill:skill||null,qs,i:0,t0:nowMs(),answers:qs.map(()=>''),review:false,used:qs.map(()=>0),tickAt:nowMs(),started:mode!=='exam'||!timerOn(),
+  run={mode,skill:skill||null,rv:!!rv,qs,i:0,t0:nowMs(),answers:qs.map(()=>''),review:false,used:qs.map(()=>0),tickAt:nowMs(),started:mode!=='exam'||!timerOn(),
     st:qs.map(()=>({tries:0,hint:false,done:false,ok:false,wrong:[],err:null,msg:null,given:''}))};
   S.view='run';render();
 }
@@ -1604,14 +1604,14 @@ function finishSpell(){
       return{w:it.w,ok,h:it.helped?1:0,err:!ok&&(g==='cards'||g==='sent')&&it.given?spErr(it.given,it.w):null,given:it.given||''};
     });
   const correct=items.filter(i=>i.ok).length;
-  const pbk=withPlaybook('spell',sessStars('spell',g==='test'?'test':'play',credit(items)));
+  const pbk=withPlaybook('spell',sessStars('spell',g==='test'?'test':'play',credit(items)),'spell:'+(sp.rv?'review':g));
   const sess={ts:nowMs(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-sp.t0)/1000)),stars:pbk.stars,
-    items:items.map(i=>({t:'sp',g,w:i.w,ok:i.ok,h:i.h,err:i.err}))};
+    items:items.map(i=>({t:'sp',g:sp.rv?'review':g,w:i.w,ok:i.ok,h:i.h,err:i.err}))};
   saveSession(sess);
   const now=stats().stars;
   const unlocked=closetNew(snap0);
   const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
-  sp.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,room:roomWins(sess)});
+  sp.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,rep:pbk.repeat,room:roomWins(sess)});
   S.view='spresults';render();
 }
 function spBadges(){
@@ -1974,7 +1974,7 @@ function homeView(){
     <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${sessCounts().all.total}</b><span>sessions</span></div></div>
     <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
   ${holidayHtml()}
-  ${playbookHtml()}
+  ${missionHtml()}
   <div class="sect">Pick a subject</div>
   <section class="subjgrid">
     <button class="subj wide" style="--c1:${SUBCOL.es[0]};--c2:${SUBCOL.es[1]}" data-act="nav" data-v="es"><span class="ribbon">${isThu(nowMs())?'THURSDAY ×6':'×4 STARS'}</span><span class="sic">${ICON.es}</span><h3>Spanish</h3><span class="d">${isThu(nowMs())?'¡Hoy es jueves! Every Spanish star counts 1.5 times today.':'The most stars and yards of any subject. Words, listening and writing.'}</span></button>
@@ -1996,7 +1996,7 @@ function mathView(){
   const m=(k,ic,t,d,lead)=>`<button class="mode ${lead?'lead':''}" data-act="start" data-v="${k}"><span class="ic">${ICON[ic]}</span><span><h3>${t}</h3><span class="d">${d}</span></span>${ICON.next}</button>`;
   const chips=GROUPS.map(g=>`<button class="chip ${S.topics.includes(g.k)?'on':''}" aria-pressed="${S.topics.includes(g.k)}" data-act="topic" data-v="${g.k}">${g.label}</button>`).join('');
   const skill=k=>{const a=acc[k],p=a.n?Math.round(100*a.c/a.n):null;
-    return`<button class="skill" data-act="skill" data-v="${k}"><b>${esc(TYPES[k].label)}</b><span class="track2"><span class="fill ${p!==null&&p<70?'low':''}" style="width:${p||0}%"></span></span><small>${p===null?'Not tried yet':p+'% right'}</small></button>`};
+    return`<button class="skill" data-act="skill" data-v="${k}"><b>${esc(TYPES[k].label)}</b><span class="track2"><span class="fill ${p!==null&&p<70?'low':''}" style="width:${p||0}%"></span></span><small>${p===null?'Not tried yet':p+'% right'} · Level ${mathLevel(k)}</small></button>`};
   return nav('Math')+`<div class="largehead"><h1>Math</h1><p class="mute">Pick one skill to practice, or play a mix.</p></div>
   ${subjHero('math')}${counterHtml('math')}${braceletHtml('math')}
   <div class="sect">Practice one skill</div>
@@ -2045,7 +2045,7 @@ function runView(){
   const val=exam?r.answers[r.i]:'';
   const goals=r.st.filter(s=>s.ok).length;
   const f=exam?r.answers.filter(a=>a!=='').length/N:(r.i+(st.done?1:0))/N;
-  let body=`<div class="row between"><span class="pill">Question ${r.i+1} of ${N}</span>${exam?examPill(r):`<span class="score pill plain">Goals <span class="num">${goals}</span></span>`}</div>
+  let body=`<div class="row between"><span class="pill">Question ${r.i+1} of ${N}</span>${!exam&&q.lv?`<span class="pill plain">Level ${q.lv}</span>`:''}${exam?examPill(r):`<span class="score pill plain">Goals <span class="num">${goals}</span></span>`}</div>
   ${raceTrack(r,f)}
   ${exam&&timerOn()?timerBar(r):''}
   <div class="paper">Paper first: write your work on your paper. Then ${q.fmt==='mc'?'tap':'type'} your answer.</div>
@@ -2055,9 +2055,9 @@ function runView(){
     if(st.msg==='right')body+=`<div class="fb good">${esc(st.cheer||'Touchdown!')} ${st.helped?'Correct, and you learned something on the way.':'Correct!'}</div>`;
     if(st.msg==='retry')body+=`<div class="fb try">Not yet. Read the steps and try again.</div>`;
     if(st.msg==='reveal')body+=`<div class="fb try">The answer is ${esc(q.ans)}. Read the steps so it clicks next time.</div>`;
-    if(st.hint||st.msg==='reveal'){const s=st.msg==='reveal'||st.done?steps(q):hintSteps(q);body+=`<ol class="steps">${s.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`}
+    if(st.hint||st.msg==='reveal'){const s=st.msg==='reveal'||st.done?steps(q):hintSteps(q).slice(0,Math.max(1,st.hn||0));body+=`<ol class="steps">${s.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`}
     const last=r.i===N-1;
-    body+=`<div class="row between"><div class="row">${st.done?'':`<button class="btn quiet" data-act="hint">Show a hint</button>`}${q.fmt==='type'&&!st.done?`<button class="btn" data-act="check">Check answer</button>`:''}</div>
+    body+=`<div class="row between"><div class="row">${st.done||(st.hint&&(st.hn||1)>=hintSteps(q).length)?'':`<button class="btn quiet" data-act="hint">${st.hint?'Another hint':'Show a hint'}</button>`}${q.fmt==='type'&&!st.done?`<button class="btn" data-act="check">Check answer</button>`:''}</div>
     ${st.done?`<button class="btn" data-act="next">${last?'See my results':'Next question'}</button>`:''}</div>`;
   }else{
     body+=`<div class="nav" aria-label="Questions">${r.qs.map((_,i)=>`<button data-act="goto" data-v="${i}" class="${i===r.i?'cur':r.answers[i]!==''?'done':''}">${i+1}</button>`).join('')}</div>
@@ -2446,10 +2446,10 @@ function geoPickStates(region,n){
   const st=geoStats(),rank={n:0,l:1,m:2};
   return shuffle(STATES.filter(s=>region==='all'||s.r===region)).sort((a,b)=>rank[geoLevel(st[a.ab])]-rank[geoLevel(st[b.ab])]).slice(0,n);
 }
-function geoBuild(game,region){
+function geoBuild(game,region,only){
   if(game==='gtest')return geoBuild('wcap',region);
   if(game==='fl')return shuffle(FL_Q).slice(0,10).map((q,i)=>Object.assign({},q,{k:'fl'+i,fl:1,choices:q.kind==='mc'?shuffle([q.ans,...q.wrong]):undefined}));
-  const list=geoPickStates(region,10);
+  const list=only||geoPickStates(region,10);
   const near=(s,key)=>shuffle(STATES.filter(o=>o.ab!==s.ab&&o.r===s.r)).concat(shuffle(STATES.filter(o=>o.ab!==s.ab&&o.r!==s.r))).slice(0,3).map(o=>o[key]);
   return list.map(s=>{
     const b={k:s.ab,state:s,why:`${s.cap} is the capital of ${s.name}.`};
@@ -2495,28 +2495,31 @@ function geoSubmit(v){
 function geoFinish(){
   const items=geo.qs.map((q,i)=>{const st=geo.st[i];return{t:'geo',g:geo.game,w:q.k,k:q.fl?'fl':q.state.r,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap0=closetSnap(),mBefore=geoMastered().map(s=>s.ab);
-  const pbk=withPlaybook('geo',sessStars('geo',geo.game==='gtest'?'test':'play',credit(items)));
+  const pbk=withPlaybook('geo',sessStars('geo',geo.game==='gtest'?'test':'play',credit(items)),'geo:'+geo.game);
   const sess={ts:nowMs(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-geo.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);
   const now=stats().stars;
   geo.result=Object.assign({},sess,{
     missed:geo.qs.map((q,i)=>({q,st:geo.st[i]})).filter(x=>!x.st.ok),
     newly:geoMastered().filter(s=>!mBefore.includes(s.ab)).map(s=>s.name),
-    unlocked:closetNew(snap0),pb:pbk.bonus,
+    unlocked:closetNew(snap0),pb:pbk.bonus,rep:pbk.repeat,
     stop:(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]),
     room:roomWins(sess)});
   S.view='gres';render();
 }
 /* ----- views ----- */
 const lvClass={n:'',l:'l',m:'m'};
+const hlOn=(o,ab)=>o.hl===ab||!!(o.hls&&o.hls.includes(ab));
+const nearSet=ab=>{const s=STATES.find(o=>o.ab===ab);return STATES.slice().sort((a,b)=>((a.c-s.c)**2+(a.y-s.y)**2)-((b.c-s.c)**2+(b.y-s.y)**2)).slice(0,6).map(o=>o.ab)};
+const r6hint=(q,st)=>st.done||!st.hinted?'':q.kind==='mc'?'<div class="fb try">Hint: one wrong answer is crossed out.</div>':q.kind==='map'?'<div class="fb try">Hint: it is one of the glowing states.</div>':'';
 function tileMap(opts){
   opts=opts||{};const st=geoStats(),cells=[];
   for(let y=0;y<8;y++)for(let c=0;c<11;c++){
     const s=STATES.find(o=>o.c===c&&o.y===y);
     if(!s){cells.push('<span class="gt empty"></span>');continue}
     const lv=opts.plain?'':lvClass[geoLevel(st[s.ab])];
-    const cls=`gt ${lv} ${opts.hl===s.ab?'hl':''} ${opts.bad&&opts.bad.includes(s.ab)?'bad':''} ${opts.ok===s.ab?'ok':''}`;
-    cells.push(opts.tap?`<button class="${cls}" data-act="gpick" data-v="${s.ab}" ${opts.dis||(opts.bad&&opts.bad.includes(s.ab))?'disabled':''} aria-label="${esc(s.name)}">${s.ab}</button>`:`<span class="gt ${lv} ${opts.hl===s.ab?'hl':''}" title="${esc(s.name)}">${s.ab}</span>`);
+    const cls=`gt ${lv} ${hlOn(opts,s.ab)?'hl':''} ${opts.bad&&opts.bad.includes(s.ab)?'bad':''} ${opts.ok===s.ab?'ok':''}`;
+    cells.push(opts.tap?`<button class="${cls}" data-act="gpick" data-v="${s.ab}" ${opts.dis||(opts.bad&&opts.bad.includes(s.ab))?'disabled':''} aria-label="${esc(s.name)}">${s.ab}</button>`:`<span class="gt ${lv} ${hlOn(opts,s.ab)?'hl':''}" title="${esc(s.name)}">${s.ab}</span>`);
   }
   return`<div class="gmap" role="group" aria-label="Map of the United States, one tile per state">${cells.join('')}</div>`;
 }
@@ -2565,7 +2568,7 @@ function gRunView(){
     ans=`<div class="choices w">${q.choices.map(c=>{let cls='choice';if(st.wrong.includes(String(c)))cls+=' bad';if(st.done&&c===q.ans)cls+=' ok';
       return`<button class="${cls}" data-act="gpick" data-v="${esc(c)}" ${st.done||st.wrong.includes(String(c))?'disabled':''}>${esc(c)}</button>`}).join('')}</div>`;
   }else{
-    ans=tileMap({tap:1,plain:1,dis:st.done,bad:st.wrong,ok:st.done?q.ans:'',hl:st.done||st.hinted?q.ans:''});
+    ans=tileMap({tap:1,plain:1,dis:st.done,bad:st.wrong,ok:st.done?q.ans:'',hl:st.done?q.ans:'',hls:st.hinted&&!st.done?nearSet(q.ans):null});
   }
   const showMap=q.show?`<div class="mini">${tileMap({plain:1,hl:q.show})}</div>`:'';
   const hintTxt=q.kind==='type'&&st.hinted&&!st.done?`<div class="fb try">Hint: it starts with <b>${esc(q.ans[0])}</b> and has ${q.ans.replace(/ /g,'').length} letters.</div>`:'';
@@ -2577,7 +2580,7 @@ function gRunView(){
   }
   const copyOk=q.kind!=='type'||st.msg!=='reveal'||gnorm(st.copy)===gnorm(q.ans);
   return top+`<section class="card"><div class="row between"><span class="pill">Question ${r.i+1} of ${N}</span><span class="score pill plain">Points <span class="num">${good}</span></span></div>${raceTrack(r,f)}
-  <p class="qtext word">${esc(q.prompt)}</p>${showMap}${ans}${hintTxt}${fb}
+  <p class="qtext word">${esc(q.prompt)}</p>${showMap}${ans}${hintTxt}${r6hint(q,st)}${fb}
   <div class="row between"><div class="row">${!st.done&&q.kind==='type'?`<button class="btn" data-act="gcheck">Check answer</button>`:''}${!st.done&&r.game!=='gtest'?`<button class="btn quiet" data-act="ghint">${q.kind==='map'?'Show the region':'Show a hint'}</button>`:''}</div>
   ${st.done?`<button class="btn" id="gnextbtn" data-act="gnext" ${copyOk?'':'disabled'}>${last?'See my results':'Next question'}</button>`:''}</div></section>`;
 }
@@ -2949,11 +2952,6 @@ function sessStars(sub,kind,correct){
 const PLAYBOOK_BONUS=25;
 function todaySubs(list){const k=dayNo(nowMs()),set=new Set();(list||S.sessions).forEach(s=>{if(dayNo(s.ts)===k)set.add(subjOf(s))});return set}
 const playbookDone=set=>set.has('math')&&set.has('spell')&&(set.has('es')||set.has('geo'));
-function withPlaybook(sub,stars){
-  const had=todaySubs(),now=new Set(had);now.add(sub);
-  const bonus=!playbookDone(had)&&playbookDone(now)?PLAYBOOK_BONUS:0;
-  return{stars:Math.min(100,stars+bonus),bonus};
-}
 /* ----- the session counter ----- */
 function sessCounts(){
   const k=dayNo(nowMs()),c={};
@@ -2969,13 +2967,6 @@ function counterHtml(only){
   const tile=([id,name])=>{const o=c[id],col=SUBCOL[id];
     return`<div class="cnt ${S.bump===id?'bump':''}" data-sub="${id}" style="--c1:${col[0]};--c2:${col[1]}"><span class="cn">${name}</span><b class="num" aria-label="${o.total} ${name} sessions">${o.total}</b><span class="cp">${pips(o.total)}</span><small>${o.today?`+${o.today} today`:'none today'}</small></div>`};
   return`<section class="counter" role="group" aria-label="Sessions finished, by subject"><div class="row between"><h3>Sessions finished</h3><span class="pill plain"><span class="num" id="cnt-all">${c.all.total}</span> in all</span></div><div class="cnts">${list.map(tile).join('')}</div></section>`;
-}
-function playbookHtml(){
-  const set=todaySubs(),item=(ok,l)=>`<span class="pbi ${ok?'ok':''}"><i>${ok?'✓':''}</i>${l}</span>`;
-  const done=playbookDone(set);
-  return`<section class="playbook ${done?'done':''}"><div class="row between"><h3>Today's Playbook</h3><span class="pill">${done?'Bonus won!':'+'+PLAYBOOK_BONUS+' bonus stars'}</span></div>
-  <div class="pbs">${item(set.has('math'),'Math')}${item(set.has('spell'),'Spelling')}${item(set.has('es')||set.has('geo'),'Spanish or Geography')}</div>
-  <p class="mute">${done?'All three finished today. Great work!':'Finish one session of each to score the bonus.'}${isThu(nowMs())?' <b>Thursday: Spanish stars are worth 1.5 times as much today.</b>':''}</p></section>`;
 }
 /* ----- prizes: one list for everything Emmett can win ----- */
 function closetOpen(x,inf,stars){
@@ -3311,6 +3302,7 @@ function render(){
     default:h=homeView();
   }
   $app.innerHTML=h;
+  decorate();
   document.body.classList.toggle('hw',halloween());
   if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view;if(CELE_VIEWS.includes(S.view)||(isBday()&&S.view==='home'))confetti()}
   if(S.tdNew&&CELE_VIEWS.includes(S.view)){S.tdNew=false;setTimeout(tdOpen,700)}
@@ -3330,14 +3322,15 @@ function finish(){
     const hintOnly=st.ok&&st.helped&&!st.err;
     return{t:q.type,k:q.kind,ok:st.ok,h:st.helped?1:0,err:st.err||(hintOnly?'Needed a hint: '+TYPES[q.type].label:null),given:st.given};
   });
+  items.forEach((it,i)=>{it.lv=run.qs[i].lv||0;if(run.rv)it.rv=1});
   const correct=items.filter(i=>i.ok).length;
-  const pbk=withPlaybook('math',sessStars('math',exam?'test':'play',credit(items)));
-  const sess={ts:nowMs(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-run.t0)/1000)),stars:pbk.stars,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err}))};
+  const pbk=withPlaybook('math',sessStars('math',exam?'test':'play',credit(items)),mathActOf(run,items));
+  const sess={ts:nowMs(),mode:run.mode,home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-run.t0)/1000)),stars:pbk.stars,items:items.map(i=>({t:i.t,k:i.k,ok:i.ok,h:i.h||0,to:i.to||0,err:i.err,lv:i.lv||0,rv:i.rv||0}))};
   saveSession(sess);
   const now=stats().stars;
   const unlocked=closetNew(snap0);
   const stop=(Math.floor(now/400)>Math.floor(before/400)?['Touchdown! You reached the end zone!']:[]);
-  run.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
+  run.result=Object.assign({},sess,{items,unlocked,stop,pb:pbk.bonus,rep:pbk.repeat,room:roomWins(sess),hi:had&&sess.stars>prevBest});S.view='results';render();
 }
 function guidedSubmit(val){
   const q=run.qs[run.i],st=run.st[run.i];
@@ -3347,7 +3340,7 @@ function guidedSubmit(val){
   if(isRight(q,val)){st.done=true;st.ok=true;st.helped=st.tries>1||st.hint;st.msg='right';st.cheer=cheerPick()}
   else{
     if(!st.err)st.err=classify(q,val);
-    st.wrong.push(val);st.hint=true;
+    st.wrong.push(val);st.hint=true;st.hn=Math.max(st.hn||0,1);
     if(st.tries>=2){st.done=true;st.ok=false;st.msg='reveal'}else st.msg='retry';
   }
   render();
@@ -3411,7 +3404,7 @@ function act(a,v,d){
     case'gflip':{const o=S.gOpen||(S.gOpen=new Set());if(o.has(v))o.delete(v);else{o.add(v);const s=stateBy(v);say(s.name,s.cap)}render();break}
     case'gcheck':{const el=document.getElementById('gans');geoSubmit(el?el.value:'');break}
     case'gpick':geoSubmit(v);break;
-    case'ghint':geo.st[geo.i].hinted=true;render();break;
+    case'ghint':{const q=geo.qs[geo.i],st=geo.st[geo.i];st.hinted=true;if(q.kind==='mc'){const bad=q.choices.filter(c=>c!==q.ans&&!st.wrong.includes(String(c)));if(bad.length>1)st.wrong.push(String(pick(bad)))}render();break}
     case'gnext':if(geo.i<geo.qs.length-1){geo.i++;render()}else geoFinish();break;
     case'closet':S.from='room';S.view='closet';render();break;
     case'rm':setRoom(d.k,v);break;
@@ -3507,7 +3500,7 @@ function act(a,v,d){
     case'pick':
       if(r.mode==='exam'){r.answers[r.i]=v;render()}else guidedSubmit(v);break;
     case'check':{const el=document.getElementById('ans');guidedSubmit(el?el.value:'');break}
-    case'hint':r.st[r.i].hint=true;render();break;
+    case'hint':{const s=r.st[r.i];s.hint=true;s.hn=Math.min(Math.max(1,hintSteps(r.qs[r.i]).length),(s.hn||0)+1);render();break}
     case'prev':if(r.i>0){r.i--;render()}break;
     case'goto':r.i=Number(v);r.review=false;render();break;
     case'next':
@@ -3521,7 +3514,7 @@ function act(a,v,d){
 }
 
 ICON.es='<svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="currentColor"/><text x="12" y="13.4" text-anchor="middle" font-size="10" font-weight="800" fill="#fff" font-family="-apple-system,Inter,sans-serif">Ñ</text></svg>';
-const SUBTAG={math:['Math pays double','×2','Every right answer is worth about 2 stars, and a practice exam can pay up to 90.'],spell:['Spelling pays double','×2','Every right answer is worth about 2 stars, and the Practice Test can pay up to 90.'],geo:['Geography pays more now','×2','Every right answer is worth about 2 stars.']};
+const SUBTAG={math:['Math pays double','×2','A right answer on the first try, with no hint, earns about 2 stars. A hint or a second try earns half. Each activity scores once a day, and a practice exam can pay up to 90.'],spell:['Spelling pays double','×2','A right answer on the first try, with no hint, earns about 2 stars. A hint or a second try earns half. Each activity scores once a day, and the Practice Test can pay up to 90.'],geo:['Geography pays more now','×2','A right answer on the first try, with no hint, earns about 2 stars. A hint or a second try earns half. Each activity scores once a day.']};
 function subjHero(sub){
   const t=SUBTAG[sub],col=SUBCOL[sub];
   return`<section class="pagehero" style="--c1:${col[0]};--c2:${col[1]}"><div><b>${t[0]}</b><span>${t[2]}</span></div><div class="x">${t[1]}</div></section>`;
@@ -3652,11 +3645,11 @@ function esTilePlace(i){
 function esFinish(){
   const g=es.game,items=es.qs.map((q,i)=>{const st=es.st[i];return{t:'es',g,w:q.k,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap=closetSnap(),mBefore=esMastered().map(w=>w.id);
-  const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',credit(items)));
+  const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',credit(items)),'es:'+g);
   const sess={ts:nowMs(),mode:'es',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((nowMs()-es.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);S.bump='es';
   const now=stats().stars;
-  es.result=Object.assign({},sess,{pb:pbk.bonus,thu:isThu(nowMs()),
+  es.result=Object.assign({},sess,{pb:pbk.bonus,rep:pbk.repeat,thu:isThu(nowMs()),
     missed:es.qs.map((q,i)=>({q,st:es.st[i]})).filter(x=>!x.st.ok),
     newly:esMastered().filter(w=>!mBefore.includes(w.id)).map(w=>w.es),
     unlocked:closetNew(snap),
@@ -3671,7 +3664,7 @@ function esView(){
     return`<button class="skill ${(S.eslesson||ES_LESSONS[0].id)===l.id?'cur':''}" data-act="eslesson" data-v="${l.id}"><b>${esc(l.name)}</b><span class="track2"><span class="fill" style="width:${p}%"></span></span><small>${esc(l.note)} · ${mm} of ${l.words.length} mastered</small></button>`};
   const gm=([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="esgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`;
   return nav('Spanish')+`<div class="largehead"><h1>Spanish <small class="hola">¡Hola!</small></h1><p class="mute">Spanish class is on Thursdays. Practice here and earn the most stars and yards of any subject.</p></div>
-  <section class="esbanner ${thu?'thu':''}"><div><b>${thu?'¡Hoy es jueves! Spanish day':'Spanish pays the most stars'}</b><span>${thu?'Every Spanish star counts 1.5 times today.':'Math and spelling pay about 2 stars for each right answer. Spanish pays about 4, and 6 on Thursdays.'}</span></div><div class="x">${thu?'×6':'×4'}</div></section>
+  <section class="esbanner ${thu?'thu':''}"><div><b>${thu?'¡Hoy es jueves! Spanish day':'Spanish pays the most stars'}</b><span>${thu?'Every Spanish star counts 1.5 times today.':'A clean right answer earns about 4 stars, and 6 on Thursdays. A hint or a second try earns half. Each activity scores once a day.'}</span></div><div class="x">${thu?'×6':'×4'}</div></section>
   ${counterHtml('es')}
   <section class="card"><div class="row between"><h3>Your words</h3><span class="pill">${m} of ${ES_ALL.length} mastered</span></div><p class="mute">Mastered means right on a Spanish Test. All the games use the words from <b>${esc(cur)}</b>. Pick a different set below.</p></section>
   <div class="sect">Games</div><section class="modes">${Object.entries(ES_GAMES).map(gm).join('')}
@@ -4630,8 +4623,148 @@ ROOM_DEFAULT.calendar='plain';
 ROOMSLOTS.calendar=['Wall calendar',[{id:'plain',name:'Classic',need:null,c:'#1B3F8F'},{id:'football',name:'Football season',need:null,c:'#2E8B4E'},{id:'dino',name:'Dino',need:null,c:'#3E9B4F'},{id:'space',name:'Space',need:null,c:'#1B2A55'}]];
 ROOMGROUPS[2][2].push('calendar');
 
+/* ================= Round 6, part B: one scored session per activity a day, spaced review, adaptive math ================= */
+(function(){const s=document.createElement('style');s.id='r6cssB';s.textContent=`
+.dn{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:999px;background:var(--good-bg);color:var(--good);font:800 .68rem/1.6 var(--f-ui);font-style:normal;letter-spacing:.02em;vertical-align:middle}
+button.pbi{font:inherit;color:inherit;cursor:pointer}
+.mrv{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.rvcard{display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--card);border-radius:20px;padding:14px 16px;box-shadow:var(--shadow);border-left:6px solid var(--accent)}
+.rvcard b{display:block}.rvcard span.s{color:var(--mute);font-size:.9rem;font-weight:600}
+`;document.head.appendChild(s)})();
+
+/* ----- which activity a finished session belongs to ----- */
+function sessAct(s){
+  const sub=subjOf(s),items=s.items||[];
+  if(sub==='nfl')return'nfl';
+  if(sub==='math'){
+    if(items.length&&items.every(i=>i.rv))return'math:review';
+    const ts=new Set(items.map(i=>i.t));
+    return'math:'+(s.mode==='guided'&&ts.size===1?'skill-'+[...ts][0]:s.mode);
+  }
+  return sub+':'+((items[0]&&items[0].g)||'x');
+}
+const todayActs=()=>{const k=dayNo(nowMs());return new Set(S.sessions.filter(s=>dayNo(s.ts)===k&&(s.stars||0)>0).map(sessAct))};
+/* an activity scores stars once a day. Playing it again is still practice, and tests still count toward mastery. */
+function withPlaybook(sub,stars,act){
+  if(act&&todayActs().has(act))return{stars:0,bonus:0,repeat:true};
+  const had=todaySubs(),now=new Set(had);now.add(sub);
+  const bonus=!playbookDone(had)&&playbookDone(now)?PLAYBOOK_BONUS:0;
+  return{stars:Math.min(100,stars+bonus),bonus,repeat:false};
+}
+const mathActOf=(r,items)=>r.rv?'math:review':'math:'+(r.mode==='guided'&&r.skill?'skill-'+r.skill:r.mode);
+
+/* ----- spaced review: items missed (or needing help) come back after 1, 3, 7, 14 and 30 days, until five clean answers in a row ----- */
+const SRS_GAPS=[1,3,7,14,30];
+function srsAttempts(sub){
+  const m=new Map();
+  S.sessions.slice().sort((a,b)=>b.ts-a.ts).forEach(s=>{
+    if(subjOf(s)!==sub)return;
+    (s.items||[]).forEach(i=>{
+      const key=sub==='math'?i.t:i.w;
+      if(!key||(sub==='geo'&&String(key).startsWith('fl')))return;
+      if(!m.has(key))m.set(key,[]);
+      m.get(key).push({ts:s.ts,ok:!!i.ok,h:!!i.h});
+    });
+  });
+  return m;
+}
+function srsDue(sub){
+  const today=dayNo(nowMs()),out=[];
+  srsAttempts(sub).forEach((atts,key)=>{
+    let streak=0;for(const a of atts){if(a.ok&&!a.h)streak++;else break}
+    if(streak>=5||!atts.slice(0,10).some(a=>!a.ok||a.h))return;
+    const due=dayNo(atts[0].ts)+SRS_GAPS[Math.min(streak,4)];
+    out.push({key,over:today-due,streak,due});
+  });
+  return out;
+}
+const srsDueNow=sub=>srsDue(sub).filter(x=>x.over>=0).sort((a,b)=>b.over-a.over||a.streak-b.streak);
+function srsNextDay(sub){const f=srsDue(sub).filter(x=>x.over<0).sort((a,b)=>a.due-b.due)[0];return f?f.due-dayNo(nowMs()):null}
+const REVIEW_MAX=10;
+function reviewItems(sub){
+  const due=srsDueNow(sub).map(x=>x.key);
+  if(sub==='spell')return due.filter(w=>allWords().includes(w)).slice(0,REVIEW_MAX);
+  if(sub==='es')return due.filter(id=>ES_ALL.some(w=>w.id===id)).slice(0,REVIEW_MAX);
+  if(sub==='geo')return due.filter(ab=>STATES.some(s=>s.ab===ab)).slice(0,REVIEW_MAX);
+  return due.filter(t=>TYPES[t]);
+}
+function reviewStart(sub){
+  const list=reviewItems(sub);if(!list.length)return;
+  if(sub==='spell'){startSpell('cards',shuffle(list));if(sp)sp.rv=true;return}
+  if(sub==='es'){
+    const kinds=['es2en','en2es','type','listen','tiles'];
+    const qs=list.map((id,i)=>{const w=ES_ALL.find(x=>x.id===id);let g=kinds[i%kinds.length];if(g==='tiles'&&!esTileOk(w))g='type';return esMake(g,w,ES_ALL)});
+    es={game:'review',qs,i:0,t0:nowMs(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null,placed:[],accent:false}))};
+    S.from='es';S.view='esrun';render();return;
+  }
+  if(sub==='geo'){
+    const kinds=['wcap','pcap','pstate','wstate','map'];
+    const qs=list.map((ab,i)=>geoBuild(kinds[i%kinds.length],'all',[STATES.find(s=>s.ab===ab)])[0]);
+    geo={game:'review',qs,i:0,t0:nowMs(),st:qs.map(()=>({tries:0,wrong:[],done:false,ok:false,h:false,hinted:false,given:'',msg:'',copy:'',err:null}))};
+    S.from='geo';S.view='grun';render();return;
+  }
+  const n=Math.max(6,Math.min(sessLen(),list.length*3)),types=[];
+  for(let i=0;i<n;i++)types.push(list[i%list.length]);
+  start('smart',null,types,true);
+}
+Object.defineProperty(ES_GAMES,'review',{value:{name:'Spaced review',d:'Words that need another look.',ic:'check'},enumerable:false});
+Object.defineProperty(GEO_GAMES,'review',{value:{name:'Spaced review',d:'States that need another look.',ic:'check'},enumerable:false});
+const REVIEW_NAME={math:'questions',spell:'words',es:'words',geo:'states'};
+function reviewCard(sub){
+  const n=reviewItems(sub).length,col=SUBCOL[sub];
+  if(n)return`<section class="rvcard" style="border-left-color:${col[0]}"><div><b>Spaced review: ${n} ${n===1?REVIEW_NAME[sub].replace(/s$/,''):REVIEW_NAME[sub]} due</b><span class="s">These come back right when your brain is about to forget them.</span></div><button class="btn" data-act="rvstart" data-v="${sub}">Start review</button></section>`;
+  const nx=srsNextDay(sub);
+  return`<section class="rvcard" style="border-left-color:${col[0]}"><div><b>Spaced review</b><span class="s">${nx===null?'Nothing to review yet. Misses and hints show up here later.':`Nothing due today. Your next review is in ${nx} day${nx===1?'':'s'}.`}</span></div></section>`;
+}
+
+/* ----- math that adapts: three levels per skill, picked from how the last answers went ----- */
+function mathLevel(t){
+  const atts=(srsAttempts('math').get(t)||[]).slice(0,8);
+  if(atts.length<4)return 2;
+  const sc=atts.reduce((n,a)=>n+(a.ok?(a.h?.5:1):0),0)/atts.length;
+  if(atts.length>=6&&sc>=.85)return 3;
+  if(sc<.5)return 1;
+  return 2;
+}
+function qDifficulty(q){
+  const nums=(q.text.match(/\d[\d,]*(\.\d+)?/g)||[]).map(x=>x.replace(/,/g,''));
+  return nums.reduce((n,x)=>n+x.length+1.5,0)+q.steps.length*2+String(q.ans).length;
+}
+function makeQL(type,fmt,level){
+  if(level===2)return Object.assign(makeQ(type,fmt),{lv:2});
+  const c=[];for(let i=0;i<7;i++)c.push(makeQ(type,fmt));
+  c.sort((a,b)=>qDifficulty(a)-qDifficulty(b));
+  const q=level===1?c[Math.floor(Math.random()*2)]:c[c.length-1-Math.floor(Math.random()*2)];
+  return Object.assign(q,{lv:level});
+}
+
+/* ----- after every screen draw: review cards on subject screens and "scored today" tags ----- */
+function decorate(){
+  const sub={math:'math',spell:'spell',es:'es',geo:'geo'}[S.view];
+  if(sub){const h=document.querySelector('.largehead');if(h&&!document.querySelector('.rvcard'))h.insertAdjacentHTML('afterend',reviewCard(sub))}
+  const done=todayActs();
+  const key=(a,v)=>a==='spgame'||a==='spstart'?'spell:'+v:a==='gstart'?'geo:'+v:a==='esgame'?'es:'+v:a==='start'?'math:'+v:a==='skill'?'math:skill-'+v:null;
+  document.querySelectorAll('[data-act="spgame"],[data-act="spstart"],[data-act="gstart"],[data-act="esgame"],[data-act="start"],[data-act="skill"]').forEach(el=>{
+    const k=key(el.getAttribute('data-act'),el.getAttribute('data-v'));
+    if(k&&done.has(k)&&!el.querySelector('.dn')){const t=el.querySelector('h3,b');if(t)t.insertAdjacentHTML('beforeend','<em class="dn">Scored today ✓</em>')}
+  });
+}
+
+/* ----- Today's Mission ----- */
+function missionHtml(){
+  const set=todaySubs(),done=playbookDone(set),thu=isThu(nowMs());
+  const item=(ok,l,v)=>`<button class="pbi ${ok?'ok':''}" data-act="nav" data-v="${v}"><i>${ok?'✓':''}</i>${l}</button>`;
+  const rv=SCHOOL.map(s=>[s,reviewItems(s).length]).filter(x=>x[1]);
+  return`<section class="playbook ${done?'done':''}"><div class="row between"><h3>Today's Mission</h3><span class="pill">${done?'Bonus won!':'+'+PLAYBOOK_BONUS+' bonus stars'}</span></div>
+  <div class="pbs">${item(set.has('math'),'Math','math')}${item(set.has('spell'),'Spelling','spell')}${item(set.has('es')||set.has('geo'),thu?'Spanish (×1.5 today)':'Spanish or Geography','es')}</div>
+  <p class="mute">${done?'All three finished today. Great work!':'Finish one session of each to score the bonus.'}${thu?' <b>Thursday: Spanish stars are worth 1.5 times as much today.</b>':''}</p>
+  ${rv.length?`<div class="mrv"><span class="mute"><b>Review due:</b></span>${rv.map(([s,n])=>`<button class="chip" data-act="rvstart" data-v="${s}">${SUBNAME[s]} · ${n}</button>`).join('')}</div>`:'<p class="mute">Nothing due for review today.</p>'}
+  <p class="mute">Each activity scores stars once a day. Playing it again is great practice, but it will not add stars.</p></section>`;
+}
+
 function r6act(a,v,d){
   switch(a){
+    case'rvstart':reviewStart(v);return true;
     case'calmo':S.calOff=v==='0'?0:(S.calOff||0)+Number(v);render();return true;
   }
   return false;
