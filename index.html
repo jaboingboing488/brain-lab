@@ -750,7 +750,7 @@ function saveSession(s){
 }
 
 /* ---------- derived stats ---------- */
-const mathSess=()=>S.sessions.filter(s=>s.mode!=='spell'&&s.mode!=='nfl'&&s.mode!=='geo');
+const mathSess=()=>S.sessions.filter(s=>s.mode!=='spell'&&s.mode!=='nfl'&&s.mode!=='geo'&&s.mode!=='es');
 const nflSess=()=>S.sessions.filter(s=>s.mode==='nfl');
 function stats(){
   /* football is extra: its sessions give stars (plus collection prizes) but do not count toward the school streak */
@@ -777,7 +777,7 @@ function badges(st){
   const okIn=ks=>st.items.filter(i=>ks.includes(i.t)&&i.ok).length;
   const big=exams.filter(s=>pct(s)>=85).length;
   const jump=exams.some((s,i)=>i>0&&pct(s)-pct(exams[i-1])>=10);
-  const perfect=S.sessions.some(s=>s.mode!=='exam'&&s.mode!=='nfl'&&s.mode!=='spell'&&s.mode!=='geo'&&s.total>=10&&s.correct===s.total&&(s.items||[]).every(i=>i.ok&&!i.h));
+  const perfect=S.sessions.some(s=>s.mode!=='exam'&&s.mode!=='nfl'&&s.mode!=='spell'&&s.mode!=='es'&&s.mode!=='geo'&&s.total>=10&&s.correct===s.total&&(s.items||[]).every(i=>i.ok&&!i.h));
   return[
     {l:'F',n:'First Kick',d:'Finish your first session',on:st.sessions>=1},
     {l:'H',n:'Hat Trick',d:'Practice 3 days in a row',on:st.streak>=3},
@@ -1302,7 +1302,7 @@ const SP_GAMES={
 const SP_ERR={blank:'Left blank',missing:'Left out a letter',extra:'Added an extra letter',swap:'Swapped two letters',vowel:'Wrong vowel',otherl:'Wrong letter',double:'Doubled a letter the wrong way',ie:'Mixed up ie and ei',ending:'Wrong word ending'};
 const customLists=()=>store.get('bl.lists',[]);
 const spLists=()=>LESSONS.concat(customLists());
-const spellSess=()=>S.sessions.filter(s=>s.mode==='spell'&&subjOf(s)!=='es');
+const spellSess=()=>S.sessions.filter(s=>subjOf(s)==='spell');
 const allWords=()=>[...new Set(spLists().flatMap(l=>l.words))];
 const sentOf=w=>SENT[w]||null;
 const blankSent=w=>{const s=sentOf(w);return s?s.replace(new RegExp('\\b'+w+'\\b','i'),'_____'):null};
@@ -2870,11 +2870,12 @@ function rackArt(id){
 
 
 /* ---------- Round 4: school work earns the most ---------- */
-/* Spanish sessions are saved as mode 'spell' with items tagged t:'es' (the database rules already accept that), so no rules change is needed. */
+/* Spanish sessions have their own mode, 'es' (the database rules must list it). Older ones saved as 'spell' with items tagged t:'es' still count as Spanish. */
 const SUBJECTS=[['es','Spanish'],['math','Math'],['spell','Spelling'],['geo','Geography'],['nfl','Football']];
 const SUBNAME={es:'Spanish',math:'Math',spell:'Spelling',geo:'Geography',nfl:'Football Club'};
 function subjOf(s){
-  if(s.mode==='spell')return(s.items||[]).length&&s.items[0].t==='es'?'es':'spell';
+  if(s.mode==='es')return'es';
+  if(s.mode==='spell')return(s.items||[]).length&&s.items[0].t==='es'?'es':'spell';/* older Spanish sessions saved before Spanish had its own type */
   return s.mode==='geo'?'geo':s.mode==='nfl'?'nfl':'math';
 }
 const isThu=ts=>new Date(ts).getDay()===4;
@@ -3601,7 +3602,7 @@ function esFinish(){
   const g=es.game,items=es.qs.map((q,i)=>{const st=es.st[i];return{t:'es',g,w:q.k,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap=closetSnap(),mBefore=esMastered().map(w=>w.id);
   const pbk=withPlaybook('es',sessStars('es',g==='test'?'test':'play',correct));
-  const sess={ts:Date.now(),mode:'spell',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-es.t0)/1000)),stars:pbk.stars,items};
+  const sess={ts:Date.now(),mode:'es',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-es.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);S.bump='es';
   const now=stats().stars;
   es.result=Object.assign({},sess,{pb:pbk.bonus,thu:isThu(Date.now()),
