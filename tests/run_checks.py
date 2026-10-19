@@ -37,6 +37,7 @@ runs = [
   ('read aloud', 'audio.js', ['--now', NOW]),
   ('prizes, birthday, kicks, rules shape', 'misc.js', ['--now', NOW]),
   ('family card', 'family_card.js', ['--now', NOW]),
+  ('test browsers can never reach the real data', 'live_guard.js', ['--now', NOW, '--seed', os.path.join(S, 'linked.json'), '--live-guard-test']),
   ('wizard list: before November 4', 'wizard_list.js', ['--now', '2026-11-03T12:00:00-05:00']),
   ('wizard list: November 4', 'wizard_list.js', ['--now', '2026-11-04T08:00:00-05:00']),
   ('wizard list: school list added', 'wizard_list.js', ['--now', '2026-11-04T08:00:00-05:00', '--seed', os.path.join(S, 'school_list.json')]),

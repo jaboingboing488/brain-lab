@@ -14,10 +14,10 @@ def find_chrome():
 ap = argparse.ArgumentParser()
 ap.add_argument('test'); ap.add_argument('--now'); ap.add_argument('--seed'); ap.add_argument('--size', default='500x900')
 ap.add_argument('--shot'); ap.add_argument('--html', default=os.path.join(os.path.dirname(__file__), '..', 'index.html'))
-ap.add_argument('--wait', type=int, default=900); ap.add_argument('--dpr', default='1'); ap.add_argument('--frame')
+ap.add_argument('--wait', type=int, default=900); ap.add_argument('--dpr', default='1'); ap.add_argument('--frame'); ap.add_argument('--live-guard-test', action='store_true')
 a = ap.parse_args()
 html = open(a.html, encoding='utf-8').read()
-pre = ['window.__NODB=1;']  # tests never reach the live sync service
+pre = [] if a.live_guard_test else ['window.__NODB=1;']  # tests never reach the live sync service (the guard test leaves this off to prove the page's own guard works)
 if a.now:
     ms = int(datetime.datetime.fromisoformat(a.now).timestamp() * 1000)
     pre.append('window.__NOW=%d;' % ms)
