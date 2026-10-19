@@ -346,6 +346,38 @@ body.hw .tab.on{color:#FF9A3C}
 .item .tag{display:inline-block;font:800 .6rem var(--f-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin-left:6px}
 @media(prefers-reduced-motion:reduce){.subj,.cnt b,.esbanner.thu,.combo{animation:none!important;transition:none!important}}
 @media(max-width:380px){.subjgrid{grid-template-columns:1fr}.subj.wide{grid-column:auto}}
+/* ---- Round 5 ---- */
+.affirm{position:relative;overflow:hidden;color:#fff;border-radius:24px;padding:20px 20px 16px;background:linear-gradient(135deg,var(--c1),var(--c2));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px}
+.affirm::after{content:"";position:absolute;right:-30px;bottom:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.14)}
+.affirm .afv{align-self:flex-start;background:rgba(255,255,255,.95);color:var(--c1);font:800 .72rem var(--f-ui);letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:99px}
+.affirm p{margin:0;font:800 1.3rem/1.3 var(--f-ui);color:#fff;position:relative;z-index:1}
+.affirm small{opacity:.9;font-weight:700;position:relative;z-index:1}
+.bday{position:relative;overflow:hidden;border-radius:28px;padding:22px 20px 20px;color:#fff;background:linear-gradient(135deg,#1B3F8F,#0076B6 45%,#F59F00);box-shadow:0 0 0 4px #FFD84D,var(--shadow);display:flex;flex-direction:column;gap:10px;text-align:center}
+.bday h2{margin:0;font:800 1.7rem/1.1 var(--f-ui);color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.25)}
+.bday p{margin:0;font-weight:600;color:#fff}
+.bday .row{justify-content:center}
+.bday.soon{padding:14px 18px;text-align:left;box-shadow:var(--shadow);background:linear-gradient(135deg,#1B3F8F,#3F6FD8)}
+.bday.soon b{display:block}.bday.soon span{font-size:.85rem;font-weight:600;opacity:.95}
+.bdbal{display:flex;justify-content:center;gap:10px;height:34px}
+.bdbal i{width:24px;height:30px;border-radius:50% 50% 48% 48%;display:block;animation:float 2.2s ease-in-out infinite;position:relative}
+.bdbal i::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:10px;background:rgba(255,255,255,.7)}
+@keyframes float{50%{transform:translateY(-10px) rotate(4deg)}}
+.tdm{position:fixed;inset:0;z-index:40;background:rgba(5,15,30,.72);display:grid;place-items:center;padding:16px}
+.tdbox{background:var(--card);color:var(--ink);border-radius:26px;padding:22px;max-width:480px;width:100%;max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);border-top:6px solid #F59F00}
+.tdbox h2{margin:0}.tdbox p{margin:0}
+.tdopts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tdopt{text-align:left;border-radius:18px;padding:14px;background:var(--accent-soft);color:var(--ink);display:flex;flex-direction:column;gap:4px;min-height:84px;box-shadow:inset 0 0 0 2px var(--line)}
+.tdopt b{font-size:1.05rem}.tdopt span{font-size:.78rem;font-weight:600;color:var(--mute)}
+.tdopt.hot{background:linear-gradient(135deg,#FFE8A8,#FFC94D);color:#3A2A00}.tdopt.hot span{color:#6B4F00}
+.tdopt:hover,.tdopt:focus-visible{box-shadow:inset 0 0 0 3px var(--accent)}
+.tdprize{display:grid;place-items:center;background:var(--accent-soft);border-radius:20px;padding:10px}
+.tdbanner{display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:22px;padding:14px 16px;background:linear-gradient(135deg,#FFE8A8,#FFC94D);color:#3A2A00;box-shadow:var(--shadow)}
+.tdbanner b{display:block}.tdbanner span{font-size:.82rem;font-weight:600}
+.critgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.crit{background:var(--card2);border-radius:16px;padding:6px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:inset 0 0 0 1px var(--line)}
+.crit small{font-size:.66rem;font-weight:700;color:var(--mute);line-height:1.2}
+.crit.lock{opacity:.7}
+@media(max-width:420px){.tdopts{grid-template-columns:1fr}}
 </style>
 </head><body>
 <div id="app"></div>
@@ -743,7 +775,9 @@ function pushSession(s){
 }
 function saveSession(s){
   s.id='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  const tdB=Math.floor(stats().stars/400);
   S.sessions.unshift(s);
+  {const tdA=Math.floor(stats().stars/400);if(tdA>tdB){tdAdd(tdA-tdB);S.tdNew=true}}
   if(dbSessions)dbSessions.unshift(s);
   pending.add(s.id);saveLocalCopy();S.bump=subjOf(s);
   pushSession(s);
@@ -998,6 +1032,7 @@ function getAv(){
   const a=Object.assign({skin:2,hair:1,style:'waves',outfit:0,bandc:2,head:'',top:'tee',extra:[]},store.get('bl.avatar',{}));
   if(!Array.isArray(a.extra))a.extra=[];
   a.room=Object.assign({},ROOM_DEFAULT,a.room||{});
+  a.room.critters=Array.isArray(a.room.critters)?a.room.critters.slice():[];
   return a;
 }
 const shade=(h,k)=>{const n=parseInt(h.slice(1),16);return'#'+[n>>16,(n>>8)&255,n&255].map(v=>Math.max(0,Math.min(255,Math.round(v*k))).toString(16).padStart(2,'0')).join('')};
@@ -1041,7 +1076,7 @@ function avatarSvg(c){
     top=`<defs><linearGradient id="ag-sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD95A"/><stop offset="1" stop-color="#F5A623"/></linearGradient><clipPath id="snc"><path d="${TORSO}"/></clipPath></defs><path d="${TORSO}" fill="url(#ag-sun)"/><g clip-path="url(#snc)"><circle cx="82" cy="108" r="8.4" fill="#FF6B2C"/><circle cx="82" cy="108" r="11.4" fill="none" stroke="#FF6B2C" stroke-width="1.2" stroke-dasharray="2 2.4"/><path d="M16 123Q28 118 40 123T64 123T88 123T112 123V130H16Z" fill="#1FB5C9"/><path d="M16 127Q28 122 40 127T64 127T88 127T112 127V130H16Z" fill="#0F8FA5"/><path d="M40 122Q42 110 38 100" fill="none" stroke="#7A4A22" stroke-width="2.4" stroke-linecap="round"/><path d="M38 100Q30 94 24 98M38 100Q32 92 40 90M38 100Q46 92 54 96M38 100Q48 100 52 106M38 100Q30 102 26 108" fill="none" stroke="#1F8A4C" stroke-width="2.6" stroke-linecap="round"/><path d="M38 100Q32 96 28 99" fill="none" stroke="#58C77F" stroke-width=".9" stroke-linecap="round"/></g><path d="M47 93Q60 106 73 93" fill="none" stroke="#C97A10" stroke-width="3.4" stroke-linecap="round"/>`;
   }
   {const g=WGEN[c.top];if(g&&g.slot==='top')top=genTopArt(g)}
-  const head=`<rect x="52" y="82" width="16" height="16" rx="6" fill="${skin}"/><circle cx="30.6" cy="62" r="5.6" fill="${shade(skin,.92)}"/><circle cx="89.4" cy="62" r="5.6" fill="${shade(skin,.92)}"/><circle cx="30.8" cy="62.4" r="2.8" fill="${shade(skin,.78)}"/><circle cx="89.2" cy="62.4" r="2.8" fill="${shade(skin,.78)}"/><path d="M52 92Q60 98 68 92V98H52Z" fill="${shade(skin,.8)}" opacity=".55"/><circle cx="60" cy="58" r="30" fill="${skin}"/>`;
+  const head=`<rect x="52" y="82" width="16" height="16" rx="6" fill="${skin}"/><circle cx="30.6" cy="62" r="5.6" fill="${shade(skin,.92)}"/><circle cx="89.4" cy="62" r="5.6" fill="${shade(skin,.92)}"/><circle cx="30.8" cy="62.4" r="2.8" fill="${shade(skin,.78)}"/><circle cx="89.2" cy="62.4" r="2.8" fill="${shade(skin,.78)}"/><path d="M52 92Q60 98 68 92V98H52Z" fill="${shade(skin,.8)}" opacity=".55"/><defs><radialGradient id="sk${skin.slice(1)}" cx=".38" cy=".3" r=".85"><stop offset="0" stop-color="${shade(skin,1.1)}"/><stop offset=".6" stop-color="${skin}"/><stop offset="1" stop-color="${shade(skin,.84)}"/></radialGradient></defs><circle cx="60" cy="58" r="30" fill="url(#sk${skin.slice(1)})"/><ellipse cx="47" cy="43" rx="9" ry="4.6" fill="#fff" opacity=".1"/>`;
   let fringe=`<path d="${CAP}" fill="${hair}"/>`;
   if(c.style==='waves'){
     /* 360 waves: rows of ripples that spin out from the crown, kept inside the hairline */
@@ -1057,7 +1092,7 @@ function avatarSvg(c){
   if(c.style==='fade')fringe=`<path d="M33 50C32 12 88 12 87 50C84 42 78 38 72 37C66 36 54 36 48 37C42 38 36 42 33 50Z" fill="${hair}"/><path d="M29 56C29 48 31 44 33 42L33 56Z M91 56C91 48 89 44 87 42L87 56Z" fill="${hair}" opacity=".35"/>`;
   if(c.style==='twists')fringe+=[34,42,50,58,66,74].map((x,i)=>`<rect x="${x}" y="${12+(i%2)*3}" width="8" height="22" rx="4" fill="${hair}"/>`).join('');
   if(c.style==='buzz')fringe=`<path d="${CAP}" fill="${hair}" opacity=".6"/>`;
-  const brow=shade(hair,.85),face=`<circle cx="50" cy="62" r="3.4" fill="#0B2233"/><circle cx="70" cy="62" r="3.4" fill="#0B2233"/><circle cx="51.1" cy="60.8" r="1.1" fill="#fff"/><circle cx="71.1" cy="60.8" r="1.1" fill="#fff"/><path d="M43.6 54.4Q50 51 56 54" stroke="${brow}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M64 54Q70 51 76.4 54.4" stroke="${brow}" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="43" cy="71" r="4.4" fill="#E5674A" opacity=".16"/><circle cx="77" cy="71" r="4.4" fill="#E5674A" opacity=".16"/><path d="M52 72Q60 80 68 72" stroke="#0B2233" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M60 64L58 69L62 69" stroke="rgba(0,0,0,.25)" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  const brow=shade(hair,.85),face=`<circle cx="50" cy="62" r="3.4" fill="#0B2233"/><circle cx="70" cy="62" r="3.4" fill="#0B2233"/><circle cx="51.1" cy="60.8" r="1.1" fill="#fff"/><circle cx="71.1" cy="60.8" r="1.1" fill="#fff"/><path d="M43.6 54.4Q50 51 56 54" stroke="${brow}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M64 54Q70 51 76.4 54.4" stroke="${brow}" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="43" cy="71" r="4.4" fill="#E5674A" opacity=".16"/><circle cx="77" cy="71" r="4.4" fill="#E5674A" opacity=".16"/><path d="M52 72Q60 80 68 72" stroke="#0B2233" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M60 64L58 69L62 69" stroke="rgba(0,0,0,.25)" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M46 59.4Q50 57 54 59.4M66 59.4Q70 57 74 59.4" stroke="${shade(skin,.55)}" stroke-width="1.2" fill="none" stroke-linecap="round"/><path d="M38 27Q50 17 66 20" stroke="rgba(255,255,255,.16)" stroke-width="3" fill="none" stroke-linecap="round"/>`;
   let hd='';
   if(c.head==='band'){const sc=lum(bc)>.6?'#0B2233':'#fff';hd=`<path d="M29 46Q60 36 91 46V54Q60 44 29 54Z" fill="url(#${gid}b)"/><path d="M29 49.5Q60 39.5 91 49.5" fill="none" stroke="${sc}" stroke-width="1.4" opacity=".6"/><path d="M29 52Q60 42 91 52" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="1"/><path d="M31 47.2Q60 37.4 89 47.2" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="1 2.2" opacity=".35"/>`}
   if(c.head==='champ')hd=`<path d="M29 46Q60 33 91 46V55Q60 42 29 55Z" fill="url(#ag-gold)"/><path d="M31 48.5Q60 36 89 48.5M31 52.5Q60 40 89 52.5" fill="none" stroke="#7A5800" stroke-width=".9" stroke-dasharray="2 2" opacity=".7"/><circle cx="60" cy="42" r="6.2" fill="#101820" stroke="#FFE9A0" stroke-width="1.3"/>`+star(60,42,4.2,'#FFE9A0');
@@ -1178,7 +1213,8 @@ const gameOf=s=>(s.items&&s.items[0]&&s.items[0].g)||'';
 function wordLevel(att){
   if(!att||!att.length)return'n';
   const clean=a=>a.ok&&!a.h;
-  if(att.length>=2&&clean(att[0])&&clean(att[1]))return'm';
+  /* mastery is proven only on an official test: the latest test attempt for the word must be right */
+  const test=att.find(a=>a.t);if(test&&test.ok)return'm';
   if(!att[0].ok||att.slice(0,3).filter(a=>!clean(a)).length>=2)return't';
   return'l';
 }
@@ -1308,7 +1344,7 @@ const sentOf=w=>SENT[w]||null;
 const blankSent=w=>{const s=sentOf(w);return s?s.replace(new RegExp('\\b'+w+'\\b','i'),'_____'):null};
 function wordStats(){
   const m={};
-  spellSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w)(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h})}));
+  spellSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w)(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h,t:i.g==='test'})}));
   return m;
 }
 function trickyWords(){const st=wordStats();return shuffle(allWords().filter(w=>wordLevel(st[w])==='t')).slice(0,12)}
@@ -1577,7 +1613,7 @@ function spBadges(){
     {l:'O',n:'On Fire',d:'Practice spelling on 3 different days',on:days>=3},
     {l:'R',n:'Ready for Test Day',d:'Spell every word right on a Practice Test',on:ss.some(s=>gameOf(s)==='test'&&s.correct===s.total)},
     {l:'D',n:'Word Detective',d:'Find every word in a Word Hunt',on:ss.some(s=>gameOf(s)==='hunt'&&s.correct===s.total)},
-    {l:'S',n:'Super Speller',d:'Master 12 words (right 2 times in a row with no help)',on:mastered>=12}
+    {l:'S',n:'Super Speller',d:'Master 12 words by spelling them right on a Practice Test',on:mastered>=12}
   ];
 }
 /* ---------- football club (extra, not schoolwork) ---------- */
@@ -1911,7 +1947,7 @@ function homePicker(){
   <div class="row">${["Dad's home","Mom's home","iPad"].map(h=>`<button class="btn tint" data-act="sethome" data-v="${esc(h)}">${esc(h)}</button>`).join('')}</div></section>`;
 }
 function homeView(){
-  const home=nav('Brain Lab',S.home?`<button class="pill" data-act="rehome">${esc(S.home)}</button>`:'');
+  const home=nav("Emmett's Brain Lab",S.home?`<button class="pill" data-act="rehome">${esc(S.home)}</button>`:'');
   if(!S.home||S.view==='pickhome')return home+homePicker()+tabbar('home');
   const st=stats(),av=getAv(),last=S.sessions[0];
   const dr=drive(st.stars);
@@ -1922,8 +1958,9 @@ function homeView(){
   const wst=wordStats(),cur=spLists().find(l=>l.id===S.splist)||LESSONS[0];
   const mastered=cur.words.filter(w=>wordLevel(wst[w])==='m').length;
   return home+`
-  <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${avatarSvg(av)}</div>
-    <div class="who"><h2>${halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
+  ${bdayCard()}${tdBannerHtml()}
+  <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${avatarSvg(isBday()&&!av.head?Object.assign({},av,{head:'bdayhat'}):av)}</div>
+    <div class="who"><h2>${isBday()?'Happy Birthday, Emmett!':halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
     <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${sessCounts().all.total}</b><span>sessions</span></div></div>
     <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
   ${halloween()?`<section class="hwcard">${pumpkinSvg(46)}<div><b>Halloween season!</b><span>${hwMessage()}</span></div>${batSvg(34)}</section>`:''}
@@ -1939,12 +1976,7 @@ function homeView(){
   ${fbOn()?`<div class="sect">Just for fun</div><section class="modes">${m('fb','football','Football Club',`${nflInfo(nflSess()).teamsM.length} of 32 team cards won. Bonus prizes inside!`)}</section>`:''}
   ${last?`<p class="mute" style="padding-inline:6px">Last activity: ${esc(sessName(last))}, ${last.correct} of ${last.total} on ${fmtDate(last.ts)}.</p>`:''}
   <section class="spark"><b>Fun fact</b><p>${esc(fact)}</p></section>
-  <div class="sect">Your math bracelet</div>
-  <section class="card"><div class="bracelet">${badges(st).map(b=>`<div class="bead ${b.on?'':'off'}" title="${esc(b.n)}">${b.l}</div>`).join('')}</div>
-    <div class="dl">${badges(st).map(b=>`<div class="${b.on?'':'off'}"><b>${b.on?'★ ':''}${esc(b.n)}</b><span>${esc(b.d)}</span></div>`).join('')}</div></section>
-  <div class="sect">Your spelling bracelet</div>
-  <section class="card"><div class="bracelet">${spBadges().map(b=>`<div class="bead ${b.on?'':'off'}" title="${esc(b.n)}">${b.l}</div>`).join('')}</div>
-    <div class="dl">${spBadges().map(b=>`<div class="${b.on?'':'off'}"><b>${b.on?'★ ':''}${esc(b.n)}</b><span>${esc(b.d)}</span></div>`).join('')}</div></section>
+  ${affirmHtml()}
   ${tabbar('home')}`;
 }
 
@@ -1955,7 +1987,7 @@ function mathView(){
   const skill=k=>{const a=acc[k],p=a.n?Math.round(100*a.c/a.n):null;
     return`<button class="skill" data-act="skill" data-v="${k}"><b>${esc(TYPES[k].label)}</b><span class="track2"><span class="fill ${p!==null&&p<70?'low':''}" style="width:${p||0}%"></span></span><small>${p===null?'Not tried yet':p+'% right'}</small></button>`};
   return nav('Math')+`<div class="largehead"><h1>Math</h1><p class="mute">Pick one skill to practice, or play a mix.</p></div>
-  ${subjHero('math')}${counterHtml('math')}
+  ${subjHero('math')}${counterHtml('math')}${braceletHtml('math')}
   <div class="sect">Practice one skill</div>
   ${SKILL_SECTIONS.map(([t,ks])=>`<div class="sect" style="padding-top:0;color:var(--accent)">${t}</div><section class="skills">${ks.map(skill).join('')}</section>`).join('')}
   <div class="sect">Mixed practice</div>
@@ -2057,7 +2089,7 @@ function spellView(){
     return`<button class="skill" data-act="lesson" data-v="${esc(l.id)}"><b>${esc(l.name)}</b><span class="track2"><span class="fill" style="width:${p}%"></span></span><small>${esc(l.note||'')} · ${m} of ${l.words.length} mastered</small></button>`};
   const custom=customLists(),cur=lists.find(l=>l.id===S.splist)||LESSONS[0];
   return nav('Spelling')+`<div class="largehead"><h1>Spelling</h1><p class="mute">Each lesson teaches one pattern. Then you write the words from memory, because writing the letters is the part that makes spelling stick.</p></div>
-  ${subjHero('spell')}${counterHtml('spell')}
+  ${subjHero('spell')}${counterHtml('spell')}${braceletHtml('spell')}
   <div class="sect">Spelling games</div>
   <p class="mute" style="padding-inline:6px">All the games use the words from <b>${esc(cur.name)}</b>. Pick a different lesson below to change the words.</p>
   <section class="modes">${Object.entries(SP_GAMES).map(([k,g])=>`<button class="mode ${g.lead?'lead':''}" data-act="spgame" data-v="${k}"><span class="ic">${ICON[g.ic]}</span><span><h3>${g.name}</h3><span class="d">${g.d}</span></span>${ICON.next}</button>`).join('')}</section>
@@ -2069,7 +2101,7 @@ function spellView(){
     <button class="mode" data-act="lesson" data-v="tricky"><span class="ic">${ICON.pencil}</span><span><h3>Tricky words</h3><span class="d">Words that need more practice, picked from everything you have tried.</span></span>${ICON.next}</button>
     <button class="mode" data-act="lesson" data-v="all"><span class="ic">${ICON.shuffle}</span><span><h3>Mix of all words</h3><span class="d">${allWords().length} words from every lesson.</span></span>${ICON.next}</button>
   </section>
-  <p class="mute" style="padding-inline:6px">A word is mastered after you write it right two times in a row with no help. Hints and second tries count as learning, not mastered.</p>
+  <p class="mute" style="padding-inline:6px">A word is mastered when you spell it right on an official Practice Test. Games and practice help you learn, but only the test proves it.</p>
   ${tabbar('spell')}`;
 }
 function lessonView(){
@@ -2340,6 +2372,7 @@ const CAP_ALT={MN:['st paul','st. paul']};
 function lev(a,b){const m=a.length,n=b.length,d=[];for(let i=0;i<=m;i++){d[i]=[i];for(let j=1;j<=n;j++)d[i][j]=i?0:j}
   for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n]}
 const GEO_GAMES={
+  gtest:{name:'Capitals Test',d:'The official test: 10 capitals to write, no hints and one try each. Pass a state here to master it.',ic:'trophy'},
   wcap:{name:'Write the Capital',d:'See the state, then type its capital. Spelling counts!',ic:'pencil',lead:1},
   wstate:{name:'Write the State',d:'See the capital, then type the state it belongs to.',ic:'pencil'},
   map:{name:'Find the State',d:'Tap the right state on the map.',ic:'search'},
@@ -2392,10 +2425,10 @@ const FL_Q=[
 function geoSess(){return S.sessions.filter(s=>s.mode==='geo')}
 function geoStats(){
   const m={};
-  geoSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w&&i.g!=='fl')(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h})}));
+  geoSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w&&i.g!=='fl')(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h,t:i.g==='gtest'})}));
   return m;
 }
-const geoLevel=a=>!a||!a.length?'n':a.length>=2&&a[0].ok&&!a[0].h&&a[1].ok&&!a[1].h?'m':'l';
+const geoLevel=a=>{if(!a||!a.length)return'n';const t=a.find(x=>x.t);return t&&t.ok?'m':'l'};
 const geoMastered=()=>{const st=geoStats();return STATES.filter(s=>geoLevel(st[s.ab])==='m')};
 /* ----- running a game ----- */
 let geo=null;
@@ -2404,6 +2437,7 @@ function geoPickStates(region,n){
   return shuffle(STATES.filter(s=>region==='all'||s.r===region)).sort((a,b)=>rank[geoLevel(st[a.ab])]-rank[geoLevel(st[b.ab])]).slice(0,n);
 }
 function geoBuild(game,region){
+  if(game==='gtest')return geoBuild('wcap',region);
   if(game==='fl')return shuffle(FL_Q).slice(0,10).map((q,i)=>Object.assign({},q,{k:'fl'+i,fl:1,choices:q.kind==='mc'?shuffle([q.ans,...q.wrong]):undefined}));
   const list=geoPickStates(region,10);
   const near=(s,key)=>shuffle(STATES.filter(o=>o.ab!==s.ab&&o.r===s.r)).concat(shuffle(STATES.filter(o=>o.ab!==s.ab&&o.r!==s.r))).slice(0,3).map(o=>o[key]);
@@ -2444,14 +2478,14 @@ function geoSubmit(v){
   else{
     if(!st.err)st.err=geoErr(q,v);
     st.wrong.push(v);st.hinted=true;
-    if(st.tries>=2){st.done=true;st.ok=false;st.msg='reveal'}else st.msg='retry';
+    if(geo.game==='gtest'||st.tries>=2){st.done=true;st.ok=false;st.msg='reveal'}else st.msg='retry';
   }
   render();
 }
 function geoFinish(){
   const items=geo.qs.map((q,i)=>{const st=geo.st[i];return{t:'geo',g:geo.game,w:q.k,k:q.fl?'fl':q.state.r,ok:st.ok,h:st.h?1:0,err:st.ok&&!st.h?null:st.err||(st.ok?'Needed a hint':null)}});
   const correct=items.filter(i=>i.ok).length,before=stats().stars,snap0=closetSnap(),mBefore=geoMastered().map(s=>s.ab);
-  const pbk=withPlaybook('geo',sessStars('geo','play',correct));
+  const pbk=withPlaybook('geo',sessStars('geo',geo.game==='gtest'?'test':'play',correct));
   const sess={ts:Date.now(),mode:'geo',home:S.home||'',correct,total:items.length,secs:Math.min(7200,Math.round((Date.now()-geo.t0)/1000)),stars:pbk.stars,items};
   saveSession(sess);
   const now=stats().stars;
@@ -2483,13 +2517,15 @@ function geoView(){
   return nav('Geography')+`<div class="largehead"><h1>Geography</h1><p class="mute">Learn the 50 state capitals. Writing the capital yourself is the best way to remember how it is spelled.</p></div>
   ${subjHero('geo')}${counterHtml('geo')}
   <section class="card"><div class="row between"><h3>Your map</h3><span class="pill">${m} of 50 mastered</span></div>${tileMap()}
-    <p class="mute">Green tiles are mastered (right 2 times in a row with no hint). Blue tiles are in progress.</p></section>
+    <p class="mute">Green tiles are mastered (passed on a Capitals Test). Blue tiles are in progress.</p></section>
+  <div class="sect">Our home state</div>
+  <section class="modes"><button class="mode" data-act="flfacts"><span class="ic">${ICON.sun}</span><span><h3>Florida Fast Facts</h3><span class="d">${FL_FACTS.length} things to know about the Sunshine State.</span></span>${ICON.next}</button>${gm('fl')}</section>
   <div class="sect">Pick a region</div><div class="seg wrap">${chips}</div>
+  <div class="sect">Official test</div>
+  <section class="modes">${gm('gtest')}</section>
   <div class="sect">Games</div>
   <section class="modes">${['wcap','wstate','map','pcap','pstate'].map(gm).join('')}
     <button class="mode" data-act="gstudy"><span class="ic">${ICON.cards}</span><span><h3>Flash Cards</h3><span class="d">Flip through the states and capitals. No score, just learn.</span></span>${ICON.next}</button></section>
-  <div class="sect">Our home state</div>
-  <section class="modes"><button class="mode" data-act="flfacts"><span class="ic">${ICON.sun}</span><span><h3>Florida Fast Facts</h3><span class="d">${FL_FACTS.length} things to know about the Sunshine State.</span></span>${ICON.next}</button>${gm('fl')}</section>
   ${tabbar('geo')}`;
 }
 function gStudyView(){
@@ -2532,7 +2568,7 @@ function gRunView(){
   const copyOk=q.kind!=='type'||st.msg!=='reveal'||gnorm(st.copy)===gnorm(q.ans);
   return top+`<section class="card"><div class="row between"><span class="pill">Question ${r.i+1} of ${N}</span><span class="score pill plain">Points <span class="num">${good}</span></span></div>${raceTrack(r,f)}
   <p class="qtext word">${esc(q.prompt)}</p>${showMap}${ans}${hintTxt}${fb}
-  <div class="row between"><div class="row">${!st.done&&q.kind==='type'?`<button class="btn" data-act="gcheck">Check answer</button>`:''}${!st.done?`<button class="btn quiet" data-act="ghint">${q.kind==='map'?'Show the region':'Show a hint'}</button>`:''}</div>
+  <div class="row between"><div class="row">${!st.done&&q.kind==='type'?`<button class="btn" data-act="gcheck">Check answer</button>`:''}${!st.done&&r.game!=='gtest'?`<button class="btn quiet" data-act="ghint">${q.kind==='map'?'Show the region':'Show a hint'}</button>`:''}</div>
   ${st.done?`<button class="btn" id="gnextbtn" data-act="gnext" ${copyOk?'':'disabled'}>${last?'See my results':'Next question'}</button>`:''}</div></section>`;
 }
 function gResView(){
@@ -2556,7 +2592,7 @@ function geoProgress(){
   const byGame=Object.keys(GEO_GAMES).map(k=>{const a=items.filter(i=>i.g===k);return{k,n:a.length,c:a.filter(i=>i.ok&&!i.h).length}}).filter(x=>x.n);
   const bar=(label,p,right,low)=>`<div class="bar"><span>${label}</span><span class="track2"><span class="fill ${low?'low':''}" style="width:${p}%"></span></span><span class="num">${right}</span></div>`;
   return`<section class="card"><div class="row between"><h3>Geography</h3><span class="pill">${m.length} of 50 mastered</span></div>
-    <p class="mute">${ss.length} sessions. Mastered means right 2 times in a row with no hint.</p>${tileMap()}</section>
+    <p class="mute">${ss.length} sessions. Mastered means right on a Capitals Test.</p>${tileMap()}</section>
   <section class="card"><h3>Right with no hint, by game</h3>${byGame.map(x=>{const p=Math.round(100*x.c/x.n);return bar(esc(GEO_GAMES[x.k].name),p,p+'%',p<70)}).join('')}</section>
   <section class="card"><h3>Mistake patterns</h3>${rows.length?rows.map(([k,n])=>bar(esc(k),Math.round(100*n/mx),n,true)).join(''):'<p class="mute">No mistakes recorded yet.</p>'}</section>
   <section class="card"><h3>Still learning</h3>${need.length?`<p>${need.map(s=>`${esc(s.name)} (${esc(s.cap)})`).join(', ')}</p>`:'<p class="mute">Nothing yet.</p>'}</section>`;
@@ -2741,7 +2777,7 @@ function roomView(){
   <section class="roomcard">${roomSvg(cfg)}</section>
   <div class="row between"><button class="btn" data-act="closet">Open the closet</button><span class="pill">${pc.have} of ${pc.total} prizes won</span></div>
   <div class="seg wrap">${ROOMGROUPS.map(([k,l])=>`<button class="${grp===k?'on':''}" data-act="rgroup" data-v="${k}">${l}</button>`).join('')}</div>
-  <section class="card">${g[2].map(slot).join('')}</section>
+  <section class="card">${g[2].map(slot).join('')}${grp==='books'?critterPanel():''}</section>
   ${tabbar('room')}`;
 }
 const ckey=x=>x.nfl?1e9:x.need?x.eq:x.at;
@@ -2750,7 +2786,7 @@ function closetView(){
   const swc=(k,arr,label,names)=>`<div class="sect" style="padding-inline:0">${label}</div><div class="swatches">${arr.map((c,i)=>`<button class="swatch ${av[k]===i?'on':''}" style="background:${c}" data-act="av" data-k="${k}" data-v="${i}" aria-label="${label}: ${names?names[i]:i+1}" title="${names?names[i]:''}"></button>`).join('')}</div>`;
   const it=x=>{const un=closetOpen(x,inf,st.stars),on=x.slot==='extra'?av.extra.includes(x.id):av[x.slot]===x.id;
     return`<button class="item ${on?'on':''} ${un?'':'lock'}" ${un?'':'disabled'} data-act="av" data-k="item" data-v="${x.id}"><b>${x.name}</b><small>${un?(on?'Wearing it':'Tap to wear'):x.nfl?`Football Club prize: ${x.nfl}`:x.need?needText(x):`Unlocks at ${x.at} stars`}</small></button>`};
-  const sec=(title,slot,clear)=>`<div class="sect">${title}</div><section class="items">${clear||''}${ITEMS.filter(x=>x.slot===slot&&(!x.season||halloween())).sort((p,q)=>ckey(p)-ckey(q)).map(it).join('')}</section>`;
+  const sec=(title,slot,clear)=>`<div class="sect">${title}</div><section class="items">${clear||''}${ITEMS.filter(x=>x.slot===slot&&(!x.season||halloween())&&(!x.bday||bdayUnlocked())).sort((p,q)=>ckey(p)-ckey(q)).map(it).join('')}</section>`;
   return`<div class="navbar"><button class="back" data-act="nav" data-v="room">${ICON.chev}Room</button><span class="mid">Closet</span><span style="min-width:64px"></span></div>
   <div class="largehead"><h1>Closet</h1><p class="mute">You have <b class="num">${st.stars}</b> stars, and <b class="num">${schoolStars()}</b> of them are school stars from math, spelling, Spanish and geography. The newest prizes need school stars, so football stars do not count for them.</p>${prizeBar()}</div>
   <div class="avbig"><div style="width:190px;height:206px">${avatarSvg(av)}</div></div>
@@ -2839,7 +2875,7 @@ function deskB2(id){
   return null;
 }
 function shelfArt(style){
-  const bx=436,by=86;let b=RR(bx,by,80,6,'#8A5A33',2)+PP(`M${bx+8} ${by+6}V${by+16}L${bx+16} ${by+6}ZM${bx+64} ${by+6}V${by+16}L${bx+56} ${by+6}Z`,'#6B4423');
+  const bx=436,by=44;let b=RR(bx,by,80,6,'#8A5A33',2)+PP(`M${bx+8} ${by+6}V${by+16}L${bx+16} ${by+6}ZM${bx+64} ${by+6}V${by+16}L${bx+56} ${by+6}Z`,'#6B4423');
   const cup=(x,s)=>PP(`M${x-6*s} ${by}H${x+6*s}L${x+4*s} ${by-12*s}H${x-4*s}Z`,'url(#ag-gold)')+`<path d="M${x-4*s} ${by-9*s}H${x-8*s}Q${x-8*s} ${by-3*s} ${x-3*s} ${by-3*s}M${x+4*s} ${by-9*s}H${x+8*s}Q${x+8*s} ${by-3*s} ${x+3*s} ${by-3*s}" fill="none" stroke="#C9A227" stroke-width="1.4"/>`;
   const book=(x,w,h,c)=>RR(x,by-h,w,h,c,1,'stroke="rgba(0,0,0,.25)" stroke-width=".7"')+`<path d="M${x+2} ${by-h+4}H${x+w-2}" stroke="rgba(255,255,255,.6)" stroke-width="1"/>`;
   if(style==='trophies')b+=cup(458,1.1)+cup(480,.8)+`<circle cx="500" cy="${by-6}" r="5" fill="url(#ag-gold)" stroke="#8A6A12"/>`+star(500,by-6,3,'#8A6A12');
@@ -2892,8 +2928,9 @@ const schoolStars=()=>starsFrom(S.sessions,SCHOOL);
 const totalStars=()=>starsFrom(S.sessions)+nflInfo(nflSess()).bonus;
 /* stars for one finished session: math and spelling pay about double what they used to; Spanish pays the most */
 function sessStars(sub,kind,correct){
-  let s=sub==='es'?(kind==='test'?correct*5+10:correct*4+8):sub==='geo'?correct*2+3:(kind==='test'?correct*4+10:correct*2+4);
+  let s=sub==='es'?(kind==='test'?correct*5+10:correct*4+8):sub==='geo'?(kind==='test'?correct*3+8:correct*2+3):(kind==='test'?correct*4+10:correct*2+4);
   if(sub==='es'&&isThu(Date.now()))s=Math.round(s*1.5);
+  if(isBday())s*=2;
   return Math.min(100,s);
 }
 /* Today's Playbook: one math session, one spelling session, and one Spanish or geography session in a day earns a bonus */
@@ -2913,7 +2950,7 @@ function sessCounts(){
   c.all={total:S.sessions.length,today:Object.values(c).reduce((n,o)=>n+o.today,0)};
   return c;
 }
-const SUBCOL={es:['#E5412D','#F5A623'],math:['#0076B6','#2FA8E8'],spell:['#7B3FE4','#C06CFF'],geo:['#12875B','#3CC98E'],nfl:['#8A5A33','#D7A22A']};
+const SUBCOL={es:['#E5412D','#F5A623'],math:['#0076B6','#2FA8E8'],spell:['#4B3FD0','#3E8BFF'],geo:['#12875B','#3CC98E'],nfl:['#8A5A33','#D7A22A']};
 function counterHtml(only){
   const c=sessCounts(),list=only?SUBJECTS.filter(([id])=>id===only):SUBJECTS;
   const pips=n=>{const k=Math.min(n,20);return Array.from({length:20},(_,i)=>`<i class="${i<k?'on':''}"></i>`).join('')};
@@ -2934,10 +2971,10 @@ function closetOpen(x,inf,stars){
   if(x.need)return needMet(x);
   return(stars===undefined?stats().stars:stars)>=x.at;
 }
-const closetSnap=()=>{const inf=nflInfo(nflSess()),st=stats().stars;return ITEMS.filter(x=>!x.season&&closetOpen(x,inf,st)).map(x=>x.id)};
-const closetNew=snap=>{const inf=nflInfo(nflSess()),st=stats().stars;return ITEMS.filter(x=>!x.season&&!x.nfl&&!snap.includes(x.id)&&closetOpen(x,inf,st)).map(x=>x.name)};
+const closetSnap=()=>{const inf=nflInfo(nflSess()),st=stats().stars;return ITEMS.filter(x=>!x.season&&!x.bday&&closetOpen(x,inf,st)).map(x=>x.id)};
+const closetNew=snap=>{const inf=nflInfo(nflSess()),st=stats().stars;return ITEMS.filter(x=>!x.season&&!x.bday&&!x.nfl&&!snap.includes(x.id)&&closetOpen(x,inf,st)).map(x=>x.name)};
 function prizeList(){
-  const out=ITEMS.filter(x=>!x.season).map(x=>({key:'c:'+x.id,met:()=>closetOpen(x)})),seen=new Set();
+  const out=ITEMS.filter(x=>!x.season&&!x.bday).map(x=>({key:'c:'+x.id,met:()=>closetOpen(x)})),seen=new Set();
   Object.entries(ROOMSLOTS).forEach(([k,[l,opts]])=>opts.forEach(x=>{
     if(!x.need)return;const key='r:'+(/^p[1-4]$/.test(k)?'poster':k)+':'+x.id;
     if(seen.has(key))return;seen.add(key);out.push({key,met:()=>needMet(x)});
@@ -3060,7 +3097,6 @@ function roomSvg(c){
   s+=WALL_BACK(c);
   /* posters */
   [['p4',86],['p1',138],['p2',190],['p3',242]].forEach(([k,x])=>{if(c[k]&&c[k]!=='none')s+=`<g transform="translate(${x} 28)" filter="url(#f-sh)">${RR(-3,-3,50,62,'#fff',3,'stroke="rgba(0,0,0,.2)"')}${posterArt(c[k])}${RR(0,0,44,56,G('g-pg'+k,[[0,'rgba(255,255,255,.22)'],[.5,'rgba(255,255,255,0)']],1,1))}</g>`});
-  if(c.shelf&&c.shelf!=='none')s+=shelfArt(c.shelf);
   /* left wall pieces stay on the left edge: closet, hook rack, laundry, bean bag, blaster rack */
   s+=`<g transform="translate(${-SH} 0)">`;
   const dcol=DOORC[c.door]||DOORC.wood,dl=lum(dcol)>.6;
@@ -3104,6 +3140,8 @@ function roomSvg(c){
   s+='</g>';
   /* Emmett, standing in the room at room scale */
   s+=`<g data-act="closet" style="cursor:pointer" role="button" aria-label="Emmett. Tap to open the closet" transform="translate(206 294) scale(1.22)">${avatarFigure(av)}</g>`;
+  if(isBday())s+=bdayRoomArt();
+  s+=roomPolish();
   if(halloween()){
     const pk=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})">${pumpkinSvg(40).replace(/^<svg[^>]*>/,'').replace('</svg>','')}</g>`;
     s+=`<g opacity=".85" stroke="#fff" stroke-width=".9" fill="none"><path d="M0 0L52 52M0 0L26 66M0 0L66 24M0 0L8 70M0 0L70 6"/><path d="M12 0Q10 10 0 12M26 0Q22 22 0 26M42 0Q36 36 0 42M58 0Q50 50 0 58"/></g>`;
@@ -3193,7 +3231,7 @@ function spellProgress(){
   const tricky=allWords().filter(w=>lvl(w)==='t');
   const bar=(label,p,right,low)=>`<div class="bar"><span>${label}</span><span class="track2"><span class="fill ${low?'low':''}" style="width:${p}%"></span></span><span class="num">${right}</span></div>`;
   return`<section class="card"><h3>Score history</h3>${chart(ss)}</section>
-  <section class="card"><h3>Words mastered</h3><p class="mute">Mastered means spelled right with no help two times in a row.</p>
+  <section class="card"><h3>Words mastered</h3><p class="mute">Mastered means spelled right on an official Practice Test.</p>
   ${lists.map(l=>{const m=l.words.filter(w=>lvl(w)==='m').length,t=l.words.filter(w=>lvl(w)==='n').length;return bar(esc(l.name),Math.round(100*m/l.words.length),m+'/'+l.words.length)+(t===l.words.length?'':'')}).join('')}</section>
   <section class="card"><h3>Words that need work</h3>${tricky.length?`<div class="wchips">${tricky.map(w=>{const a=st[w];return`<span class="wchip"><i class="t"></i>${esc(w)} <span class="mute num">${a.filter(x=>x.ok&&!x.h).length}/${a.length}</span></span>`}).join('')}</div><p class="mute">The numbers show clean tries out of all tries. The Tricky words list on the Spelling page practices these.</p>`:'<p class="mute">No tricky words right now.</p>'}</section>
   <section class="card"><h3>Clean tries by activity</h3>${byGame.map(x=>bar(esc(SP_GAMES[x.k].name),Math.round(100*x.c/x.n),Math.round(100*x.c/x.n)+'%',x.c/x.n<.7)).join('')}</section>
@@ -3262,7 +3300,8 @@ function render(){
   }
   $app.innerHTML=h;
   document.body.classList.toggle('hw',halloween());
-  if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view;if(CELE_VIEWS.includes(S.view))confetti()}
+  if(lastView!==S.view){window.scrollTo(0,0);lastView=S.view;if(CELE_VIEWS.includes(S.view)||(isBday()&&S.view==='home'))confetti()}
+  if(S.tdNew&&CELE_VIEWS.includes(S.view)){S.tdNew=false;setTimeout(tdOpen,700)}
   if(!CELE_VIEWS.includes(S.view))S.bump=null;
   const a=document.getElementById('ans')||document.getElementById('spin')||document.getElementById('gans')||document.getElementById('gcopy')||document.getElementById('esans')||document.getElementById('escopy');
   if(a&&!a.disabled)a.focus({preventScroll:true});
@@ -3337,6 +3376,7 @@ document.addEventListener('keydown',e=>{
   }
   if(e.key!=='Enter')return;
   if(e.target.id==='spin'&&sp){e.preventDefault();act(sp.game==='test'?'spnext':'spcheck');return}
+  if(e.target.id==='tdin'){e.preventDefault();act('tdcheck');return}
   if(e.target.id==='esans'&&es){e.preventDefault();act('escheck');return}
   if(e.target.id==='escopy'&&es){e.preventDefault();const b=document.getElementById('esnextbtn');if(b&&!b.disabled)act('esnext');return}
   if(e.target.id==='gans'&&geo){e.preventDefault();geoSubmit(e.target.value);return}
@@ -3465,7 +3505,7 @@ function act(a,v,d){
       break;
     case'begin':r.started=true;r.tickAt=Date.now();render();break;
     case'submitExam':finish();break;
-    default:v2act(a,v,d);
+    default:if(a==='bdaypop')confetti();else if(a==='tdopen')tdOpen();else if(a.startsWith('td'))tdAct(a,v);else v2act(a,v,d);
   }
 }
 
@@ -3510,7 +3550,7 @@ const ES_GAMES={
   listen:{name:'Listen and pick',d:'Hear the Spanish word, then pick its meaning.',ic:'speaker'},
   type:{name:'Type the Spanish',d:'Write the Spanish word yourself. Writing makes it stick.',ic:'pencil'},
   tiles:{name:'Letter tiles',d:'Put the letters in order to spell the Spanish word.',ic:'shuffle'},
-  test:{name:'Spanish Quiz',d:'20 mixed questions, no hints. The most stars of any game.',ic:'trophy'}
+  test:{name:'Spanish Test',d:'The official test: 20 mixed questions, no hints. Words are mastered here, and it pays the most stars.',ic:'trophy'}
 };
 const esLesson=()=>ES_LESSONS.find(l=>l.id===S.eslesson)||ES_LESSONS[0];
 function esPool(){
@@ -3522,10 +3562,10 @@ const esName=()=>S.eslesson==='all'?'Everything':S.eslesson==='tricky'?'Tricky w
 const esSess=()=>S.sessions.filter(s=>subjOf(s)==='es');
 function esStats(){
   const m={};
-  esSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w)(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h})}));
+  esSess().slice().sort((a,b)=>b.ts-a.ts).forEach(s=>(s.items||[]).forEach(i=>{if(i.w)(m[i.w]=m[i.w]||[]).push({ok:!!i.ok,h:!!i.h,t:i.g==='test'})}));
   return m;
 }
-const esLevel=a=>!a||!a.length?'n':a.length>=2&&a[0].ok&&!a[0].h&&a[1].ok&&!a[1].h?'m':'l';
+const esLevel=a=>{if(!a||!a.length)return'n';const t=a.find(x=>x.t);return t&&t.ok?'m':'l'};
 const esMastered=()=>{const st=esStats();return ES_ALL.filter(w=>esLevel(st[w.id])==='m')};
 /* speaking Spanish: use a Spanish voice when the device has one */
 let esVoice=null;
@@ -3622,7 +3662,7 @@ function esView(){
   return nav('Spanish')+`<div class="largehead"><h1>Spanish <small class="hola">¡Hola!</small></h1><p class="mute">Spanish class is on Thursdays. Practice here and earn the most stars and yards of any subject.</p></div>
   <section class="esbanner ${thu?'thu':''}"><div><b>${thu?'¡Hoy es jueves! Spanish day':'Spanish pays the most stars'}</b><span>${thu?'Every Spanish star counts 1.5 times today.':'Math and spelling pay about 2 stars for each right answer. Spanish pays about 4, and 6 on Thursdays.'}</span></div><div class="x">${thu?'×6':'×4'}</div></section>
   ${counterHtml('es')}
-  <section class="card"><div class="row between"><h3>Your words</h3><span class="pill">${m} of ${ES_ALL.length} mastered</span></div><p class="mute">Mastered means right 2 times in a row with no hint. All the games use the words from <b>${esc(cur)}</b>. Pick a different set below.</p></section>
+  <section class="card"><div class="row between"><h3>Your words</h3><span class="pill">${m} of ${ES_ALL.length} mastered</span></div><p class="mute">Mastered means right on a Spanish Test. All the games use the words from <b>${esc(cur)}</b>. Pick a different set below.</p></section>
   <div class="sect">Games</div><section class="modes">${Object.entries(ES_GAMES).map(gm).join('')}
     <button class="mode" data-act="esstudy"><span class="ic">${ICON.cards}</span><span><h3>Flash Cards</h3><span class="d">Flip, listen and learn the words. No score.</span></span>${ICON.next}</button></section>
   <div class="sect">Lessons</div><section class="skills">${ES_LESSONS.map(lcard).join('')}</section>
@@ -3687,7 +3727,7 @@ function esProgress(){
   const rows=Object.entries(errs).sort((a,b)=>b[1]-a[1]),mx=rows.length?rows[0][1]:1;
   const byGame=Object.keys(ES_GAMES).map(k=>{const a=items.filter(i=>i.g===k);return{k,n:a.length,c:a.filter(i=>i.ok&&!i.h).length}}).filter(x=>x.n);
   const tricky=ES_ALL.filter(w=>esLevel(st[w.id])==='l');
-  return`<section class="card"><div class="row between"><h3>Spanish</h3><span class="pill">${esMastered().length} of ${ES_ALL.length} words mastered</span></div><p class="mute">${ss.length} sessions. Mastered means right 2 times in a row with no hint.</p>
+  return`<section class="card"><div class="row between"><h3>Spanish</h3><span class="pill">${esMastered().length} of ${ES_ALL.length} words mastered</span></div><p class="mute">${ss.length} sessions. Mastered means right on a Spanish Test.</p>
     ${ES_LESSONS.map(l=>{const m=l.words.filter(w=>esLevel(st[w.id])==='m').length;return bar(esc(l.name),Math.round(100*m/l.words.length),m+'/'+l.words.length)}).join('')}</section>
   <section class="card"><h3>Score history</h3>${chart(ss)}</section>
   <section class="card"><h3>Words that need work</h3>${tricky.length?`<div class="wchips">${tricky.map(w=>`<span class="wchip"><i class="t"></i>${esc(w.es)}</span>`).join('')}</div>`:'<p class="mute">None right now.</p>'}</section>
@@ -3873,6 +3913,7 @@ function genFront(id){
 const WGEN={};
 TOPS_GEN.concat(HATS_GEN,EXTRAS_GEN).forEach(x=>{WGEN[x.id]=x});
 
+
 /* ---------- Round 4: 93 new room prizes: seven new editable spots, 19 new posters, and new paint, floor and furniture choices ---------- */
 const TX=(x,y,t,c,sz,extra)=>`<text x="${x}" y="${y}" text-anchor="middle" style="fill:${c};font:800 ${sz}px Inter,system-ui,sans-serif;${extra||''}">${t}</text>`;
 const roomLine=(x1,y1,x2,y2,c,w)=>`<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${c}" stroke-width="${w||1}" stroke-linecap="round"/>`;
@@ -4001,7 +4042,13 @@ function headwallArt(id){
   }
   return'';
 }
-const WALL_BACK=c=>c.headwall&&c.headwall!=='none'?`<g transform="translate(90.6 17) scale(.72)">${headwallArt(c.headwall)}</g>`:'';
+const WALL_BACK=c=>{
+  let s='';
+  if(c.headwall&&c.headwall!=='none')s+=`<g transform="translate(90.6 17) scale(.72)">${headwallArt(c.headwall)}</g>`;
+  const all=(c.critters||[]).slice(-12);
+  s+=bigPosterArt(c.bigposter||'bigrex')+bookshelfArt(c.bookshelf||'wood',all.slice(0,9))+shelfDraw(c,all.slice(9));
+  return s;
+};
 const WALL_ART=c=>{let s='';
   if(c.banner&&c.banner!=='none')s+=bannerArt(c.banner);
   if(c.board&&c.board!=='none')s+=boardArt(c.board);
@@ -4059,6 +4106,14 @@ Object.assign(RACKC,{teal:'#0A7E8C'});
 Object.assign(DESKC,{navy:'#1B2A55',red:'#B31B1B'});
 Object.assign(FRAMEC,{navy:'#1B2A55',green:'#2E7D4F'});
 const NEWP=[];
+/* Round 5 spots: a bookshelf and a large wall poster (each with a starter), and decor choices for the wall shelf */
+Object.assign(ROOM_DEFAULT,{bookshelf:'wood',bigposter:'bigrex',critters:[]});
+ROOMSLOTS.bookshelf=['Bookshelf',[o('wood','Wood (starter)','',0,'#9A6A3A')]];
+ROOMSLOTS.bigposter=['Large wall poster',[o('bigrex','T. rex (starter)','',0,'#0F8F8B')]];
+ROOMSLOTS.shelf[1][0]=Object.assign({},NONE,{name:'Decor shelf (starter)'});
+ROOMGROUPS.push(['books','Books and shelves',['bookshelf','bigposter','shelf']]);
+ROOMGROUPS[4][2]=ROOMGROUPS[4][2].filter(k=>k!=='shelf');
+
 const addP=(kind,slot,id,name,cool,extra)=>NEWP.push(Object.assign({kind,slot,id,name,cool},extra||{}));
 const COOL_TOP={thunder:3,blaze:3,storm:3,num99:3,neoncam:3,circuit:3,arctic:2,desert:2,tiedye:2,goldstar:2};
 TOPS_GEN.forEach(x=>addP('closet','top',x.id,x.name,COOL_TOP[x.id]||1));
@@ -4077,12 +4132,12 @@ const NEWROOM={
 };
 const POSTERS_NEW=[['mult','Multiplication chart',1],['planets2','The planets',2],['esgreet','¡Hola! poster',2],['esflags','Spanish flags',3],['world','World map',2],['flmapp','Florida map',2],['manatee','Manatee',2],['gator','Gator',2],['pelican','Pelican',2],['jag','Jaguar',4],['trike','Triceratops',3],['astro','Astronaut',4],['volcano','Volcano',3],['sharkp','Shark',3],['soccerp','Soccer',2],['numline','Number line',1],['abc','Alphabet blocks',1],['enye','The letter Ñ',3],['castle','Spanish castle',3]];
 const NEWCOLORS=[
-  ['wall','lime','Lime','#DCEFA6',0],['wall','lavender','Lavender','#D9CCF2',0],['wall','coral','Coral','#F9C6B8',1],['wall','navy','Navy','#2D3F6E',2],['wall','mint','Mint','#BFEBD9',0],
-  ['floor','cherry','Cherry wood','#9A4B32',2],['floor','sand','Sand wood','#E8D9B0',1],
-  ['door','red','Red','#C8102E',1],['door','navy','Navy','#1B2A55',2],['rack','teal','Teal','#0A7E8C',1],
-  ['desk','navy','Navy','#1B2A55',2],['desk','red','Red','#B31B1B',1],['bedframe','navy','Navy','#1B2A55',2],['bedframe','green','Green','#2E7D4F',1],
-  ['dresser','navy','Navy','#1B2A55',2],['dresser','red','Red','#B31B1B',1],['sheets','red','Red','#C8102E',1],['sheets','purple','Purple','#7B3FE4',2]
+  ['wall','coral','Coral','#F9C6B8',1],['wall','navy','Navy','#2D3F6E',2],['floor','cherry','Cherry wood','#9A4B32',2],['desk','navy','Navy','#1B2A55',2]
 ];
+[['bookshelf','white','White bookshelf','#E9EEF3',1],['bookshelf','black','Black bookshelf','#2A3138',2],['bookshelf','teal','Teal bookshelf','#0A7E8C',2],['bookshelf','navy','Navy bookshelf','#1B2A55',3],['bookshelf','gold','Gold bookshelf','#C9A227',4],
+ ['bigposter','bigfield','Touchdown poster','#2E8B4E',2],['bigposter','bigspace','Outer space poster','#0B1033',3],['bigposter','bigflorida','Sunshine State poster','#7CC4F0',2],['bigposter','bigjungle','Jurassic jungle poster','#2F7D4F',4],['bigposter','bigspanish','Bienvenidos poster','#D62839',3],
+ ['shelf','plants','Plants and photos','#3CB878',1],['shelf','spacedecor','Space decor','#E5674A',3],['shelf','gamedecor','Game day decor','#D7A22A',2],['shelf','dinodecor','Dino decor','#EFE6D2',3]
+].forEach(r=>NEWCOLORS.push(r));
 Object.entries(NEWROOM).forEach(([slot,[label,opts]])=>opts.forEach(([id,name,cool])=>addP('room',slot,id,name,cool)));
 POSTERS_NEW.forEach(([id,name,cool])=>addP('room','poster',id,name,cool));
 NEWCOLORS.forEach(([slot,id,name,c,cool])=>addP('room',slot,id,name,cool,{c}));
@@ -4113,6 +4168,268 @@ NEWP.filter(p=>p.kind==='room').forEach(p=>{
   else ROOMSLOTS[p.slot][1].push(opt);
 });
 ROOMGROUPS[0][2].push('bedtop','headwall');ROOMGROUPS[2][2].push('banner','board');ROOMGROUPS[3][2].push('sill');ROOMGROUPS[4][2].push('chair');ROOMGROUPS.push(['ceil','Ceiling',['ceiling']]);
+
+/* ---------- Round 5 ---------- */
+/* Halloween fun facts (well-known facts; one per day of the countdown) */
+const HW_FACTS=[
+  'The word Halloween comes from “All Hallows’ Eve,” the night before All Saints’ Day on November 1.',
+  'Halloween grew out of Samhain, an ancient Celtic festival in Ireland that is about 2,000 years old.',
+  'The first jack-o’-lanterns were carved from turnips in Ireland and Scotland, long before pumpkins.',
+  'The name “jack-o’-lantern” comes from an Irish folktale about a man called Stingy Jack.',
+  'Pumpkins are fruits. They grow from a flower and hold seeds.',
+  'A pumpkin is about 90 percent water.',
+  'Bats are the only mammals that can truly fly.',
+  'Spiders are not insects. Spiders have 8 legs and insects have 6.',
+  'An owl can turn its head about 270 degrees, so it can look behind itself without moving its body.',
+  'An adult human skeleton has 206 bones.',
+  'Candy corn was first made in the 1880s, so it is more than 100 years old.',
+  'Pumpkins come in many colors, including orange, white, blue, green and yellow.',
+  'The biggest pumpkins ever grown weigh more than 2,000 pounds.',
+  'Halloween is on October 31 every year, no matter what day of the week it is.'
+];
+hwMessage=function(){
+  const d=new Date(),t=new Date(d.getFullYear(),9,31),n=Math.round((new Date(d.getFullYear(),d.getMonth(),d.getDate())-t)/86400000);
+  const head=n<0?`${-n} day${n===-1?'':'s'} until Halloween.`:n===0?'Happy Halloween! Have a spooktacular night.':'Hope you had a spooktacular Halloween!';
+  const fact=HW_FACTS[((-n%HW_FACTS.length)+HW_FACTS.length)%HW_FACTS.length];
+  return`${head} <b>Fun fact:</b> ${fact}`;
+};
+/* ----- daily affirmations ----- */
+const AFFIRM=[
+  ['Respect','I treat people kindly, even when no one is watching.'],['Respect','I listen first, then I speak.'],['Respect','I take care of my things and my space.'],['Respect','I say please and thank you because I mean it.'],['Respect','I respect my teachers, my coaches and my family.'],['Respect','I wait for my turn to talk.'],['Respect','I can disagree without being mean.'],['Respect','I take care of the Earth and everything living on it.'],['Respect','I respect my opponents. A good game matters more than winning.'],['Respect','I include others. Everyone deserves a spot on the team.'],['Respect','I respect myself by giving my best effort.'],['Respect','I use kind words. Words can build someone up.'],['Respect','Differences make a team stronger, and I respect them.'],['Respect','I respect the rules because they keep games fair for everyone.'],['Respect','I speak politely to everyone, from little kids to grandparents.'],['Respect','I clean up after myself without being asked.'],['Respect','I respect my body. I sleep, eat well and move every day.'],['Respect','I respect other people’s time by being ready on time.'],
+  ['Integrity','I do the right thing even when it is hard.'],['Integrity','I tell the truth, even when it is tough.'],['Integrity','My word matters. If I say I will, I do.'],['Integrity','I do my own work and I am proud of it.'],['Integrity','I own my mistakes and learn from them.'],['Integrity','I play fair, whether I win or lose.'],['Integrity','I am the same person at home, at school and on the field.'],['Integrity','I return what I borrow.'],['Integrity','When I mess up, I say I am sorry and I make it right.'],['Integrity','I do honest work, even when nobody is checking.'],['Integrity','Being honest is how I earn trust.'],['Integrity','I stand up for what is right.'],['Integrity','I keep my promises, big and small.'],['Integrity','I give credit to the people who help me.'],['Integrity','I choose honesty over an easy shortcut.'],['Integrity','I would rather lose fairly than win by cheating.'],['Integrity','Strong people admit when they do not know something.'],['Integrity','I try to do the right thing the first time.'],
+  ['Courage','I try hard things. That is how I grow.'],['Courage','Being brave does not mean not being scared. It means trying anyway.'],['Courage','A mistake is just a step toward getting it right.'],['Courage','I raise my hand even when I am not sure.'],['Courage','I can do hard things, one step at a time.'],['Courage','I get back up after every tough play.'],['Courage','I speak up when something is not right.'],['Courage','I am brave enough to ask for help.'],['Courage','I try new things, even if I am not good at them yet.'],['Courage','I face my fears one small step at a time.'],['Courage','When the lesson gets tricky, I keep going.'],['Courage','Every champion was once a beginner.'],['Courage','I am brave enough to be kind, even when it is not popular.'],['Courage','I try again, and again, until I get it.'],['Courage','I walk into new places with my head up.'],['Courage','Trying and missing beats not trying at all.'],['Courage','I am brave enough to say “I do not know yet.”'],['Courage','I am strong, and I am getting stronger every day.'],
+  ['Curiosity','I ask questions because that is how I learn.'],['Curiosity','I wonder why and how. Great thinkers always do.'],['Curiosity','Every day I can learn something new.'],['Curiosity','I explore ideas the way an astronaut explores space.'],['Curiosity','My mistakes teach me something when I get curious about them.'],['Curiosity','I look closely, I think deeply and I discover.'],['Curiosity','I love learning new words, in English and in Spanish.'],['Curiosity','I wonder how things work, then I find out.'],['Curiosity','There is always more to discover about dinosaurs, space and the world.'],['Curiosity','A good question is as powerful as a good answer.'],['Curiosity','I am curious about people. Everyone has a story.'],['Curiosity','I read, I listen and I stay curious.'],['Curiosity','When I do not understand, I ask, “How can I figure this out?”'],['Curiosity','“I can’t” becomes “I can’t yet” when I stay curious.'],['Curiosity','Learning a new language opens doors around the world.'],['Curiosity','I test ideas and learn from the results, like a scientist.'],['Curiosity','Every new thing I learn makes my brain stronger.'],['Curiosity','I follow my curiosity, so I am never bored.']
+];
+function affirmOfDay(){
+  const N=AFFIRM.length,d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/86400000);
+  let k=11;const gcd=(a,b)=>b?gcd(b,a%b):a;while(gcd(k,N)!==1)k++;
+  return AFFIRM[((n*k)%N+N)%N];
+}
+const AFF_COL={Respect:['#0076B6','#2FA8E8'],Integrity:['#1B3F8F','#3F6FD8'],Courage:['#D9480F','#F59F00'],Curiosity:['#087F5B','#38C79A']};
+function affirmHtml(){
+  const [v,t]=affirmOfDay(),c=AFF_COL[v];
+  return`<section class="affirm" style="--c1:${c[0]};--c2:${c[1]}"><span class="afv">${v}</span><p>${esc(t)}</p><small>Today’s thought</small></section>`;
+}
+/* ----- bracelets live on their own subject screens ----- */
+function braceletHtml(kind){
+  const list=kind==='math'?badges(stats()):spBadges();
+  return`<div class="sect">Your ${kind==='math'?'math':'spelling'} bracelet</div><section class="card"><div class="bracelet">${list.map(b=>`<div class="bead ${b.on?'':'off'}" title="${esc(b.n)}">${b.l}</div>`).join('')}</div>
+    <div class="dl">${list.map(b=>`<div class="${b.on?'':'off'}"><b>${b.on?'★ ':''}${esc(b.n)}</b><span>${esc(b.d)}</span></div>`).join('')}</div></section>`;
+}
+/* ----- Emmett's birthday: December 17, 2015 ----- */
+const isBday=()=>{const t=new Date();return t.getMonth()===11&&t.getDate()===17};
+const bdayAge=()=>new Date().getFullYear()-2015;
+const ordinal=n=>n+(n%100>=11&&n%100<=13?'th':({1:'st',2:'nd',3:'rd'}[n%10]||'th'));
+function bdayDaysLeft(){
+  const n=new Date(),today=new Date(n.getFullYear(),n.getMonth(),n.getDate());let t=new Date(n.getFullYear(),11,17);
+  if(t<today)t=new Date(n.getFullYear()+1,11,17);
+  return Math.round((t-today)/86400000);
+}
+const bdayGiftSeen=()=>store.get('bl.bday'+new Date().getFullYear(),false);
+function bdayCard(){
+  if(isBday()){
+    const gid=bdayGift();if(gid)S.bdayGiftId=gid;
+    return`<section class="bday"><div class="bdbal" aria-hidden="true">${[['#E5412D',0],['#F2B705',.2],['#2F6FD0',.1],['#12875B',.3],['#7B3FE4',.15]].map(([c,d])=>`<i style="background:${c};animation-delay:${d}s"></i>`).join('')}</div>
+    <h2>HAPPY ${ordinal(bdayAge()).toUpperCase()} BIRTHDAY, EMMETT!</h2>
+    <p>Today is all about you. <b>Every star counts double all day,</b> there is a birthday gift waiting in your closet and on your shelves, and the whole lab is celebrating.${S.bdayGiftId?` <b>Birthday gift: ${esc(CRIT[S.bdayGiftId].n)} is on your shelf!</b>`:''}${new Date().getDay()===4?' It is even Spanish Thursday. ¡Feliz cumpleaños!':' ¡Feliz cumpleaños!'}</p>
+    <div class="row"><button class="btn" data-act="bdaypop">Pop the confetti</button></div></section>`;
+  }
+  const d=bdayDaysLeft();
+  if(d<=30)return`<section class="bday soon"><div><b>${d} day${d===1?'':'s'} until your ${ordinal(new Date().getFullYear()-2015+(new Date()>new Date(new Date().getFullYear(),11,17)?1:0))} birthday!</b><span>December 17 is going to be a big day in the lab.</span></div></section>`;
+  return'';
+}
+/* the day-of gift: a rare creature, once */
+function bdayGift(){
+  if(!isBday()||bdayGiftSeen())return null;
+  store.set('bl.bday'+new Date().getFullYear(),true);
+  return tdPrize('2pt');
+}
+/* ----- creature collection: Jurassic dinosaurs and Pokémon, drawn as original little figurines ----- */
+const CRIT_SKIN='#3E9B4F';
+const CRIT={
+  trex:{n:'Tyrannosaurus rex',k:'dino',r:2,s:()=>`<path d="M-12 -7Q-18 -6 -17 -11Q-10 -10 -6 -12Z" fill="#3E9B4F"/><ellipse cx="-1" cy="-9" rx="9.5" ry="6.6" fill="#3E9B4F"/><path d="M4 -12L6 -20H15L17 -14L12 -12Z" fill="#3E9B4F"/><circle cx="12" cy="-17.6" r="1.1" fill="#101820"/><path d="M11 -14l1.2 1.8 1.2-1.8 1.2 1.8" stroke="#fff" stroke-width=".8" fill="none"/><rect x="-5" y="-4" width="4.4" height="5" rx="1.4" fill="#2C7A3A"/><rect x="1" y="-4" width="4.4" height="5" rx="1.4" fill="#2C7A3A"/><path d="M6 -9l3 1" stroke="#2C7A3A" stroke-width="1.6" stroke-linecap="round"/>`},
+  raptor:{n:'Velociraptor',k:'dino',r:1,s:()=>`<path d="M-13 -8Q-19 -9 -18 -13Q-10 -13 -6 -10Z" fill="#4A7BA8"/><ellipse cx="-1" cy="-8" rx="8" ry="4.6" fill="#4A7BA8"/><path d="M-5 -10Q0 -12 5 -10" stroke="#A8D0F0" stroke-width="1.4" fill="none"/><path d="M5 -10L8 -17H14L15 -13L10 -10Z" fill="#4A7BA8"/><circle cx="12" cy="-15" r="1" fill="#101820"/><rect x="-5" y="-4" width="3.4" height="5" rx="1.2" fill="#35597C"/><rect x="1" y="-4" width="3.4" height="5" rx="1.2" fill="#35597C"/><path d="M3 1l3-2" stroke="#F4F7FA" stroke-width="1.2"/>`},
+  trike:{n:'Triceratops',k:'dino',r:1,s:()=>`<path d="M-13 -6Q-18 -6 -17 -10Q-11 -9 -8 -11Z" fill="#B8864B"/><ellipse cx="-2" cy="-8" rx="10" ry="6.4" fill="#B8864B"/><circle cx="9" cy="-10" r="7.4" fill="#8F6535"/><ellipse cx="11" cy="-9" rx="5.2" ry="4.6" fill="#B8864B"/><path d="M10 -14L14 -22L12 -13ZM15 -13L21 -17L15 -10Z" fill="#F4F7FA" stroke="#C9B58A" stroke-width=".5"/><path d="M14 -9L21 -7L14 -6Z" fill="#E8D5A8"/><circle cx="11" cy="-11" r="1" fill="#101820"/><rect x="-7" y="-4" width="4.6" height="5" rx="1.4" fill="#8F6535"/><rect x="1" y="-4" width="4.6" height="5" rx="1.4" fill="#8F6535"/>`},
+  brachio:{n:'Brachiosaurus',k:'dino',r:1,s:()=>`<path d="M-14 -5Q-19 -4 -18 -8Q-12 -8 -9 -10Z" fill="#7C9A4A"/><ellipse cx="-2" cy="-8" rx="11" ry="6" fill="#7C9A4A"/><path d="M6 -10Q10 -14 9 -22Q9 -26 13 -26" stroke="#7C9A4A" stroke-width="4.4" fill="none" stroke-linecap="round"/><ellipse cx="14" cy="-26" rx="3.8" ry="2.6" fill="#7C9A4A"/><circle cx="15" cy="-27" r=".9" fill="#101820"/><rect x="-9" y="-4" width="3.6" height="5" rx="1.2" fill="#5F7A38"/><rect x="2" y="-4" width="3.6" height="5" rx="1.2" fill="#5F7A38"/>`},
+  stego:{n:'Stegosaurus',k:'dino',r:1,s:()=>`<path d="M-9 -12L-6 -19L-3 -12ZM-4 -14L0 -22L3 -14ZM2 -13L6 -20L8 -12Z" fill="#E5671B"/><path d="M-15 -4Q-20 -8 -18 -10Q-12 -8 -9 -7Z" fill="#5E8A5A"/><path d="M-19 -9l-3-2M-18 -6l-4 0" stroke="#F4F7FA" stroke-width="1.4"/><ellipse cx="-1" cy="-7" rx="10.4" ry="5.6" fill="#5E8A5A"/><circle cx="10" cy="-5" r="3.6" fill="#5E8A5A"/><circle cx="11" cy="-6" r=".9" fill="#101820"/><rect x="-6" y="-3" width="3.6" height="4" rx="1.2" fill="#46704A"/><rect x="2" y="-3" width="3.6" height="4" rx="1.2" fill="#46704A"/>`},
+  para:{n:'Parasaurolophus',k:'dino',r:1,s:()=>`<path d="M-13 -6Q-18 -6 -17 -10Q-11 -9 -8 -11Z" fill="#C8651B"/><ellipse cx="-2" cy="-8" rx="9.4" ry="5.8" fill="#C8651B"/><path d="M4 -11L7 -18H13L14 -13L9 -11Z" fill="#C8651B"/><path d="M8 -18Q4 -22 -2 -20" stroke="#8A4510" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="11" cy="-16" r=".9" fill="#101820"/><rect x="-6" y="-4" width="3.6" height="5" rx="1.2" fill="#8A4510"/><rect x="1" y="-4" width="3.6" height="5" rx="1.2" fill="#8A4510"/>`},
+  anky:{n:'Ankylosaurus',k:'dino',r:1,s:()=>`<path d="M-14 -5L-19 -6" stroke="#8A7A5A" stroke-width="3" stroke-linecap="round"/><circle cx="-21" cy="-6" r="3.6" fill="#6B5E44"/><path d="M-10 -5Q-10 -14 0 -14Q10 -14 11 -5Z" fill="#8A7A5A"/><path d="M-6 -12l1 -3 2 3M-1 -13l1 -3 2 3M4 -12l1 -3 2 3" fill="#6B5E44"/><circle cx="12" cy="-6" r="3.6" fill="#8A7A5A"/><circle cx="13" cy="-7" r=".9" fill="#101820"/><rect x="-7" y="-4" width="3.4" height="4.4" rx="1.2" fill="#6B5E44"/><rect x="4" y="-4" width="3.4" height="4.4" rx="1.2" fill="#6B5E44"/>`},
+  dilo:{n:'Dilophosaurus',k:'dino',r:1,s:()=>`<path d="M-13 -8Q-19 -9 -18 -13Q-10 -13 -6 -10Z" fill="#B4A23A"/><ellipse cx="-1" cy="-8" rx="8" ry="4.8" fill="#B4A23A"/><path d="M5 -10L8 -17H14L15 -13L10 -10Z" fill="#B4A23A"/><path d="M9 -17L7 -23L11 -19L14 -24L14 -17Z" fill="#D84A2A"/><circle cx="12" cy="-15" r="1" fill="#101820"/><rect x="-5" y="-4" width="3.4" height="5" rx="1.2" fill="#8A7B22"/><rect x="1" y="-4" width="3.4" height="5" rx="1.2" fill="#8A7B22"/>`},
+  ptera:{n:'Pteranodon',k:'dino',r:1,s:()=>`<path d="M0 -12L-20 -18L-12 -8ZM0 -12L20 -18L12 -8Z" fill="#B4553A"/><path d="M-20 -18L-12 -8L-6 -12M20 -18L12 -8L6 -12" stroke="#7A3622" stroke-width="1" fill="none"/><ellipse cx="0" cy="-10" rx="4" ry="5" fill="#C9744F"/><path d="M0 -14L8 -17L2 -12Z" fill="#C9744F"/><path d="M-1 -14L-6 -19L1 -16Z" fill="#7A3622"/><circle cx="1.6" cy="-13" r=".8" fill="#101820"/>`},
+  spino:{n:'Spinosaurus',k:'dino',r:2,s:()=>`<path d="M-8 -12Q-5 -24 0 -12ZM-3 -12Q1 -26 6 -12ZM2 -12Q6 -22 10 -11Z" fill="#D84A2A"/><path d="M-13 -7Q-19 -6 -17 -11Q-11 -10 -7 -12Z" fill="#3A7A8A"/><ellipse cx="0" cy="-8" rx="9.6" ry="5.6" fill="#3A7A8A"/><path d="M6 -10L9 -15H20L21 -12L10 -10Z" fill="#3A7A8A"/><circle cx="11" cy="-13.4" r="1" fill="#101820"/><rect x="-5" y="-4" width="3.6" height="5" rx="1.2" fill="#2A5A68"/><rect x="1" y="-4" width="3.6" height="5" rx="1.2" fill="#2A5A68"/>`},
+  mosa:{n:'Mosasaurus',k:'dino',r:2,s:()=>`<path d="M-20 -4Q-12 -14 -2 -8Q8 -2 14 -8L19 -10L19 -5Q8 4 -2 -2Q-12 -8 -20 -4Z" fill="#2A5A8A"/><path d="M14 -8L20 -6" stroke="#fff" stroke-width="1.6"/><path d="M-4 -9L-1 -14L2 -8Z" fill="#1E4468"/><circle cx="15" cy="-8" r=".9" fill="#F4F7FA"/><path d="M-22 0Q-16 -3 -10 0T2 0T14 0T24 0" stroke="#5CC2F2" stroke-width="1.8" fill="none"/>`},
+  indom:{n:'Indominus rex',k:'dino',r:2,s:()=>`<path d="M-12 -7Q-18 -6 -17 -11Q-10 -10 -6 -12Z" fill="#EEEBDD"/><ellipse cx="-1" cy="-9" rx="9.5" ry="6.6" fill="#EEEBDD"/><path d="M4 -12L6 -20H15L17 -14L12 -12Z" fill="#EEEBDD"/><path d="M8 -20L9 -24L11 -20ZM12 -20L14 -24L15 -20Z" fill="#C9C6B5"/><circle cx="12" cy="-17.4" r="1.2" fill="#D62839"/><rect x="-5" y="-4" width="4.4" height="5" rx="1.4" fill="#C9C6B5"/><rect x="1" y="-4" width="4.4" height="5" rx="1.4" fill="#C9C6B5"/><path d="M6 -9l4 1.4" stroke="#C9C6B5" stroke-width="1.8" stroke-linecap="round"/><circle cx="-4" cy="-10" r="1" fill="#9A968A"/><circle cx="1" cy="-7" r="1" fill="#9A968A"/>`},
+  pikachu:{n:'Pikachu',k:'poke',r:1,s:()=>`<path d="M8 -6L14 -10L11 -14L18 -18L13 -6Z" fill="#F2C300" stroke="#8A6A12" stroke-width=".8"/><ellipse cx="0" cy="-7" rx="8" ry="7.4" fill="#F2C300"/><circle cx="0" cy="-17" r="6.6" fill="#F2C300"/><path d="M-4 -22L-8 -31L-1 -23ZM4 -22L8 -31L1 -23Z" fill="#F2C300"/><path d="M-6 -27L-8 -31L-4 -27ZM6 -27L8 -31L4 -27Z" fill="#101820"/><circle cx="-2.6" cy="-18" r="1" fill="#101820"/><circle cx="2.6" cy="-18" r="1" fill="#101820"/><circle cx="-5" cy="-15" r="1.6" fill="#D62839"/><circle cx="5" cy="-15" r="1.6" fill="#D62839"/><path d="M-1 -15Q0 -14 1 -15" stroke="#101820" stroke-width=".8" fill="none"/>`},
+  charmander:{n:'Charmander',k:'poke',r:1,s:()=>`<path d="M7 -5Q14 -4 13 -12" stroke="#F57C1F" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M13 -12Q10 -17 14 -20Q17 -16 15 -13Z" fill="#F2C300" stroke="#D62839" stroke-width="1"/><ellipse cx="0" cy="-7" rx="7.4" ry="7" fill="#F57C1F"/><ellipse cx="0" cy="-5" rx="4.4" ry="5" fill="#F2D49A"/><circle cx="0" cy="-16" r="6.2" fill="#F57C1F"/><circle cx="-2.4" cy="-16.4" r="1.1" fill="#101820"/><circle cx="2.4" cy="-16.4" r="1.1" fill="#101820"/><path d="M-1.6 -13Q0 -12 1.6 -13" stroke="#101820" stroke-width=".8" fill="none"/>`},
+  squirtle:{n:'Squirtle',k:'poke',r:1,s:()=>`<ellipse cx="0" cy="-7" rx="8" ry="7.4" fill="#5CB4D8"/><ellipse cx="0" cy="-6" rx="6" ry="6" fill="#F2E2B0" stroke="#B8862B" stroke-width=".8"/><path d="M0 -12V0M-5 -9H5M-5 -4H5" stroke="#B8862B" stroke-width=".7"/><circle cx="0" cy="-17" r="6.2" fill="#5CB4D8"/><circle cx="-2.4" cy="-17.4" r="1.2" fill="#101820"/><circle cx="2.4" cy="-17.4" r="1.2" fill="#101820"/><path d="M-2 -14Q0 -12.6 2 -14" stroke="#101820" stroke-width=".8" fill="none"/><path d="M8 -4Q13 -3 12 -9Q9 -8 8 -4Z" fill="#5CB4D8"/>`},
+  bulba:{n:'Bulbasaur',k:'poke',r:1,s:()=>`<ellipse cx="0" cy="-6" rx="9.4" ry="6" fill="#6FBFA8"/><circle cx="-1" cy="-13" r="6" fill="#3FA05A"/><path d="M-1 -19Q-6 -23 -1 -25Q4 -23 -1 -19Z" fill="#2E8A4A"/><circle cx="8" cy="-8" r="4.6" fill="#6FBFA8"/><path d="M11 -9L13 -8L11 -7Z" fill="#D62839"/><circle cx="9" cy="-9" r=".9" fill="#101820"/><rect x="-6" y="-3" width="3.6" height="4" rx="1.2" fill="#4A9A86"/><rect x="2" y="-3" width="3.6" height="4" rx="1.2" fill="#4A9A86"/>`},
+  eevee:{n:'Eevee',k:'poke',r:1,s:()=>`<path d="M-7 -5Q-14 -6 -13 -12Q-8 -9 -6 -9Z" fill="#B8864B"/><path d="M-13 -12Q-14 -14 -11 -14" stroke="#F4EBD0" stroke-width="2.4" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-7" rx="7.4" ry="6.4" fill="#B8864B"/><circle cx="2" cy="-15" r="6" fill="#B8864B"/><path d="M-2 -19L-4 -28L2 -21ZM7 -19L9 -28L3 -21Z" fill="#B8864B"/><path d="M-5 -10Q0 -6 7 -10L5 -12Q0 -9 -3 -12Z" fill="#F4EBD0"/><circle cx="0" cy="-16" r="1" fill="#101820"/><circle cx="5" cy="-16" r="1" fill="#101820"/><circle cx="2.6" cy="-13.4" r=".8" fill="#101820"/>`},
+  snorlax:{n:'Snorlax',k:'poke',r:2,s:()=>`<ellipse cx="0" cy="-8" rx="13" ry="9" fill="#2E5A68"/><ellipse cx="0" cy="-6" rx="8.6" ry="6.6" fill="#F2E8CC"/><circle cx="0" cy="-19" r="7.4" fill="#2E5A68"/><ellipse cx="0" cy="-17" rx="5" ry="4" fill="#F2E8CC"/><path d="M-6 -24L-7 -28L-3 -25ZM6 -24L7 -28L3 -25Z" fill="#2E5A68"/><path d="M-3 -20Q-2 -19 -1 -20M1 -20Q2 -19 3 -20" stroke="#101820" stroke-width=".9" fill="none"/><path d="M-2 -16Q0 -15 2 -16" stroke="#101820" stroke-width=".8" fill="none"/>`},
+  gengar:{n:'Gengar',k:'poke',r:2,s:()=>`<ellipse cx="0" cy="-8" rx="10" ry="8.6" fill="#6B3FA0"/><path d="M-8 -14L-11 -22L-4 -17ZM8 -14L11 -22L4 -17Z" fill="#6B3FA0"/><path d="M-9 -9L-14 -11M9 -9L14 -11" stroke="#6B3FA0" stroke-width="3" stroke-linecap="round"/><path d="M-10 -8L-8 -12M10 -8L8 -12" stroke="#6B3FA0" stroke-width="0"/><circle cx="-3.6" cy="-11" r="1.8" fill="#F4F7FA"/><circle cx="3.6" cy="-11" r="1.8" fill="#F4F7FA"/><circle cx="-3.6" cy="-11" r=".9" fill="#D62839"/><circle cx="3.6" cy="-11" r=".9" fill="#D62839"/><path d="M-5 -6Q0 -2 5 -6" stroke="#F4F7FA" stroke-width="1.2" fill="none"/>`},
+  charizard:{n:'Charizard',k:'poke',r:2,s:()=>`<path d="M-6 -12L-18 -24L-14 -10Z M6 -12L18 -24L14 -10Z" fill="#2F8FA0"/><path d="M8 -4Q16 -3 15 -11" stroke="#F57C1F" stroke-width="3.4" fill="none" stroke-linecap="round"/><path d="M15 -11Q12 -16 16 -19Q19 -15 17 -12Z" fill="#F2C300" stroke="#D62839" stroke-width="1"/><ellipse cx="0" cy="-8" rx="8" ry="8" fill="#F57C1F"/><ellipse cx="0" cy="-6" rx="4.6" ry="6" fill="#F2D49A"/><circle cx="0" cy="-19" r="5.6" fill="#F57C1F"/><path d="M-4 -22L-8 -26L-3 -23ZM4 -22L8 -26L3 -23Z" fill="#F57C1F"/><circle cx="-2" cy="-19.4" r="1" fill="#101820"/><circle cx="2" cy="-19.4" r="1" fill="#101820"/>`},
+  mewtwo:{n:'Mewtwo',k:'poke',r:2,s:()=>`<path d="M5 -6Q15 -4 14 -14Q12 -18 8 -16" stroke="#8E5AB5" stroke-width="3" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-9" rx="6.6" ry="8.6" fill="#D5CCDD"/><ellipse cx="0" cy="-5" rx="3.6" ry="4.6" fill="#8E5AB5"/><circle cx="0" cy="-21" r="6" fill="#D5CCDD"/><path d="M-4 -25L-6 -31L-1 -26ZM4 -25L6 -31L1 -26Z" fill="#D5CCDD"/><path d="M-3.4 -21.4L-1 -20.6M3.4 -21.4L1 -20.6" stroke="#7B3FE4" stroke-width="1.6" stroke-linecap="round"/><rect x="-5" y="-2" width="3.4" height="3.4" rx="1.2" fill="#D5CCDD"/><rect x="1.6" y="-2" width="3.4" height="3.4" rx="1.2" fill="#D5CCDD"/>`}
+};
+const CRIT_IDS=Object.keys(CRIT);
+const critSvg=(id,x,y,k)=>CRIT[id]?`<g transform="translate(${x} ${y}) scale(${k||1})">${CRIT[id].s()}</g>`:'';
+const critBig=id=>`<svg viewBox="-26 -34 52 40" width="150" height="116" role="img" aria-label="${esc(CRIT[id].n)}"><ellipse cx="0" cy="2" rx="18" ry="3" fill="rgba(0,0,0,.2)"/>${CRIT[id].s()}</svg>`;
+const myCrit=()=>((getAv().room||{}).critters||[]);
+/* the prize for a good kick: field goals win everyday creatures, two-point conversions win rare ones */
+function tdPrize(kind){
+  const have=myCrit(),rare=kind==='2pt';
+  let pool=CRIT_IDS.filter(id=>!have.includes(id)&&(CRIT[id].r===2)===rare);
+  if(!pool.length)pool=CRIT_IDS.filter(id=>!have.includes(id));
+  if(!pool.length)return null;
+  const id=pick(pool),a=getAv();a.room.critters=[...have,id];store.set('bl.avatar',a);touchProfile();
+  return id;
+}
+/* ----- the shelves in the room ----- */
+const BOOKSH={wood:'#9A6A3A',white:'#E9EEF3',black:'#2A3138',teal:'#0A7E8C',navy:'#1B2A55',gold:'#C9A227'};
+function bookshelfArt(id,list){
+  const c=BOOKSH[id]||BOOKSH.wood,x=-56,y=72,w=54,h=154,dk=shade(c,.68),lt=shade(c,1.2);
+  let g=`<g filter="url(#f-sh)">`+RR(x,y,w,h,dk,3)+RR(x+3,y+3,w-6,h-3,shade(c,.45),2)+`</g>`;
+  const plank=[112,148,184];
+  const book=(bx,by,bw,bh,col)=>RR(bx,by-bh,bw,bh,col,1,'stroke="rgba(0,0,0,.3)" stroke-width=".6"')+`<path d="M${bx+1} ${by-bh+3}H${bx+bw-1}" stroke="rgba(255,255,255,.55)" stroke-width=".8"/>`;
+  /* bottom compartment: books */
+  [[-50,'#C8102E',22],[-45,'#2F6FD0',26],[-40,'#F2B705',20],[-35,'#2E9E5B',25],[-30,'#7B3FE4',22],[-25,'#E5671B',27],[-20,'#0E9AA7',21],[-15,'#C8102E',24],[-11,'#F4F7FA',19]].forEach(([bx,col,bh])=>{g+=book(bx,220,4.6,bh,col)});
+  plank.forEach(py=>{g+=RR(x+2,py,w-4,4.6,c,1.4)+RR(x+2,py,w-4,1.4,lt,.7)});
+  /* creatures: three per shelf, nearest the top first */
+  list.slice(0,9).forEach((id2,i)=>{const row=Math.floor(i/3),col=i%3;g+=critSvg(id2,-43+col*14.6,[110,146,182][row],.62)});
+  return g+RR(x-1,y-3,w+2,5,lt,2)+RR(x-2,y+h-2,w+4,4,dk,1.4);
+}
+function decorShelfExtras(id){
+  /* small decor at the two ends of the wall shelf; the three middle spots are for creatures */
+  const by=44;
+  const plant=(x)=>RR(x-5,by-8,10,8,'#C8651B',1.6)+`<path d="M${x} ${by-8}Q${x-6} ${by-16} ${x-3} ${by-20}Q${x} ${by-14} ${x} ${by-8}ZM${x} ${by-8}Q${x+6} ${by-17} ${x+3} ${by-21}Q${x} ${by-14} ${x} ${by-8}Z" fill="#3CB878"/>`;
+  const frame=(x,c,inner)=>RR(x-6,by-16,12,16,c,1.6,'stroke="rgba(0,0,0,.3)" stroke-width=".7"')+inner;
+  const fl=`<circle cx="${0}" cy="0" r="0"/>`;
+  switch(id){
+    case'plants':return plant(444)+frame(508,'#8A5A33',RR(502.6,by-12.4,6.4+0,9.6,'#7CC4F0',.8)+PP(`M502 ${by-4}L506 ${by-9}L509 ${by-6}L511 ${by-8}V${by-3}Z`,'#3CB878'));
+    case'spacedecor':return `<g transform="translate(444 ${by})"><circle cy="-8" r="6" fill="#E5674A"/><ellipse cy="-8" rx="10" ry="2.4" fill="none" stroke="#E8CB86" stroke-width="1.4" transform="rotate(-18 0 -8)"/></g>`+`<g transform="translate(509 ${by})"><path d="M0 -20C4 -15 5 -8 4 -2H-4C-5 -8 -4 -15 0 -20Z" fill="#F4F7FA" stroke="#9AA7B5" stroke-width=".7"/><circle cy="-11" r="1.8" fill="#4DA3FF"/><path d="M-4 -5L-8 0L-4 -1ZM4 -5L8 0L4 -1Z" fill="#D62839"/></g>`;
+    case'gamedecor':return `<g transform="translate(444 ${by}) rotate(-20)"><ellipse cy="-5" rx="7" ry="4.6" fill="#9A5B33" stroke="#2A1608" stroke-width=".8"/><path d="M-2.4 -5H2.4" stroke="#fff" stroke-width=".9"/></g>`+RR(502,by-10,12,10,'#D7A22A',2,'stroke="#8A6A12" stroke-width=".8"')+star(508,by-5,3,'#8A6A12');
+    case'dinodecor':return `<g transform="translate(444 ${by})"><ellipse cy="-5" rx="7" ry="5" fill="#EFE6D2" stroke="#9C8C6A" stroke-width=".8"/><path d="M-4 -7Q0 -3 4 -7" stroke="#9C8C6A" fill="none" stroke-width=".8"/></g>`+`<g transform="translate(509 ${by})"><circle cy="-6" r="6.4" fill="#D9C9A3" stroke="#9C8C6A" stroke-width=".8"/><path d="M0 -6a1.4 1.4 0 1 1 2.4 1a3 3 0 1 1 -4.6 -1.8" fill="none" stroke="#9C8C6A" stroke-width="1"/></g>`;
+    default:return plant(444)+RR(503,by-9,10,9,'#2F6FD0',1.6)+RR(505,by-14,6,5,'#F2B705',1);
+  }
+}
+function wallShelfArt(style,list){
+  const by=44,bx=436;
+  let b=RR(bx,by,80,6,'#8A5A33',2)+PP(`M${bx+8} ${by+6}V${by+16}L${bx+16} ${by+6}ZM${bx+64} ${by+6}V${by+16}L${bx+56} ${by+6}Z`,'#6B4423')+RR(bx,by,80,1.6,'rgba(255,255,255,.4)',1);
+  const deco=['plants','spacedecor','gamedecor','dinodecor'].includes(style)?style:'starter';
+  b+=decorShelfExtras(deco);
+  list.slice(0,3).forEach((id,i)=>{b+=critSvg(id,462+i*17,by,.9)});
+  return b;
+}
+function bigPosterArt(id){
+  const x=2,y=26,w=78,h=112;
+  let g=RR(x-3,y-3,w+6,h+6,'#fff',4,'stroke="rgba(0,0,0,.25)" filter="url(#f-sh)"');
+  const T=(t,yy,c,sz)=>TX(x+w/2,yy,t,c,sz||9);
+  switch(id){
+    case'bigfield':return g+RR(x,y,w,h,'#1B2A55',2)+RR(x,y+54,w,58,'#2E8B4E',0)+Array.from({length:6},(_,i)=>RR(x,y+54+i*10,w,5,'rgba(255,255,255,.1)')).join('')+`<path d="M${x} ${y+78}H${x+w}M${x} ${y+98}H${x+w}" stroke="#fff" stroke-width="1" opacity=".6"/>`+`<path d="M${x+39} ${y+56}V${y+34}M${x+22} ${y+10}V${y+34}H${x+56}V${y+10}" fill="none" stroke="#F2B705" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`+`<g transform="translate(${x+39} ${y+22}) rotate(-24)"><ellipse rx="6" ry="3.8" fill="#9A5B33"/><path d="M-2 0H2" stroke="#fff"/></g>`+T('TOUCHDOWN',y+h-8,'#fff',7.4);
+    case'bigspace':return g+RR(x,y,w,h,'#0B1033',2)+[[8,14],[60,22],[20,60],[68,70],[40,90],[12,100],[64,104],[34,30]].map(([a,b])=>`<circle cx="${x+a}" cy="${y+b}" r="1.1" fill="#fff"/>`).join('')+`<circle cx="${x+40}" cy="${y+46}" r="19" fill="#E5674A"/><path d="M${x+24} ${y+42}Q${x+40} ${y+52} ${x+56} ${y+42}M${x+22} ${y+52}Q${x+40} ${y+62} ${x+58} ${y+52}" stroke="#B4442E" stroke-width="2.4" fill="none"/><ellipse cx="${x+40}" cy="${y+46}" rx="34" ry="6.4" fill="none" stroke="#E8CB86" stroke-width="2" transform="rotate(-18 ${x+40} ${y+46})"/><circle cx="${x+16}" cy="${y+22}" r="5" fill="#4DA3FF"/>`+T('OUTER SPACE',y+h-8,'#fff',7.4);
+    case'bigflorida':return g+RR(x,y,w,h,'#7CC4F0',2)+`<circle cx="${x+60}" cy="${y+18}" r="11" fill="#FFE08A"/>`+PP(`M${x+16} ${y+30}H${x+50}L${x+54} ${y+38}H${x+34}Q${x+34} ${y+44} ${x+40} ${y+48}Q${x+56} ${y+62} ${x+60} ${y+82}Q${x+62} ${y+98} ${x+52} ${y+100}Q${x+46} ${y+90} ${x+44} ${y+76}Q${x+36} ${y+58} ${x+28} ${y+48}L${x+16} ${y+42}Z`,'#F2E2B0','stroke="#8A5A33" stroke-width="1.2"')+`<circle cx="${x+50}" cy="${y+80}" r="3" fill="#D62839"/>`+T('SUNSHINE STATE',y+h-6,'#1B2A55',6.6);
+    case'bigjungle':return g+RR(x,y,w,h,'#2F7D4F',2)+RR(x,y,w,38,'#F5C06A',0)+`<circle cx="${x+54}" cy="${y+20}" r="12" fill="#FFE08A"/>`+PP(`M${x} ${y+38}L${x+14} ${y+28}L${x+26} ${y+38}L${x+40} ${y+24}L${x+60} ${y+38}L${x+w} ${y+30}V${y+h}H${x}Z`,'#1E5A38')+`<path d="M${x+12} ${y+h-4}Q${x+6} ${y+60} ${x+18} ${y+44}Q${x+14} ${y+66} ${x+24} ${y+h-4}Z" fill="#164A2C"/><g transform="translate(${x+44} ${y+88}) scale(1.3)">${CRIT.brachio.s().replace(/#7C9A4A/g,'#0E2A18').replace(/#5F7A38/g,'#0E2A18')}</g>`+T('JURASSIC WORLD',y+h-6,'#fff',6.4);
+    case'bigspanish':return g+RR(x,y,w,h,'#F4F7FA',2)+RR(x,y,w,26,'#D62839',2)+T('¡BIENVENIDOS!',y+17,'#fff',8)+[['#2E9E5B','#fff','#D62839',0,0],['#F2B705','#D62839','#F2B705',1,0],['#7CC4F0','#fff','#7CC4F0',0,1],['#D62839','#fff','#D62839',1,1]].map(([a,b,c,i,j])=>`<g transform="translate(${x+8+i*34} ${y+34+j*30})"><rect width="28" height="21" fill="${b}"/><rect width="9.4" height="21" fill="${a}"/><rect x="18.6" width="9.4" height="21" fill="${c}"/><rect width="28" height="21" fill="none" stroke="rgba(0,0,0,.25)" stroke-width=".8"/></g>`).join('')+T('ESPAÑOL',y+h-6,'#7A1F2B',7);
+    default:return g+RR(x,y,w,h,'#0F8F8B',2)+RR(x,y+84,w,28,'#0A5E5C',0)+PP(`M${x+14} ${y+66}Q${x-2} ${y+72} ${x+4} ${y+84}L${x+20} ${y+74}Z`,'#7BD389')+EL(x+34,y+66,22,14,'#7BD389')+PP(`M${x+48} ${y+60}L${x+52} ${y+36}H${x+70}L${x+72} ${y+54}L${x+60} ${y+60}Z`,'#7BD389')+RR(x+50,y+30,24,18,'#7BD389',5)+`<circle cx="${x+66}" cy="${y+38}" r="2.6" fill="#0B2233"/><path d="M${x+55} ${y+48}l3 4 3-4 3 4 3-4 3 4" stroke="#fff" fill="none" stroke-width="1.6"/>`+RR(x+26,y+76,8,14,'#5DB36B',2)+RR(x+42,y+76,8,14,'#5DB36B',2)+T('T. REX',y+h-5,'#fff',8);
+  }
+}
+/* birthday decorations for the room */
+function bdayRoomArt(){
+  const bal=(x,y,c,r)=>`<path d="M${x} ${y+r}L${x-3} ${y+r+7}H${x+3}Z" fill="${c}"/><ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*1.18}" fill="${c}"/><path d="M${x-r*.5} ${y-r*.6}Q${x-r*.2} ${y-r*.9} ${x+r*.2} ${y-r*.8}" stroke="rgba(255,255,255,.6)" stroke-width="2" fill="none"/><path d="M${x} ${y+r+7}Q${x+6} ${y+r+30} ${x-2} ${y+r+50}" stroke="#9AA7B5" stroke-width="1" fill="none"/>`;
+  let s=`<path d="M40 6Q390 40 740 6" fill="none" stroke="#8A5A33" stroke-width="1.6"/>`;
+  'HAPPY BIRTHDAY'.split('').forEach((ch,i)=>{if(ch===' ')return;const t=(i+.5)/14,x=40+700*t,y=6+68*t*(1-t)+2;s+=`<g transform="translate(${x-8} ${y})"><path d="M0 0H16L8 22Z" fill="${['#E5412D','#F2B705','#2F6FD0','#12875B','#7B3FE4'][i%5]}"/>${TX(8,11,ch,'#fff',9)}</g>`});
+  s+=bal(20,60,'#E5412D',11)+bal(40,84,'#F2B705',10)+bal(8,92,'#2F6FD0',9)+bal(758,64,'#12875B',11)+bal(738,92,'#7B3FE4',10)+bal(766,100,'#F2B705',9);
+  s+=`<g transform="translate(30 236)"><rect width="30" height="22" rx="2" fill="#2F6FD0"/><rect x="12" width="6" height="22" fill="#F2B705"/><path d="M15 0Q8 -10 4 -4Q8 -1 15 0Q22 -1 26 -4Q22 -10 15 0Z" fill="#F2B705"/></g><g transform="translate(66 244)"><rect width="22" height="16" rx="2" fill="#E5412D"/><rect x="8" width="6" height="16" fill="#fff"/></g>`;
+  for(let i=0;i<24;i++)s+=`<rect x="${(i*47)%760}" y="${110+(i*29)%110}" width="5" height="3" fill="${['#F2B705','#E5412D','#2F6FD0','#12875B','#fff'][i%5]}" opacity=".85" transform="rotate(${i*37} ${(i*47)%760} ${110+(i*29)%110})"/>`;
+  return s;
+}
+/* ----- touchdown kick: a bonus question for a creature ----- */
+S.tdp=Number(store.get('bl.tdp',0))||0;
+function tdAdd(n){S.tdp=(S.tdp||0)+n;store.set('bl.tdp',S.tdp)}
+const tdSubs=[['math','Math'],['spell','Spelling'],['es','Spanish'],['geo','Geography']];
+function spVariants(w){
+  const out=new Set(),L=[...w];
+  const swap=i=>{const a=[...L];[a[i],a[i+1]]=[a[i+1],a[i]];return a.join('')};
+  const tries=[()=>swap(1+Math.floor(Math.random()*Math.max(1,L.length-2))),()=>{const i=1+Math.floor(Math.random()*(L.length-1));return L.slice(0,i).concat(L.slice(i+1)).join('')},()=>{const i=1+Math.floor(Math.random()*(L.length-1));return L.slice(0,i+1).concat(L[i],L.slice(i+1)).join('')},()=>{const vi=L.findIndex((c,i)=>i>0&&'aeiou'.includes(c));if(vi<0)return w+'e';const a=[...L];a[vi]=pick('aeiou'.split('').filter(c=>c!==a[vi]));return a.join('')}];
+  let n=0;while(out.size<3&&n++<40){const v=pick(tries)();if(v&&v!==w)out.add(v)}
+  return[...out];
+}
+function tdMake(kind,subj){
+  const hard=kind==='2pt';
+  if(subj==='math'){
+    const q=makeQ(pick(activeTypes()),hard?'type':'mc');
+    return{prompt:q.text,ans:String(q.ans),mc:!hard&&q.choices?q.choices.map(String):null,check:v=>isRight(q,v)};
+  }
+  if(subj==='spell'){
+    const w=pick(allWords()),s=blankSent(w);
+    return hard?{prompt:`${s?s+' ':''}Type the missing word. Tap Hear it first.`,say:w,ans:w,mc:null,check:v=>v.trim().toLowerCase()===w}:{prompt:`${s?s:'Which one is spelled right?'}${s?' Which spelling fits?':''}`,ans:w,mc:shuffle([w,...spVariants(w)]),check:v=>v===w};
+  }
+  if(subj==='es'){
+    const w=pick(ES_ALL),q=esMake(hard?'type':'es2en',w,ES_ALL);
+    return hard?{prompt:q.prompt,ans:q.ans,mc:null,check:v=>esRight(q,v)}:{prompt:q.prompt,say:w.es,ans:q.ans,mc:q.choices,check:v=>v===q.ans};
+  }
+  const q=geoBuild(hard?'wcap':'pcap','all')[0];
+  return hard?{prompt:q.prompt,ans:q.ans,mc:null,check:v=>geoRight(q,v)}:{prompt:q.prompt,ans:q.ans,mc:q.choices,check:v=>v===q.ans};
+}
+let tdq=null;
+function tdOpen(){if(!S.tdp||tdq)return;tdq={step:'choose'};tdDraw()}
+function tdDraw(){
+  let m=document.getElementById('tdmodal');
+  if(!tdq){if(m)m.remove();return}
+  if(!m){m=document.createElement('div');m.id='tdmodal';m.className='tdm';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','Touchdown kick');document.body.appendChild(m)}
+  const q=tdq;let h='';
+  const close=`<button class="btn quiet" data-act="tdclose">${q.step==='result'?'Done':'Not now'}</button>`;
+  if(q.step==='choose')h=`<h2>Touchdown! One more play.</h2><p>You can kick for bonus points and win a creature for your shelves. Pick your kick:</p>
+    <div class="tdopts"><button class="tdopt" data-act="tdkick" data-v="fg"><b>Field goal</b><span>An easier question. Win a Jurassic dinosaur or a Pokémon.</span></button>
+    <button class="tdopt hot" data-act="tdkick" data-v="2pt"><b>Two-point conversion</b><span>A harder question. Win a rare one.</span></button></div><div class="row">${close}</div>`;
+  if(q.step==='subject')h=`<h2>${q.kind==='fg'?'Field goal':'Two-point conversion'}</h2><p>Pick the subject for your question:</p><div class="tdopts">${tdSubs.map(([k,l])=>`<button class="tdopt" data-act="tdsubj" data-v="${k}"><b>${l}</b></button>`).join('')}</div><div class="row">${close}</div>`;
+  if(q.step==='q'){const k=q.q;
+    h=`<h2>${q.kind==='fg'?'Field goal':'Two-point conversion'}: ${tdSubs.find(s=>s[0]===q.subj)[1]}</h2><p class="qtext word">${esc(k.prompt)}</p>${k.say?`<div class="row"><button class="btn tint" data-act="tdsay">${ICON.speaker}Hear it</button></div>`:''}`+
+    (k.mc?`<div class="choices w">${k.mc.map(c=>`<button class="choice" data-act="tdans" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>`:`<div class="row"><input class="ans wide" id="tdin" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Your answer" placeholder="Type your answer"></div><div class="row"><button class="btn" data-act="tdcheck">Kick it</button></div>`)+`<p class="mute">One try. Take your time.</p>`;}
+  if(q.step==='result'){
+    h=q.ok?`<h2>${q.kind==='fg'?'It’s good!':'Two points! It’s good!'}</h2><div class="tdprize">${q.prize?critBig(q.prize):''}</div><p>${q.prize?`You won <b>${esc(CRIT[q.prize].n)}</b>! It is on a shelf in your room now.`:'You already have every creature. Amazing!'}</p>`
+      :`<h2>No good this time.</h2><p>The answer was <b>${esc(q.q.ans)}</b>. Great try. Your next touchdown gets another kick.</p>`;
+    h+=`<div class="row"><button class="btn" data-act="tdroom">See my room</button>${close}</div>`;
+  }
+  m.innerHTML=`<div class="tdbox">${h}</div>`;
+  const i=document.getElementById('tdin');if(i)i.focus();
+  if(q.step==='result'&&q.ok)confetti();
+}
+function tdAct(a,v){
+  switch(a){
+    case'tdkick':tdq={step:'subject',kind:v};break;
+    case'tdsubj':tdq={step:'q',kind:tdq.kind,subj:v,q:tdMake(tdq.kind,v)};break;
+    case'tdsay':{const k=tdq.q;if(tdq.subj==='es')sayEs(k.say);else say(k.say);return}
+    case'tdans':case'tdcheck':{
+      const k=tdq.q,val=a==='tdans'?v:(document.getElementById('tdin')||{value:''}).value;
+      if(a==='tdcheck'&&!String(val).trim())return;
+      const ok=!!k.check(String(val));
+      S.tdp=Math.max(0,S.tdp-1);store.set('bl.tdp',S.tdp);
+      tdq={step:'result',kind:tdq.kind,subj:tdq.subj,q:k,ok,prize:ok?tdPrize(tdq.kind):null};break}
+    case'tdclose':tdq=null;if(S.view==='home'||S.view==='room')render();break;
+    case'tdroom':tdq=null;S.view='room';S.rgroup='books';render();break;
+  }
+  tdDraw();
+}
+function tdBannerHtml(){
+  return S.tdp?`<section class="tdbanner"><div><b>You have ${S.tdp} kick${S.tdp>1?'s':''} waiting!</b><span>Score a field goal or two-point conversion to win a creature for your shelves.</span></div><button class="btn" data-act="tdopen">Kick now</button></section>`:'';
+}
+function critterPanel(){
+  const have=myCrit();
+  return`<div class="sect" style="padding-inline:0">My creature collection</div><p class="mute">${have.length} of ${CRIT_IDS.length} won. Score a touchdown, then kick a field goal or a two-point conversion to win more. The newest ones sit on your shelves.</p>
+  <div class="critgrid">${CRIT_IDS.map(id=>{const got=have.includes(id);return`<div class="crit ${got?'':'lock'}"><svg viewBox="-22 -32 44 38" width="64" height="54">${got?CRIT[id].s():`<g opacity=".25">${CRIT[id].s().replace(/fill="#[0-9A-Fa-f]{3,6}"/g,'fill="#8899AA"').replace(/stroke="#[0-9A-Fa-f]{3,6}"/g,'stroke="#8899AA"')}</g>`}</svg><small>${got?esc(CRIT[id].n):CRIT[id].r===2?'Rare':'Mystery'}</small></div>`}).join('')}</div>`;
+}
+
+function shelfDraw(c,extra){
+  const st=c.shelf||'none';
+  if(['trophies','books','comics','builds','belts','fossils'].includes(st))return shelfArt(st);
+  return wallShelfArt(st,extra);
+}
+WGEN.bdayhat={id:'bdayhat',name:'Birthday party hat',slot:'head',s:'party',c1:GC.gold,c2:GC.red};
+ITEMS.push({id:'bdayhat',slot:'head',name:'Birthday party hat',at:0,bday:1});
+const bdayUnlocked=()=>new Date()>=new Date(2026,11,17);
+/* soft depth over the whole room: crown molding and a gentle vignette */
+function roomPolish(){
+  return`<defs><radialGradient id="rm-vg" cx=".5" cy=".55" r=".78"><stop offset=".62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".26"/></radialGradient><linearGradient id="rm-cm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#C9D1D6" stop-opacity=".9"/></linearGradient></defs><rect x="0" y="0" width="780" height="7" fill="url(#rm-cm)"/><rect x="0" y="7" width="780" height="2" fill="rgba(0,0,0,.18)"/><rect width="780" height="330" fill="url(#rm-vg)" pointer-events="none"/>`;
+}
 
 render();
 initDb();

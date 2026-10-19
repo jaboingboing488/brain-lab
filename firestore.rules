@@ -31,7 +31,7 @@ service cloud.firestore {
     function validAvatar(a) {
       return a.keys().hasOnly(['skin','hair','style','outfit','bandc','head','top','extra','room'])
         && (!('extra' in a) || (a.extra is list && a.extra.size() <= 30))
-        && (!('room' in a) || (a.room is map && a.room.size() <= 40));
+        && (!('room' in a) || (a.room is map && a.room.size() <= 60));
     }
 
     function validProfile(d) {

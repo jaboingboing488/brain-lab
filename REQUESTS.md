@@ -118,6 +118,22 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 | Spanish earns the most stars and yards | Built: about 4 stars per right answer, 1.5 times on Thursdays, up to 150 a day |
 | Make math and spelling more eye-catching | Built: colorful subject tiles with star-rate ribbons, Today's Playbook bonus, streak counter, confetti |
 
+## Round 5 (Oct 18)
+
+| Request | Status |
+|---|---|
+| Halloween countdown shows fun facts | Built: 14 well-known facts, one per day (chosen from common knowledge, not each looked up) |
+| Math and spelling bracelets on their own subject screens | Built |
+| Daily affirmation (respect, integrity, courage, curiosity) at the bottom of Home | Built: 72 affirmations, a different one each day |
+| Fun but masculine colors on every screen | Built: blue, indigo, green, orange and gold; spelling tile changed from lavender to indigo |
+| Top banner reads "Emmett's Brain Lab" | Built |
+| Mastery only through an official test | Built for spelling (Practice Test), Spanish (Spanish Test) and geography (new Capitals Test); football team mastery was not changed |
+| Geography: home state above the games | Built |
+| Bookshelf, decor shelf and large poster in the room | Built, each with a starter and prizes |
+| More advanced graphics for room and avatar | Built: shaded skin, brows, eyelids, hair shine, room depth; not every old item was redrawn |
+| Touchdown kick: field goal or two-point conversion, question from any subject, a Jurassic dinosaur or Pokemon prize on his shelves | Built: 21 creatures; checked by running kicks in a test copy |
+| Birthday December 17, 2015 | Built: takeover card, balloons and banner in the room, double stars, party hat, a gift creature, countdown from 30 days out; checked by pretending the date |
+
 ## Open items
 
 - Prize pacing lives in the `ITEMS` list (`at:` = stars). The room prizes (bed, desk, posters and so on) were not changed.
