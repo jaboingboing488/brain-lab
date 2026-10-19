@@ -19,35 +19,51 @@ service cloud.firestore {
         && d.items is list && d.items.size() == d.total;
     }
 
-    // Sessions are add-only: no edits, no deletes.
-    match /sessions/{id} {
-      allow read: if true;
-      allow create: if valid(request.resource.data, id);
-      allow update, delete: if false;
-    }
-
-    // The avatar/closet look, math topics, chosen spelling lesson and custom spelling lists follow Emmett between homes.
-    // Only the avatar fields the app actually uses (look, closet choices and bedroom choices), with small sizes.
+    // The avatar and bedroom choices, with small sizes.
     function validAvatar(a) {
       return a.keys().hasOnly(['skin','hair','style','outfit','bandc','head','top','extra','room'])
         && (!('extra' in a) || (a.extra is list && a.extra.size() <= 30))
-        && (!('room' in a) || (a.room is map && a.room.size() <= 60));
+        && (!('room' in a) || (a.room is map && a.room.size() <= 80));
     }
 
+    // The look, room, topics, spelling lists and the small counters that keep every home in agreement.
     function validProfile(d) {
-      return d.keys().hasOnly(['avatar','topics','splist','lists','updated'])
+      return d.keys().hasOnly(['avatar','topics','splist','lists','updated','rt','kicks','by','del','birth'])
         && d.keys().hasAll(['avatar','topics','splist','lists','updated'])
         && d.avatar is map && validAvatar(d.avatar)
         && d.topics is list && d.topics.size() >= 1 && d.topics.size() <= 5
         && d.splist is string && d.splist.size() <= 24
         && d.lists is list && d.lists.size() <= 10
-        && d.updated is number;
+        && d.updated is number
+        && (!('rt' in d) || (d.rt is map && d.rt.size() <= 200))
+        && (!('kicks' in d) || (d.kicks is int && d.kicks >= 0 && d.kicks < 1000))
+        && (!('by' in d) || (d.by is list && d.by.size() <= 60))
+        && (!('del' in d) || (d.del is list && d.del.size() <= 60))
+        && (!('birth' in d) || (d.birth is int && d.birth > 1990 && d.birth < 2100));
     }
 
-    match /profile/{id} {
+    // The family space. The long secret in the path is the key: only devices opened through the
+    // family link know it. (The real key is not stored in this public file. See README.md.)
+    match /fam/__FAMILY_KEY__/sessions/{id} {
+      allow read: if true;
+      allow create: if valid(request.resource.data, id);
+      allow update, delete: if false;
+    }
+    match /fam/__FAMILY_KEY__/profile/{id} {
       allow read: if true;
       allow create, update: if id == 'emmett' && validProfile(request.resource.data);
       allow delete: if false;
+    }
+
+    // The old open locations: readable only until the one-time move into the family space is done.
+    // Nothing can be written there any more. Delete these two collections in the console after the move.
+    match /sessions/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /profile/{id} {
+      allow read: if true;
+      allow write: if false;
     }
 
     match /{other=**} { allow read, write: if false; }

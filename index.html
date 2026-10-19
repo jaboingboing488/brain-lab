@@ -725,64 +725,6 @@ function mergedSessions(){
 function refreshSessions(){S.sessions=mergedSessions()}
 function saveLocalCopy(){store.set('bl.sessions',S.sessions.slice(0,300));store.set('bl.pending',[...pending])}
 
-/* Firebase web config (public by design; the API key is restricted to this site in Google Cloud Console). */
-const FB_CONFIG={apiKey:"AIzaSyD6D8wWi_da8IdeQ7FVxvdoNC0n5Ezm3wQ",authDomain:"brain-lab-b0e8c.firebaseapp.com",projectId:"brain-lab-b0e8c",storageBucket:"brain-lab-b0e8c.firebasestorage.app",messagingSenderId:"866143565838",appId:"1:866143565838:web:bcd2ee26cb82241e55a45f"};
-async function loadFirestore(){
-  if(window.__NODB)throw new Error('sync off for tests');
-  const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
-  const [A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-firestore.js')]);
-  if(/REPLACE/.test(FB_CONFIG.apiKey))throw new Error('not configured');
-  const fs=F.getFirestore(A.initializeApp(FB_CONFIG));
-  return{
-    recent:(n,ok,err)=>F.onSnapshot(F.query(F.collection(fs,'sessions'),F.orderBy('ts','desc'),F.limit(n)),ok,err),
-    save:s=>F.setDoc(F.doc(fs,'sessions',s.id),s),
-    profile:(ok,err)=>F.onSnapshot(F.doc(fs,'profile','emmett'),ok,err),
-    saveProfile:p=>F.setDoc(F.doc(fs,'profile','emmett'),p)
-  };
-}
-async function initDb(){
-  try{db=await loadFirestore()}catch(e){db=null}
-  if(!db){S.sync='local';render();return}
-  try{
-    initProfileSync();
-    db.recent(1000,snap=>{
-      S.sync='live';
-      dbSessions=snap.docs.map(d=>Object.assign({id:d.id},d.data()));
-      dbSessions.forEach(s=>pending.delete(s.id));
-      refreshSessions();saveLocalCopy();
-      store.get('bl.sessions',[]).filter(s=>pending.has(s.id)&&!dbSessions.some(d=>d.id===s.id)).forEach(pushSession);
-      if(S.view!=='run'&&S.view!=='sprun')render();
-    },()=>{S.sync='local';render()});
-  }catch(e){S.sync='local';render()}
-}
-/* look, math topics, chosen word list and custom spelling lists follow Emmett between homes (newest change wins) */
-const PROFILE_SAFE=['home','math','spell','lesson','fb','closet','room','geo','gstudy','flfacts'];
-function profileData(){return{avatar:getAv(),topics:S.topics,splist:String(S.splist),lists:customLists(),updated:store.get('bl.profileTs',0)}}
-function pushProfile(){
-  if(!db||!db.saveProfile||!store.get('bl.profileTs',0))return;
-  db.saveProfile(profileData()).catch(()=>{});
-}
-function touchProfile(){store.set('bl.profileTs',Date.now());pushProfile()}
-function initProfileSync(){
-  if(!db.profile)return;
-  db.profile(snap=>{
-    const mine=store.get('bl.profileTs',0);
-    if(!snap.exists()){pushProfile();return}
-    const p=snap.data();
-    if((p.updated||0)>mine){
-      if(p.avatar)store.set('bl.avatar',p.avatar);
-      if(Array.isArray(p.topics)&&p.topics.length){S.topics=p.topics;store.set('bl.topics',p.topics)}
-      if(p.splist){S.splist=p.splist;store.set('bl.splist',p.splist)}
-      if(Array.isArray(p.lists))store.set('bl.lists',p.lists);
-      store.set('bl.profileTs',p.updated);
-      if(PROFILE_SAFE.includes(S.view))render();
-    }else if((p.updated||0)<mine)pushProfile();
-  },()=>{});
-}
-function pushSession(s){
-  if(!db)return;
-  db.save(s).then(()=>{pending.delete(s.id);saveLocalCopy()}).catch(()=>{S.sync='local';render()});
-}
 function saveSession(s){
   s.id='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
   const tdB=Math.floor(stats().stars/400);
@@ -1946,7 +1888,7 @@ function teamBack(t){
 const modeName=m=>({smart:'Smart Practice',guided:'Guided Practice',exam:'Practice Exam',spell:'Spelling',geo:'Geography',nfl:'Football Club',es:'Spanish'}[m]||m);
 const sessName=s=>subjOf(s)==='es'?'Spanish: '+((ES_GAMES[gameOf(s)]||{}).name||'practice'):s.mode==='spell'?'Spelling: '+((SP_GAMES[gameOf(s)]||{}).name||'practice'):s.mode==='nfl'?'Football: '+((FB_GAMES[gameOf(s)]||{}).name||'game'):s.mode==='geo'?'Geography: '+((GEO_GAMES[gameOf(s)]||{}).name||'practice'):modeName(s.mode);
 const fbOn=()=>S.settings.football!==false;
-const syncPill=()=>`<span class="pill plain"><i class="dot ${S.sync==='live'?'':'off'}"></i>${S.sync==='live'?'Synced':'This device only'}</span>`;
+const syncPill=()=>`<span class="pill plain"><i class="dot ${S.sync==='live'?'':'off'}"></i>${S.sync==='live'?'Synced':S.sync==='unlinked'?'Not linked':'This device only'}</span>`;
 function nav(title,right){return`<div class="navbar">${syncPill()}<span class="mid">${esc(title)}</span>${right||'<span></span>'}</div>`}
 function tabbar(on){
   const t=(k,l)=>`<button class="tab ${on===k?'on':''}" data-act="nav" data-v="${k}" aria-label="${l}">${ICON[k]}<span>${l}</span></button>`;
@@ -3478,7 +3420,7 @@ function act(a,v,d){
       store.set('bl.lists',[...customLists(),{id:'c'+Date.now().toString(36),name,note:'Your own list',words}]);touchProfile();
       render();document.getElementById('listMsg').textContent='Added '+words.length+' words.';break}
     case'dellist':
-      store.set('bl.lists',customLists().filter(l=>l.id!==v));
+      store.set('bl.lists',customLists().filter(l=>l.id!==v));store.set('bl.del',[...store.get('bl.del',[]),v]);
       if(S.splist===v){S.splist=LESSONS[0].id;store.set('bl.splist',S.splist)}
       touchProfile();
       render();break;
@@ -4319,8 +4261,8 @@ function bdayRoomArt(){
   return s;
 }
 /* ----- touchdown kick: a bonus question for a creature ----- */
-S.tdp=Number(store.get('bl.tdp',0))||0;
-function tdAdd(n){S.tdp=(S.tdp||0)+n;store.set('bl.tdp',S.tdp)}
+Object.defineProperty(S,'tdp',{get:()=>tdPending()});
+function tdAdd(){}
 const tdSubs=[['math','Math'],['spell','Spelling'],['es','Spanish'],['geo','Geography']];
 function spVariants(w){
   const out=new Set(),L=[...w];
@@ -4379,7 +4321,7 @@ function tdAct(a,v){
       const k=tdq.q,val=a==='tdans'?v:(document.getElementById('tdin')||{value:''}).value;
       if(a==='tdcheck'&&!String(val).trim())return;
       const ok=!!k.check(String(val));
-      S.tdp=Math.max(0,S.tdp-1);store.set('bl.tdp',S.tdp);
+      tdKick();
       tdq={step:'result',kind:tdq.kind,subj:tdq.subj,q:k,ok,prize:ok?tdPrize(tdq.kind):null};break}
     case'tdclose':tdq=null;if(S.view==='home'||S.view==='room')render();break;
     case'tdroom':tdq=null;S.view='room';S.rgroup='books';render();break;
@@ -4739,6 +4681,7 @@ function makeQL(type,fmt,level){
 }
 
 /* ----- after every screen draw: review cards on subject screens and "scored today" tags ----- */
+const DECOR=[];
 function decorate(){
   const sub={math:'math',spell:'spell',es:'es',geo:'geo'}[S.view];
   if(sub){const h=document.querySelector('.largehead');if(h&&!document.querySelector('.rvcard'))h.insertAdjacentHTML('afterend',reviewCard(sub))}
@@ -4748,6 +4691,7 @@ function decorate(){
     const k=key(el.getAttribute('data-act'),el.getAttribute('data-v'));
     if(k&&done.has(k)&&!el.querySelector('.dn')){const t=el.querySelector('h3,b');if(t)t.insertAdjacentHTML('beforeend','<em class="dn">Scored today ✓</em>')}
   });
+  DECOR.forEach(f=>{try{f()}catch(e){}});
 }
 
 /* ----- Today's Mission ----- */
@@ -4762,9 +4706,209 @@ function missionHtml(){
   <p class="mute">Each activity scores stars once a day. Playing it again is great practice, but it will not add stars.</p></section>`;
 }
 
+/* ================= Round 6, part S: a private family space, merged sync, and a saved history ================= */
+/* Everything is saved under a long secret path that only devices opened through the family link know.
+   The link looks like  https://.../brain-lab/#k=SECRET&b=BIRTHYEAR  and is stored on the device the first time it is opened. */
+const FAM=(function(){
+  try{
+    const k=/[#&]k=([A-Za-z0-9]{12,48})/.exec(location.hash),b=/[#&]b=(\d{4})/.exec(location.hash);
+    if(k){store.set('bl.fam',k[1]);if(b)store.set('bl.birth',Number(b[1]));history.replaceState(null,'',location.pathname+location.search)}
+  }catch(e){}
+  return store.get('bl.fam',null);
+})();
+const famUrl=()=>location.origin+location.pathname+'#k='+FAM+(birthYear()?'&b='+birthYear():'');
+
+/* Firebase web config (public by design; the API key is restricted to this site in Google Cloud Console). */
+const FB_CONFIG={apiKey:"AIzaSyD6D8wWi_da8IdeQ7FVxvdoNC0n5Ezm3wQ",authDomain:"brain-lab-b0e8c.firebaseapp.com",projectId:"brain-lab-b0e8c",storageBucket:"brain-lab-b0e8c.firebasestorage.app",messagingSenderId:"866143565838",appId:"1:866143565838:web:bcd2ee26cb82241e55a45f"};
+async function loadFirestore(){
+  if(window.__NODB)throw new Error('sync off for tests');
+  const V='10.12.2',B='https://www.gstatic.com/firebasejs/'+V+'/';
+  const [A,F]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-firestore.js')]);
+  const fs=F.getFirestore(A.initializeApp(FB_CONFIG)),sp=['fam',FAM];
+  return{
+    since:(ts,ok,err)=>F.onSnapshot(F.query(F.collection(fs,...sp,'sessions'),F.where('ts','>=',ts),F.orderBy('ts','desc'),F.limit(3000)),ok,err),
+    save:s=>F.setDoc(F.doc(fs,...sp,'sessions',s.id),s),
+    profile:(ok,err)=>F.onSnapshot(F.doc(fs,...sp,'profile','emmett'),ok,err),
+    saveProfile:p=>F.setDoc(F.doc(fs,...sp,'profile','emmett'),p),
+    oldSessions:()=>F.getDocs(F.collection(fs,'sessions')),
+    oldProfile:()=>F.getDoc(F.doc(fs,'profile','emmett'))
+  };
+}
+
+/* ----- the full history lives on the device (IndexedDB), so only the last week is read from the cloud on each visit ----- */
+const IDB={
+  db:null,
+  open(){
+    if(this.db)return this.db;
+    this.db=new Promise((res,rej)=>{
+      if(!window.indexedDB){rej(new Error('no indexedDB'));return}
+      const q=indexedDB.open('brainlab-'+String(FAM||'x').slice(0,8),1);
+      q.onupgradeneeded=()=>{q.result.createObjectStore('sess',{keyPath:'id'});q.result.createObjectStore('meta')};
+      q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);
+    });
+    return this.db;
+  },
+  async tx(name,mode,fn){
+    const d=await this.open();
+    return new Promise((res,rej)=>{const t=d.transaction(name,mode),r=fn(t.objectStore(name));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)});
+  },
+  all(){return this.tx('sess','readonly',s=>s.getAll())},
+  put(list){return this.tx('sess','readwrite',s=>{list.forEach(x=>s.put(x))})},
+  getMeta(k){return this.tx('meta','readonly',s=>s.get(k))},
+  setMeta(k,v){return this.tx('meta','readwrite',s=>{s.put(v,k)})}
+};
+let sessCache=new Map();
+const WEEK=7*86400000;
+async function initDb(){
+  if(!FAM){S.sync='unlinked';render();return}
+  let cached=[];try{cached=(await Promise.race([IDB.all(),new Promise(r=>setTimeout(()=>r([]),2500))]))||[]}catch(e){}
+  sessCache=new Map(cached.map(s=>[s.id,s]));
+  if(sessCache.size){dbSessions=[...sessCache.values()];refreshSessions();if(S.view!=='run'&&S.view!=='sprun')render()}
+  try{db=await loadFirestore()}catch(e){db=null}
+  if(!db){S.sync='local';render();return}
+  try{
+    initProfileSync();
+    let lastFull=0;try{lastFull=(await Promise.race([IDB.getMeta('full'),new Promise(r=>setTimeout(()=>r(0),1500))]))||0}catch(e){}
+    const maxTs=[...sessCache.values()].reduce((m,s)=>Math.max(m,s.ts),0);
+    const full=!sessCache.size||nowMs()-lastFull>30*86400000;
+    db.since(full?0:Math.max(0,maxTs-WEEK),snap=>{
+      S.sync='live';const fresh=[];
+      snap.docs.forEach(d=>{const s=Object.assign({id:d.id},d.data());if(!sessCache.has(d.id))fresh.push(s);sessCache.set(d.id,s)});
+      dbSessions=[...sessCache.values()];
+      dbSessions.forEach(s=>pending.delete(s.id));
+      refreshSessions();saveLocalCopy();
+      if(fresh.length)IDB.put(fresh).catch(()=>{});
+      if(full&&snap.docs.length)IDB.setMeta('full',nowMs()).catch(()=>{});
+      store.get('bl.sessions',[]).filter(s=>pending.has(s.id)&&!sessCache.has(s.id)).forEach(pushSession);
+      migrateOld();
+      if(S.view!=='run'&&S.view!=='sprun')render();
+    },()=>{S.sync='local';render()});
+  }catch(e){S.sync='local';render()}
+}
+/* one time: bring the sessions and profile from the old, open location into the private space */
+async function migrateOld(){
+  if(store.get('bl.mig',false)||!db||!db.oldSessions||window.__MIGRATING)return;
+  window.__MIGRATING=true;
+  try{
+    const os=await db.oldSessions();
+    os.docs.forEach(d=>{if(!sessCache.has(d.id)){const s=Object.assign({id:d.id},d.data());db.save(s).catch(()=>{})}});
+    const op=await db.oldProfile();
+    if(op.exists()&&mergeProfile(op.data()))touchProfile();
+    store.set('bl.mig',true);
+  }catch(e){/* the old location is closed or empty: nothing to move */}
+  window.__MIGRATING=false;
+}
+
+/* ----- the profile: each setting keeps its own change time, so two homes merge instead of one overwriting the other ----- */
+const AV_KEYS=['skin','hair','style','outfit','bandc','head','top','extra'];
+function flatProfile(){
+  const a=getAv(),o={};
+  AV_KEYS.forEach(k=>{o['a.'+k]=a[k]});
+  Object.keys(a.room).forEach(k=>{if(k!=='critters')o['r.'+k]=a.room[k]});
+  o.topics=S.topics;o.splist=String(S.splist);
+  return o;
+}
+if(store.get('bl.snap',null)===null)store.set('bl.snap',flatProfile());/* first run of this version: what is here now is not a new change */
+function profileData(){
+  const a=getAv(),rt=store.get('bl.rt',{});
+  const d={avatar:a,topics:S.topics,splist:String(S.splist),lists:customLists(),updated:Math.max(store.get('bl.profileTs',0),0,...Object.values(rt)),rt,kicks:store.get('bl.kicks',0),by:store.get('bl.by',[]),del:store.get('bl.del',[])};
+  const b=birthYear();if(b)d.birth=b;
+  return d;
+}
+function pushProfile(){
+  if(!db||!db.saveProfile||!store.get('bl.profileTs',0))return;
+  db.saveProfile(profileData()).catch(()=>{});
+}
+/* called after every change the child or parent makes to the look, room, topics or lists */
+function touchProfile(){
+  const cur=flatProfile(),prev=store.get('bl.snap',{}),rt=store.get('bl.rt',{}),now=Date.now();
+  Object.keys(cur).forEach(k=>{if(JSON.stringify(cur[k])!==JSON.stringify(prev[k]))rt[k]=now});
+  store.set('bl.rt',rt);store.set('bl.snap',cur);store.set('bl.profileTs',now);
+  pushProfile();
+}
+function mergeProfile(p){
+  const prt=p.rt||{},legacy=p.updated||0,mine0=store.get('bl.profileTs',0),rt=Object.assign({},store.get('bl.rt',{}));
+  const theirs=k=>prt[k]!==undefined?prt[k]:legacy,mine=k=>rt[k]!==undefined?rt[k]:mine0;
+  const a=getAv(),pa=p.avatar||{},pr=pa.room||{};let ch=false;
+  AV_KEYS.forEach(k=>{if(pa[k]!==undefined&&theirs('a.'+k)>mine('a.'+k)){a[k]=pa[k];rt['a.'+k]=theirs('a.'+k);ch=true}});
+  Object.keys(pr).forEach(k=>{if(k==='critters'||pr[k]===undefined)return;if(theirs('r.'+k)>mine('r.'+k)){a.room[k]=pr[k];rt['r.'+k]=theirs('r.'+k);ch=true}});
+  const cr=[...new Set([...a.room.critters,...(Array.isArray(pr.critters)?pr.critters:[])])];
+  if(cr.length!==a.room.critters.length){a.room.critters=cr;ch=true}
+  if(Array.isArray(p.topics)&&p.topics.length&&theirs('topics')>mine('topics')){S.topics=p.topics;store.set('bl.topics',p.topics);rt.topics=theirs('topics');ch=true}
+  if(p.splist&&theirs('splist')>mine('splist')){S.splist=p.splist;store.set('bl.splist',p.splist);rt.splist=theirs('splist');ch=true}
+  const del=[...new Set([...store.get('bl.del',[]),...(Array.isArray(p.del)?p.del:[])])];
+  const own=customLists(),other=Array.isArray(p.lists)?p.lists:[];
+  const lists=[...own,...other.filter(l=>!own.some(m=>m.id===l.id))].filter(l=>!del.includes(l.id));
+  if(lists.length!==own.length||del.length!==store.get('bl.del',[]).length){store.set('bl.lists',lists);store.set('bl.del',del);ch=true}
+  const kicks=Math.max(store.get('bl.kicks',0),p.kicks||0);
+  if(kicks!==store.get('bl.kicks',0)){store.set('bl.kicks',kicks);ch=true}
+  const by=[...new Set([...store.get('bl.by',[]),...(Array.isArray(p.by)?p.by:[])])];
+  if(by.length!==store.get('bl.by',[]).length){store.set('bl.by',by);ch=true}
+  if(p.birth&&!birthYear()){store.set('bl.birth',p.birth);ch=true}
+  if(ch){store.set('bl.avatar',a);store.set('bl.rt',rt);store.set('bl.snap',flatProfile())}
+  return ch;
+}
+const normP=d=>JSON.stringify(d,(k,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.keys(v).sort().reduce((o,x)=>(o[x]=v[x],o),{}):v);
+function initProfileSync(){
+  if(!db.profile)return;
+  db.profile(snap=>{
+    if(!snap.exists()){if(!store.get('bl.profileTs',0))store.set('bl.profileTs',Date.now());pushProfile();return}
+    const p=snap.data(),ch=mergeProfile(p);
+    if(ch&&PROFILE_SAFE.includes(S.view))render();
+    const ours=profileData(),sameAsCloud=normP(Object.assign({},ours,{updated:0}))===normP(Object.assign({},p,{updated:0}));
+    if(!sameAsCloud)pushProfile();
+  },()=>{});
+}
+const PROFILE_SAFE=['home','math','spell','lesson','fb','closet','room','geo','gstudy','flfacts'];
+function pushSession(s){
+  if(!db)return;
+  db.save(s).then(()=>{pending.delete(s.id);saveLocalCopy()}).catch(()=>{S.sync='local';render()});
+}
+
+/* ----- touchdown kicks: kicks waiting = touchdowns earned minus kicks taken. Both come from synced data, so every home agrees. ----- */
+const tdPending=()=>Math.max(0,Math.floor(totalStars()/400)-store.get('bl.kicks',0));
+function tdKick(){store.set('bl.kicks',store.get('bl.kicks',0)+1);touchProfile()}
+
+/* ----- parent area: the family link, the birth year and the data downloads ----- */
+const csvCell=v=>{v=String(v==null?'':v);return/[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+const csvLine=a=>a.map(csvCell).join(',');
+function csvSessions(){
+  const rows=[['date','time','weekday','subject','activity','correct','total','percent','stars','minutes','where']];
+  S.sessions.slice().sort((a,b)=>a.ts-b.ts).forEach(s=>{
+    const d=etDate(s.ts),p=etp(s.ts);
+    rows.push([dayKey(s.ts),String(p.hour).padStart(2,'0')+':'+String(p.minute).padStart(2,'0'),['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][d.getDay()],SUBNAME[subjOf(s)],sessName(s),s.correct,s.total,s.total?Math.round(100*s.correct/s.total):0,s.stars||0,Math.round((s.secs||0)/60),s.home||'']);
+  });
+  return rows.map(csvLine).join('\n');
+}
+function csvItems(){
+  const rows=[['date','subject','activity','item','right','clean','hint_or_second_try','level']];
+  S.sessions.slice().sort((a,b)=>a.ts-b.ts).forEach(s=>(s.items||[]).forEach(i=>{
+    rows.push([dayKey(s.ts),SUBNAME[subjOf(s)],sessName(s),i.w||i.t||'',i.ok?1:0,i.ok&&!i.h?1:0,i.h?1:0,i.lv||'']);
+  }));
+  return rows.map(csvLine).join('\n');
+}
+function download(name,text){
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'text/csv'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}catch(e){}
+}
+function familyCard(){
+  return`<section class="card" id="famcard"><h3>Family link and your data</h3>
+  <p class="mute">${FAM?'This device is linked to your private family space. Open the family link once on every phone, iPad and computer so all homes share the same stars, room and history.':'This device is not linked yet, so nothing is saved to the cloud. Open your family link on this device once. Practice is still saved on this device.'}</p>
+  ${FAM?`<div class="row"><button class="btn tint" data-act="famshow">${S.famShow?'Hide the link':'Show the family link'}</button><button class="btn quiet" data-act="famcopy">Copy the link</button></div>${S.famShow?`<p class="mute" style="word-break:break-all"><b>${esc(famUrl())}</b></p>`:''}${S.famMsg?`<p class="mute">${esc(S.famMsg)}</p>`:''}`:''}
+  <div class="row"><button class="btn quiet" data-act="csv" data-v="sessions">Download session log (CSV)</button><button class="btn quiet" data-act="csv" data-v="items">Download answer log (CSV)</button></div>
+  <label class="row">Year Emmett was born <input class="txt" id="birthY" inputmode="numeric" maxlength="4" style="width:90px" value="${birthYear()||''}"><button class="btn quiet" data-act="setbirth">Save</button></label>
+  <p class="mute">The birth year is only kept in your private space, so the birthday card can say his age. It is not in the public code.</p></section>`;
+}
+DECOR.push(function(){
+  if(S.view==='parent'&&S.unlocked&&S.tab==='settings'&&!document.getElementById('famcard')){const t=document.querySelector('.tabbar');if(t)t.insertAdjacentHTML('beforebegin',familyCard())}
+});
+
 function r6act(a,v,d){
   switch(a){
     case'rvstart':reviewStart(v);return true;
+    case'famshow':S.famShow=!S.famShow;render();return true;
+    case'famcopy':try{navigator.clipboard.writeText(famUrl()).then(()=>{S.famMsg='Copied.';render()}).catch(()=>{S.famShow=true;S.famMsg='Copy it from here.';render()})}catch(e){S.famShow=true;render()}return true;
+    case'csv':download(v==='sessions'?'brain-lab-sessions.csv':'brain-lab-answers.csv',v==='sessions'?csvSessions():csvItems());return true;
+    case'setbirth':{const y=(document.getElementById('birthY')||{value:''}).value.trim();if(/^(19|20)\d{2}$/.test(y)){store.set('bl.birth',Number(y));touchProfile();S.famMsg='Saved.'}else S.famMsg='Enter a 4-digit year.';render();return true}
     case'calmo':S.calOff=v==='0'?0:(S.calOff||0)+Number(v);render();return true;
   }
   return false;
