@@ -1945,6 +1945,7 @@ function homeView(){
     <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
   ${holidayHtml()}
   ${missionHtml()}
+  ${affirmHtml()}
   <div class="sect">Pick a subject</div>
   <section class="subjgrid">
     <button class="subj wide" style="--c1:${SUBCOL.es[0]};--c2:${SUBCOL.es[1]}" data-act="nav" data-v="es"><span class="ribbon">${isThu(nowMs())?'THURSDAY ×6':'×4 STARS'}</span><span class="sic">${ICON.es}</span><h3>Spanish</h3><span class="d">${isThu(nowMs())?'¡Hoy es jueves! Every Spanish star counts 1.5 times today.':'The most stars and yards of any subject. Words, listening and writing.'}</span></button>
@@ -1957,7 +1958,6 @@ function homeView(){
   ${last?`<p class="mute" style="padding-inline:6px">Last activity: ${esc(sessName(last))}, ${last.correct} of ${last.total} on ${fmtDate(last.ts)}.</p>`:''}
   ${calendarHtml()}
   <section class="spark"><b>Fun fact</b><p>${esc(fact)}</p></section>
-  ${affirmHtml()}
   ${tabbar('home')}`;
 }
 
