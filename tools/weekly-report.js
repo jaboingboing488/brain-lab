@@ -99,7 +99,7 @@ function report(sessions,today,profile){
     newlyMastered,trickyWords:tricky.slice(0,12),mathLevels,
     practiceRounds:wk.filter(s=>!(s.stars>0)).length,
     totalSessionsEver:sessions.length,
-    spellingList:{schoolListAdded:Array.isArray(profile.lists)&&profile.lists.length>0,wizardingWordsStart:'2026-11-04',started:today>='2026-11-04'}
+    spellingList:{schoolListAdded:Array.isArray(profile.lists)&&profile.lists.length>0}
   };
 }
 (async()=>{

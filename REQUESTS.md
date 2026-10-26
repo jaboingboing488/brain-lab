@@ -149,7 +149,7 @@ This file is public, so it holds no last names, school, teacher, grades or perso
 | A right answer on the second try or with a hint earns less | Built: half the stars (math, spelling, Spanish, geography, football). Mastery is unchanged. |
 | No skipping questions | Built: the Skip button is gone. |
 | Each activity scores once a day | Built: later rounds of the same activity are real practice but add no stars; mode cards show "Scored today". Tests still count toward mastery. |
-| Harry Potter grade-4 spelling list if no school list by Nov 4 | Built: 20 words, switches on by itself on Nov 4 2026 unless a school list was added |
+| Harry Potter grade-4 spelling list if no school list by Nov 4 | Removed 2026-10-26: Emmett is in 5th grade and does not read them. Spelling comes from his school list only |
 | Two homes must not overwrite each other | Built: every setting keeps its own change time; creatures, lists and kicks merge instead of replacing |
 | Session history without slowing things down | Built: the full history is kept on the device; each visit reads only the last 7 days from the cloud (a full refresh every 30 days). The old 1000-session limit that could drop stars is gone. |
 | Spaced review for every section | Built: math, spelling, Spanish and geography. Misses and hints come back after 1, 3, 7, 14 and 30 days, until five clean answers in a row. |
