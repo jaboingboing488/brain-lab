@@ -283,7 +283,6 @@ button.gt:hover:not(:disabled){box-shadow:inset 0 0 0 2px var(--accent)}
 .mini{max-width:360px;margin-inline:auto;width:100%}
 .flf{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:start}.flf span{font-size:1.6rem}.flf p{margin:0}
 .roomcard{border-radius:24px;overflow:hidden;box-shadow:var(--shadow);line-height:0;background:#E4ECF2}.roomcard svg{width:100%;height:auto;display:block}
-.n64box{position:relative}.n64box.fill{width:100%;height:100%}.n64box.on>svg{opacity:0}.n64box>img.n64{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;image-rendering:auto;display:block}
 .cdot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
 .ans.wide{width:100%;max-width:none}.spell-big{font:800 1.6rem var(--f-num);letter-spacing:.12em;text-align:center}
 .tabbar .tab{font-size:.56rem;min-width:0}.tabbar>div{gap:0}
@@ -1916,7 +1915,7 @@ function homeView(){
   const mastered=cur.words.filter(w=>wordLevel(wst[w])==='m').length;
   return home+`
   ${bdayCard()}${tdBannerHtml()}
-  <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${n64(avatarSvg(isBday()&&!av.head?Object.assign({},av,{head:'bdayhat'}):av),44,'fill')}</div>
+  <section class="hero">${halloween()?`<div class="hwdeco">${batSvg(30)}${pumpkinSvg(34)}${batSvg(24)}</div>`:''}<div class="av">${avatarSvg(isBday()&&!av.head?Object.assign({},av,{head:'bdayhat'}):av)}</div>
     <div class="who"><h2>${isBday()?'Happy Birthday, Emmett!':halloween()?'Happy Halloween, Emmett!':'Hi, Emmett!'}</h2><span>${st.streak?`${st.streak}-day winning streak`:'Ready for kickoff?'}</span></div>
     <div class="stats"><div class="stat"><b class="num">${st.stars}</b><span>stars</span></div><div class="stat"><b class="num">${st.streak}</b><span>day streak</span></div><div class="stat"><b class="num">${sessCounts().all.total}</b><span>sessions</span></div></div>
     <div class="journey">${fieldSvg(st.stars)}${scoreboardHtml(st.stars)}<p>${nextTxt}</p>${seasonBarHtml()}</div></section>
@@ -2725,32 +2724,6 @@ function packArt(id){
   return d;
 }
 /* ----- views ----- */
-/* ----- Nintendo 64 look: the picture is drawn at a tiny size like a 1990s console, squeezed to 15-bit colour with dithering, then stretched back up with smooth (blurry) filtering.
-   The sharp drawing stays underneath, invisible, so taps still work. If anything fails the sharp drawing simply stays visible. ----- */
-const N64={cache:new Map(),busy:new Set()};
-function n64Hash(m){let h=5381;for(let i=0;i<m.length;i++)h=(h*33^m.charCodeAt(i))>>>0;return h+'.'+m.length}
-function n64(svg,w,cls){
-  const vb=/viewBox="0 0 (\d+) (\d+)"/.exec(svg);if(!vb)return svg;
-  const k=n64Hash(svg)+'@'+w,hit=N64.cache.get(k),h=Math.round(w*vb[2]/vb[1]);
-  if(!hit)n64Make(svg,k,w,h);
-  return`<div class="n64box ${cls||''} ${hit?'on':''}" data-n64k="${k}">${svg}${hit?`<img class="n64" alt="" src="${hit}">`:''}</div>`;
-}
-function n64Make(svg,k,w,h){
-  if(N64.busy.has(k))return;N64.busy.add(k);
-  const src=svg.replace(/ filter="url\(#f-sh\)"/g,'').replace(/^<svg([^>]*)>/,(m,a)=>'<svg xmlns="http://www.w3.org/2000/svg"'+a.replace(/\s(width|height)="[^"]*"/g,'')+` width="${w}" height="${h}">`);
-  const im=new Image();
-  im.onload=()=>{try{
-    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');x.imageSmoothingEnabled=true;x.drawImage(im,0,0,w,h);
-    const d=x.getImageData(0,0,w,h),a=d.data,B=[0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
-    for(let y=0;y<h;y++)for(let X=0;X<w;X++){const i=(y*w+X)*4,t=(B[(y&3)*4+(X&3)]/16-.5)*14;for(let q=0;q<3;q++)a[i+q]=Math.max(0,Math.min(255,Math.round((a[i+q]+t)/16)*16))}
-    x.putImageData(d,0,0);
-    const url=c.toDataURL('image/png');
-    if(N64.cache.size>12)N64.cache.clear();N64.cache.set(k,url);
-    document.querySelectorAll('.n64box[data-n64k="'+k+'"]:not(.on)').forEach(el=>{el.classList.add('on');el.insertAdjacentHTML('beforeend',`<img class="n64" alt="" src="${url}">`)});
-  }catch(e){}N64.busy.delete(k)};
-  im.onerror=()=>N64.busy.delete(k);
-  im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(src);
-}
 function roomView(){
   const cfg=getAv().room,grp=S.rgroup||'bed',g=ROOMGROUPS.find(x=>x[0]===grp)||ROOMGROUPS[0];
   const pc=prizeCount();
@@ -2759,7 +2732,7 @@ function roomView(){
       const un=needMet(x),on=cfg[k]===x.id;
       return`<button class="item ${on?'on':''} ${un?'':'lock'}" ${un?'':'disabled'} data-act="rm" data-k="${k}" data-v="${x.id}"><b>${x.c?`<i class="cdot" style="background:${x.c}"></i>`:''}${esc(x.name)}</b><small>${un?(on?'In my room':'Tap to use'):needText(x)}</small></button>`}).join('')}</div>`};
   return nav('My Room')+`<div class="largehead"><h1>My Room</h1><p class="mute">Prizes take real work. School stars (math, spelling, Spanish and geography) win the coolest ones, and the best need mastery, exam scores or school streaks. Tap the closet door to change your look.</p></div>
-  <section class="roomcard">${n64(roomSvg(cfg),208)}</section>
+  <section class="roomcard">${roomSvg(cfg)}</section>
   <div class="row between"><button class="btn" data-act="closet">Open the closet</button><span class="pill">${pc.have} of ${pc.total} prizes won</span></div>
   <div class="seg wrap">${ROOMGROUPS.map(([k,l])=>`<button class="${grp===k?'on':''}" data-act="rgroup" data-v="${k}">${l}</button>`).join('')}</div>
   <section class="card">${g[2].map(slot).join('')}${grp==='books'?critterPanel():''}</section>
@@ -2774,7 +2747,7 @@ function closetView(){
   const sec=(title,slot,clear)=>`<div class="sect">${title}</div><section class="items">${clear||''}${ITEMS.filter(x=>x.slot===slot&&(!x.season||halloween())&&(!x.bday||bdayUnlocked())).sort((p,q)=>ckey(p)-ckey(q)).map(it).join('')}</section>`;
   return`<div class="navbar"><button class="back" data-act="nav" data-v="room">${ICON.chev}Room</button><span class="mid">Closet</span><span style="min-width:64px"></span></div>
   <div class="largehead"><h1>Closet</h1><p class="mute">You have <b class="num">${st.stars}</b> stars, and <b class="num">${schoolStars()}</b> of them are school stars from math, spelling, Spanish and geography. The newest prizes need school stars, so football stars do not count for them.</p>${prizeBar()}</div>
-  <div class="avbig"><div style="width:190px;height:206px">${n64(avatarSvg(av),44,'fill')}</div></div>
+  <div class="avbig"><div style="width:190px;height:206px">${avatarSvg(av)}</div></div>
   <section class="card">${swc('skin',SKIN,'Skin',['Lightest','Light','Medium','Tan','Brown','Deep'])}${swc('hair',HAIR,'Hair color',['Black','Dark brown','Brown','Light brown','Blond','Blue'])}
     <div class="sect" style="padding-inline:0">Hair style</div><div class="seg wrap">${[['waves','Short waves'],['curly','Curly'],['fade','Fade'],['twists','Twists'],['buzz','Buzz'],['afro','Afro']].map(([k,l])=>`<button class="${av.style===k?'on':''}" data-act="av" data-k="style" data-v="${k}">${l}</button>`).join('')}</div>
     ${swc('outfit',OUTFIT,'Outfit color',COLNAME)}${swc('bandc',OUTFIT,'Headband and helmet color',COLNAME)}</section>
