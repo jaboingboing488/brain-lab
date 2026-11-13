@@ -30,10 +30,16 @@ post = ('<script>setTimeout(async function(){try{window.RESULT={};' + test +
         '(window.parent!==window?window.parent:window).document.body.setAttribute("data-zzres",JSON.stringify({r:window.RESULT,err:window.__ERR}))},%d)</script>' % a.wait)
 i = html.index('<script>')
 html = html[:i] + '<script>' + ''.join(pre) + '</script>' + html[i:]
+html = html.replace('</head>', '<script type="module">import("./room3d.js").then(m=>{window.__r3m=m}).catch(e=>{window.__r3err=String(e)})</script></head>', 1)  # warm the 3D module during page load (virtual time cannot wait for late imports)
 j = html.rindex('</body>')
 html = html[:j] + post + html[j:]
 d = tempfile.mkdtemp(prefix='blt')
 f = os.path.join(d, 't.html'); open(f, 'w', encoding='utf-8').write(html)
+_src = os.path.dirname(os.path.abspath(a.html))  # the 3D room loads these files next to the page
+for _n in ('room3d.js', 'vendor'):
+    _p = os.path.join(_src, _n)
+    if os.path.isdir(_p): shutil.copytree(_p, os.path.join(d, _n))
+    elif os.path.exists(_p): shutil.copy(_p, d)
 w, h = a.size.split('x')
 target = f
 if a.frame:
@@ -41,7 +47,7 @@ if a.frame:
     target = os.path.join(d, 'w.html')
     open(target, 'w', encoding='utf-8').write('<!doctype html><body style="margin:0;background:#888"><iframe src="t.html" style="width:%spx;height:%spx;border:0;display:block"></iframe></body>' % (fw, fh))
 cmd = [find_chrome(), os.environ.get('HEADLESS','--headless=new'), '--disable-gpu', '--no-sandbox', '--allow-file-access-from-files', '--hide-scrollbars', '--window-size=%s,%s' % (w, h),
-       '--force-device-scale-factor=' + a.dpr, '--user-data-dir=' + os.path.join(d, 'prof'), '--virtual-time-budget=6000']
+       '--force-device-scale-factor=' + a.dpr, '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--user-data-dir=' + os.path.join(d, 'prof'), '--virtual-time-budget=' + os.environ.get('BUDGET','6000')]
 if a.shot: cmd.append('--screenshot=' + os.path.abspath(a.shot))
 else: cmd.append('--dump-dom')
 cmd.append('file:///' + target.replace(chr(92), '/'))
@@ -50,7 +56,9 @@ if a.shot:
     print('screenshot', a.shot); shutil.rmtree(d, ignore_errors=True); sys.exit(0)
 m = re.search(r'data-zzres="([^"]*)"', p.stdout)
 shutil.rmtree(d, ignore_errors=True)
-if not m: print('NO RESULT', p.stderr[-400:]); sys.exit(1)
+if not m:
+    err = chr(10).join(l for l in p.stderr.splitlines() if 'external_registry' not in l)
+    print('NO RESULT', err[-1500:], chr(10) + 'DOM:', p.stdout[-300:]); sys.exit(1)
 import html as H
 res = json.loads(H.unescape(m.group(1)))
 print(json.dumps(res['r'], indent=1)[:6000])

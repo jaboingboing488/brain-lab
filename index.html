@@ -6,6 +6,7 @@
 <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://a.espncdn.com; connect-src 'self' https://firestore.googleapis.com; base-uri 'none'; manifest-src 'self'; worker-src 'self'; form-action 'none'; object-src 'none'">
 <title>Brain Lab</title>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap">
 <style>
@@ -282,7 +283,7 @@ textarea.txt{font:inherit;padding:12px 14px;border:0;border-radius:14px;backgrou
 button.gt:hover:not(:disabled){box-shadow:inset 0 0 0 2px var(--accent)}
 .mini{max-width:360px;margin-inline:auto;width:100%}
 .flf{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:start}.flf span{font-size:1.6rem}.flf p{margin:0}
-.roomcard{border-radius:24px;overflow:hidden;box-shadow:var(--shadow);line-height:0;background:#E4ECF2}.roomcard svg{width:100%;height:auto;display:block}
+.roomcard{border-radius:24px;overflow:hidden;box-shadow:var(--shadow);line-height:0;background:#E4ECF2}.roomcard svg{width:100%;height:auto;display:block}.roomcard.is3d{position:relative;background:#0B1626}.roomcard.is3d>svg{display:none}.roomcard canvas.r3d{display:block;width:100%;touch-action:pan-y;cursor:grab}
 .cdot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
 .ans.wide{width:100%;max-width:none}.spell-big{font:800 1.6rem var(--f-num);letter-spacing:.12em;text-align:center}
 .tabbar .tab{font-size:.56rem;min-width:0}.tabbar>div{gap:0}
@@ -2735,7 +2736,7 @@ function roomView(){
       return`<button class="item ${on?'on':''} ${un?'':'lock'}" ${un?'':'disabled'} data-act="rm" data-k="${k}" data-v="${x.id}"><b>${x.c?`<i class="cdot" style="background:${x.c}"></i>`:''}${esc(x.name)}</b><small>${un?(on?'In my room':'Tap to use'):needText(x)}</small></button>`}).join('')}</div>`};
   return nav('My Room')+`<div class="largehead"><h1>My Room</h1><p class="mute">Prizes take real work. School stars (math, spelling, Spanish and geography) win the coolest ones, and the best need mastery, exam scores or school streaks. Tap the closet door to change your look.</p></div>
   <section class="roomcard">${roomSvg(cfg)}</section>
-  <div class="row between"><button class="btn" data-act="closet">Open the closet</button><span class="pill">${pc.have} of ${pc.total} prizes won</span></div>
+  <div class="row between"><button class="btn" data-act="closet">Open the closet</button><button class="btn quiet" data-act="room3d">${store.get('bl.room3d',true)&&!R3.fail?'Flat view':'3D view'}</button><span class="pill">${pc.have} of ${pc.total} prizes won</span></div>
   <div class="seg wrap">${ROOMGROUPS.map(([k,l])=>`<button class="${grp===k?'on':''}" data-act="rgroup" data-v="${k}">${l}</button>`).join('')}</div>
   <section class="card">${g[2].map(slot).join('')}${grp==='books'?critterPanel():''}</section>
   ${tabbar('room')}`;
@@ -3353,6 +3354,7 @@ document.addEventListener('click',e=>{
 function act(a,v,d){
   const r=run;
   switch(a){
+    case'room3d':store.set('bl.room3d',!store.get('bl.room3d',true));R3.fail=false;render();break;
     case'sethome':S.home=v;store.set('bl.home',v);S.view='home';render();break;
     case'gstart':geoStart(v);break;
     case'gregion':S.geoRegion=v;render();break;
@@ -4708,6 +4710,33 @@ function decorate(){
   });
   DECOR.forEach(f=>{try{f()}catch(e){}});
 }
+
+
+/* ----- 3D room: loaded on demand from room3d.js; if the browser cannot do 3D, the flat room simply stays ----- */
+const R3={inst:null,loading:false,fail:false};
+function room3dData(){
+  const av=getAv(),c=av.room,col=s=>{const x=roomOpt(s,c[s]);return x&&x.c};
+  const on=k=>c[k]&&c[k]!=='none'?c[k]:'';
+  const posters=['p4','p1','p2','p3'].map(k=>c[k]&&c[k]!=='none'?{svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 56" width="352" height="448">${posterArt(c[k])}</svg>`}:{});
+  const d={view:c.window||'day',wall:WALLC[c.wall]||WALLC.cloud,floor:c.floor||'wood',floorC:FLOORC[c.floor]||FLOORC.wood,door:DOORC[c.door]||DOORC.wood,bedframe:FRAMEC[c.bedframe]||FRAMEC.wood,desk:DESKC[c.desk]||DESKC.wood,rack:RACKC[c.rack]||RACKC.wood,
+    sheets:col('sheets')||'#0A7E8C',pillow:col('pillow')||'#F4F7FA',rug:col('rug')||'#0A7E8C',laundry:col('laundry')||'#9AA3AB',dresser:col('dresser')||'#B9854F',curtains:col('curtains')||'#3A7BD5',lamp:col('lamp')||'#0A7E8C',
+    pack:on('pack')?col('pack'):'',deskA:on('deskA'),deskB:on('deskB'),globe:on('globe'),telescope:on('telescope'),beanbag:on('beanbag')?(BEANC[c.beanbag]||'#0A7E8C'):'',shelf:on('shelf'),lights:on('lights'),hoop:on('hoop'),posters,
+    avatar:{skin:av.skin,hair:av.hair,style:av.style,outfit:av.outfit,bandc:av.bandc},pal:{SKIN,HAIR,OUTFIT}};
+  d.keyData=Object.assign({},d,{posters:posters.map(p=>p.svg?1:0),pal:0});
+  return d;
+}
+function mountRoom3d(){
+  const card=document.querySelector('.roomcard');
+  if(!card||!store.get('bl.room3d',true)||R3.fail){if(R3.inst){R3.inst.stop();if(R3.inst.canvas.parentNode)R3.inst.canvas.remove()}if(card)card.classList.remove('is3d');return}
+  if(!R3.inst){
+    if(R3.loading)return;R3.loading=true;
+    import('./room3d.js').then(m=>{R3.inst=m.createRoom3D(card,{onTap:v=>{S.from='room';S.view='closet';render()}});if(!R3.inst)R3.fail=true;R3.loading=false;render()}).catch(e=>{R3.fail=true;R3.loading=false;render()});
+    return;
+  }
+  R3.inst.setHost(card);card.classList.add('is3d');card.appendChild(R3.inst.canvas);
+  try{R3.inst.update(room3dData());R3.inst.resize();R3.inst.start()}catch(e){R3.fail=true;card.classList.remove('is3d');R3.inst.stop()}
+}
+DECOR.push(mountRoom3d);
 
 /* ----- Today's Mission ----- */
 function missionHtml(){
