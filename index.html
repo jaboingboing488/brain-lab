@@ -1087,7 +1087,7 @@ function avatarSvg(c,part){
   /* rendered look: soft form shading, a warm key light, a cool rim light from behind, and a gentle contact shadow */
   const lit=`<filter id="av-lit" x="-12%" y="-8%" width="124%" height="120%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceAlpha" stdDeviation="2.4" result="bl"/><feDiffuseLighting in="bl" surfaceScale="3.6" diffuseConstant="1.2" lighting-color="#fff" result="df"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting><feComposite in="SourceGraphic" in2="df" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="sh"/><feSpecularLighting in="bl" surfaceScale="3.6" specularConstant=".38" specularExponent="26" lighting-color="#FFF0D4" result="sp"><feDistantLight azimuth="225" elevation="48"/></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="spc"/><feSpecularLighting in="bl" surfaceScale="3.6" specularConstant=".34" specularExponent="30" lighting-color="#8FC4FF" result="rm"><feDistantLight azimuth="45" elevation="30"/></feSpecularLighting><feComposite in="rm" in2="SourceAlpha" operator="in" result="rmc"/><feComposite in="sh" in2="spc" operator="arithmetic" k1="0" k2="1" k3=".5" k4="0" result="a"/><feComposite in="a" in2="rmc" operator="arithmetic" k1="0" k2="1" k3=".32" k4="0"/></filter>`;
   /* one layer of the look on its own (shirt, hat, extras, cape): the 3D room lays these on its figure */
-  if(part){const P={top:['14 88 92 50',top+tfx],hd:['0 -12 120 112',hd],ex:['0 0 120 140',ex],cape:['0 0 120 140',cape]}[part];if(!P)return'';const vb=P[0].split(' ').map(Number);return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${P[0]}" width="${vb[2]*8}" height="${vb[3]*8}">${defs}${P[1]}</svg>`}
+  if(part){const tall=t=>t.replace(/ 130(?=[CLZH])/g,' 168').replace(/V130/g,'V168'),nk=head.replace(/<rect x="52" y="82"[^>]*\/>/,'').replace(/<path d="M52 92Q60 98 68 92V98H52Z"[^>]*\/>/,'');const P={top:['14 88 92 80',tall(top+tfx)],hd:['0 -12 120 112',hd],ex:['0 0 120 140',ex],cape:['0 0 120 140',cape],face:['20 20 80 80',nk+face],fringe:['14 -4 92 96',fringe],back:['14 -4 92 96',back]}[part];if(!P)return'';const vb=P[0].split(' ').map(Number);return`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${P[0]}" width="${vb[2]*8}" height="${vb[3]*8}">${defs}${P[1]}</svg>`}
   return`<svg viewBox="0 0 120 130" width="100%" height="100%" role="img" aria-label="Emmett's avatar"><defs>${lit}</defs>${defs}<g filter="url(#av-lit)">${cape}${back}${top}${tfx}${head}${fringe}${face}${ex}${hd}</g></svg>`;
 }
 function kartSvg(){
@@ -4740,11 +4740,12 @@ function room3dData(){
   /* the figure follows the closet: same shirt colour rule, sleeve types and shoe colour as the flat figure */
   const head=isBday()&&!av.head?'bdayhat':av.head,look=Object.assign({},av,{head});
   const shirt=av.top==='gi'?'#F4F7FA':WGEN[av.top]&&WGEN[av.top].slot==='top'?WGEN[av.top].c1:OUTFIT[av.outfit]||OUTFIT[0];
-  const exRest=(av.extra||[]).filter(x=>!['shades','belt'].includes(x)),arts={top:avatarSvg(look,'top')};
+  const exRest=(av.extra||[]).filter(x=>!['shades','belt'].includes(x)),arts={top:avatarSvg(look,'top'),face:avatarSvg(look,'face'),fringe:avatarSvg(look,'fringe')};
+  if(look.style==='curly'||look.style==='afro')arts.back=avatarSvg(look,'back');
   if(head&&!R3_HATS.includes(head))arts.hd=avatarSvg(look,'hd');
   if(exRest.length){arts.ex=avatarSvg(Object.assign({},look,{extra:exRest}),'ex');const cp=avatarSvg(Object.assign({},look,{extra:exRest}),'cape');if(cp&&/<(path|g|rect|circle|ellipse|polygon)/.test(cp.replace(/<defs>[\s\S]*?<\/defs>/,'')))arts.cape=cp}
   const d={view:c.window||'day',wall:WALLC[c.wall]||WALLC.cloud,floor:c.floor||'wood',floorC:FLOORC[c.floor]||FLOORC.wood,door:DOORC[c.door]||DOORC.wood,bedframe:FRAMEC[c.bedframe]||FRAMEC.wood,desk:DESKC[c.desk]||DESKC.wood,rack:RACKC[c.rack]||RACKC.wood,
-    sheets:col('sheets')||'#0A7E8C',pillow:col('pillow')||'#F4F7FA',rug:col('rug')||'#0A7E8C',laundry:col('laundry')||'#9AA3AB',dresser:col('dresser')||'#B9854F',curtains:col('curtains')||'#3A7BD5',lamp:col('lamp')||'#0A7E8C',lampId:c.lamp||'basic',
+    sheets:col('sheets')||'#0A7E8C',pillow:col('pillow')||'#F4F7FA',rug:col('rug')||'#0A7E8C',laundry:col('laundry')||'#9AA3AB',dresser:col('dresser')||'#B9854F',curtains:col('curtains')||'#3A7BD5',lamp:col('lamp')||'#0A7E8C',lampId:c.lamp||'basic',sheetsId:c.sheets,pillowId:c.pillow,rugId:c.rug,curtainsId:c.curtains,laundryId:c.laundry,beanbagId:on('beanbag'),
     pack:on('pack')?col('pack'):'',deskA:on('deskA'),deskB:on('deskB'),globe:on('globe'),telescope:on('telescope'),beanbag:on('beanbag')?(BEANC[c.beanbag]||'#0A7E8C'):'',shelf:on('shelf'),lights:on('lights'),hoop:on('hoop'),posters,
     tv:on('tv'),arcade:on('arcade'),floorA:on('floorA'),rack2:on('rack2'),
     avatar:{skin:av.skin,hair:av.hair,style:av.style,outfit:av.outfit,bandc:av.bandc,head,top:av.top,extra:av.extra,shirt,shoe:OUTFIT[av.bandc]||OUTFIT[2],white:av.top==='gi',long:['jacket','gi','hoodie'].includes(av.top),bare:av.top==='runner',pro:['jersey','fbjersey'].includes(av.top),arts},pal:{SKIN,HAIR,OUTFIT}};
@@ -4757,7 +4758,7 @@ function mountRoom3d(){
   if(!card||!store.get('bl.room3d',true)||R3.fail){if(R3.inst){R3.inst.stop();if(R3.inst.canvas.parentNode)R3.inst.canvas.remove()}if(card)card.classList.remove('is3d');return}
   if(!R3.inst){
     if(R3.loading)return;R3.loading=true;
-    import('./room3d.js').then(m=>{R3.inst=m.createRoom3D(card,{onTap:v=>{S.from='room';S.view='closet';render()}});if(!R3.inst)R3.fail=true;R3.loading=false;render()}).catch(e=>{R3.fail=true;R3.loading=false;render()});
+    import('./room3d.js?v=r6-3').then(m=>{R3.inst=m.createRoom3D(card,{onTap:v=>{S.from='room';S.view='closet';render()}});if(!R3.inst)R3.fail=true;R3.loading=false;render()}).catch(e=>{R3.fail=true;R3.loading=false;render()});
     return;
   }
   R3.inst.setHost(card);card.classList.add('is3d');card.appendChild(R3.inst.canvas);
