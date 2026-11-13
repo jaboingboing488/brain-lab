@@ -56,6 +56,18 @@ function svgTex(svg,w,h,bg){
 /* project a flat drawing onto a head-sized shape as seen from the front (art units: head centre 60,58; 0.005 per unit) */
 function planarUV(geo,vb){const p=geo.attributes.position,uv=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){let u=(60+p.getX(i)/.005-vb[0])/vb[2],v=1-(58-p.getY(i)/.005-vb[1])/vb[3];if(p.getZ(i)<-.01){u=v=-2}uv[i*2]=u;uv[i*2+1]=v}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
 function bodyUV(geo,vb,U){const p=geo.attributes.position,uv=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){let u=(60+p.getX(i)/(.46*U)-vb[0])/vb[2],v=1-((115-p.getY(i)/U)/.46-vb[1])/vb[3];if(p.getZ(i)<-.01){u=v=-2}uv[i*2]=u;uv[i*2+1]=v}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
+
+/* hair: a smooth shell over the head, cut off at a hairline (high on the forehead, just above the ears at the sides, low at the back) */
+function hairCap(rx,ry,rz,cy,mat,hl,tex){
+  const g0=new THREE.SphereGeometry(1,160,110),P=g0.attributes.position,I=g0.index.array,keep=[];
+  const line=(x,z)=>{const n=Math.hypot(x,z)||1,f=z/n;return .03+(hl||0)+(f>0?.075*Math.pow(f,1.6):-.03*(-f))};
+  for(let t=0;t<I.length;t+=3){let cx=0,cyy=0,cz=0;for(let k=0;k<3;k++){cx+=P.getX(I[t+k])*rx;cyy+=P.getY(I[t+k])*ry+cy;cz+=P.getZ(I[t+k])*rz}cx/=3;cyy/=3;cz/=3;if(cyy>=line(cx,cz))keep.push(I[t],I[t+1],I[t+2])}
+  g0.setIndex(keep);g0.scale(rx,ry,rz);g0.translate(0,cy,0);
+  if(tex){const q=g0.attributes.position,uv=new Float32Array(q.count*2);for(let i=0;i<q.count;i++){uv[i*2]=.5+q.getX(i)/.4;uv[i*2+1]=.5-(q.getZ(i)-.03)/.4}g0.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
+  g0.computeVertexNormals();const m=new THREE.Mesh(g0,mat);m.castShadow=true;return m}
+function waveTex(hc){const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');g.fillStyle=hc;g.fillRect(0,0,512,512);
+  for(let k=0;k<12;k++){const r=14+k*20;for(const [col,dy,lw] of [['rgba(255,255,255,.3)',0,3],['rgba(0,0,0,.5)',3,3]]){g.beginPath();for(let a=0;a<=360;a+=2){const rad=a*Math.PI/180,rr=r+Math.sin(a/4)*3;const x=256+Math.cos(rad)*rr,y=256+Math.sin(rad)*rr+dy;a?g.lineTo(x,y):g.moveTo(x,y)}g.closePath();g.strokeStyle=col;g.lineWidth=lw;g.stroke()}}
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t}
 function gradTex(stops){
   return canvasTex(8,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);stops.forEach(([o,c])=>gr.addColorStop(o,c));g.fillStyle=gr;g.fillRect(0,0,w,h)});
 }
@@ -450,15 +462,14 @@ function buildAvatar(a,pal){
   };
   {
   const hm=phys(hairC,{roughness:.7,sheen:.3,sheenColor:C(hairC).lerp(C('#fff'),.25)}),st=a.style||'waves';
-  const capT=(r,th,tilt,sc,mat)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,44,30,0,Math.PI*2,0,th),mat||hm);m.scale.set(sc[0],sc[1],sc[2]);m.rotation.x=-tilt;m.castShadow=true;return m};
+  const capT=(r,th,tilt,sc,mat,hl,tex)=>hairCap(r*sc[0]*1.0,r*sc[1]*.98,r*sc[2]*1.0,.012,mat||hm,hl,tex);
   if(st==='afro'){const m=sph(.215,hm,36,24);m.position.set(0,.05,-.03);head.add(m)}
-  else if(st==='curly'){const r=rnd(6);for(let i=0;i<64;i++){const th=Math.acos(r()*.92+.08),ph=r()*Math.PI*2,R=.16;const m=sph(.04,hm,10,8);m.position.set(R*Math.sin(th)*Math.cos(ph),R*Math.cos(th)*1.06+.012,R*Math.sin(th)*Math.sin(ph)-.01);if(m.position.z>.07&&m.position.y<.1)continue;head.add(m)}head.add(at(capT(.158,1.45,.4,[1,1.07,1.03]),0,.008,-.01))}
-  else if(st==='twists'){const r=rnd(8);for(let i=0;i<26;i++){const ph=r()*Math.PI*2,th=.25+r()*1.0;const t=cyl(.017,.012,.1+r()*.05,hm,8);t.position.set(.16*Math.sin(th)*Math.cos(ph),.16*Math.cos(th)+.03,.16*Math.sin(th)*Math.sin(ph));if(t.position.z>.07&&t.position.y<.12)continue;t.lookAt(t.position.x*3,t.position.y*3+.2,t.position.z*3);t.rotateX(Math.PI/2);head.add(t)}head.add(at(capT(.164,1.42,.45,[1.03,1.14,1.08]),0,.004,-.008))}
-  else if(st==='buzz'){head.add(at(capT(.157,1.38,.45,[1,1.1,1.04],phys('#'+C(hairC).lerp(C(skin),.4).getHexString(),{roughness:.8})),0,0,-.004))}
-  else if(st==='fade'){head.add(at(capT(.166,1.3,.45,[1.03,1.18,1.08]),0,.004,-.01));head.add(at(capT(.157,1.52,.38,[1,1.085,1.03],phys('#'+C(hairC).lerp(C(skin),.55).getHexString(),{roughness:.8})),0,0,-.004))}
-  else{head.add(at(capT(.168,1.46,.46,[1.04,1.2,1.1]),0,.0,-.014));[-.07,0,.07].forEach(x=>{const w=sph(.048,hm,12,10);w.scale.set(1.1,.7,.8);w.position.set(x,.15-Math.abs(x)*.25,.085);head.add(w)})}
+  else if(st==='curly'){const r=rnd(6);for(let i=0;i<64;i++){const th=Math.acos(r()*.92+.08),ph=r()*Math.PI*2,R=.16;const m=sph(.04,hm,10,8);m.position.set(R*Math.sin(th)*Math.cos(ph),R*Math.cos(th)*1.06+.012,R*Math.sin(th)*Math.sin(ph)-.01);if(m.position.z>.07&&m.position.y<.1)continue;head.add(m)}head.add(capT(.152,0,0,[1,1.07,1.03]))}
+  else if(st==='twists'){const r=rnd(8);for(let i=0;i<26;i++){const ph=r()*Math.PI*2,th=.25+r()*1.0;const t=cyl(.017,.012,.1+r()*.05,hm,8);t.position.set(.16*Math.sin(th)*Math.cos(ph),.16*Math.cos(th)+.03,.16*Math.sin(th)*Math.sin(ph));if(t.position.z>.07&&t.position.y<.12)continue;t.lookAt(t.position.x*3,t.position.y*3+.2,t.position.z*3);t.rotateX(Math.PI/2);head.add(t)}head.add(capT(.158,0,0,[1.03,1.14,1.08]))}
+  else if(st==='buzz'){head.add(capT(.152,0,0,[1,1.1,1.04],phys('#'+C(hairC).lerp(C(skin),.4).getHexString(),{roughness:.8}),-.005))}
+  else if(st==='fade'){head.add(capT(.158,0,0,[1.03,1.18,1.08],null,.035));head.add(capT(.152,0,0,[1,1.1,1.04],phys('#'+C(hairC).lerp(C(skin),.55).getHexString(),{roughness:.8}),-.01))}
+  else{head.add(capT(.158,0,0,[1.04,1.2,1.1],new THREE.MeshStandardMaterial({map:waveTex(hairC),roughness:.7}),0,true))}
   }
-  if(a.arts&&a.arts.fringe&&['waves','fade','buzz','twists'].includes(a.style||'waves'))hairShell();
   const hairBits=head.children.slice(hairStart);
   /* hats and extras. Common ones are modelled; every other hat, shirt and extra is laid on from its closet artwork. */
   const H=a.head,hatM=(c,o={})=>phys(c,Object.assign({roughness:.55},o)),bc=accent;
