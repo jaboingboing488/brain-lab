@@ -55,6 +55,7 @@ function svgTex(svg,w,h,bg){
 }
 /* project a flat drawing onto a head-sized shape as seen from the front (art units: head centre 60,58; 0.005 per unit) */
 function planarUV(geo,vb){const p=geo.attributes.position,uv=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){let u=(60+p.getX(i)/.005-vb[0])/vb[2],v=1-(58-p.getY(i)/.005-vb[1])/vb[3];if(p.getZ(i)<-.01){u=v=-2}uv[i*2]=u;uv[i*2+1]=v}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
+function bodyUV(geo,vb,U){const p=geo.attributes.position,uv=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){let u=(60+p.getX(i)/(.46*U)-vb[0])/vb[2],v=1-((115-p.getY(i)/U)/.46-vb[1])/vb[3];if(p.getZ(i)<-.01){u=v=-2}uv[i*2]=u;uv[i*2+1]=v}geo.setAttribute('uv',new THREE.BufferAttribute(uv,2))}
 function gradTex(stops){
   return canvasTex(8,256,(g,w,h)=>{const gr=g.createLinearGradient(0,0,0,h);stops.forEach(([o,c])=>gr.addColorStop(o,c));g.fillStyle=gr;g.fillRect(0,0,w,h)});
 }
@@ -404,8 +405,8 @@ function buildAvatar(a,pal){
   /* torso (shirt colour) with the closet's shirt artwork laid on the front */
   const torso=box(39*U,36*U,22*U,shirtM,9*U,5);torso.position.set(0,55*U,0);body.add(torso);
   if(a.arts&&a.arts.top){
-    const tt=svgTex(a.arts.top,736,640),m=new THREE.Mesh(new THREE.PlaneGeometry(92*.46*U,80*.46*U),new THREE.MeshStandardMaterial({map:tt,transparent:true,alphaTest:.04,roughness:.75}));
-    m.position.set(0,56.1*U,11*U+.003);body.add(m);
+    const sg=new RoundedBoxGeometry(39*U*1.012,36*U*1.012,22*U*1.012,5,9*U);sg.translate(0,55*U,0);bodyUV(sg,[14,88,92,80],U);
+    const sm=new THREE.Mesh(sg,new THREE.MeshStandardMaterial({map:svgTex(a.arts.top,736,640),alphaTest:.04,roughness:.75}));sm.castShadow=true;body.add(sm);
   }
   body.add(at(cyl(7.4*U,8*U,9*U,skinM,20),0,74*U,0));
   /* arms: sleeve, forearm and hand follow the shirt type (long sleeves, short sleeves, bare for the singlet) */
@@ -426,6 +427,7 @@ function buildAvatar(a,pal){
   const head=new THREE.Group();head.position.y=88.3*U;body.add(head);
   head.scale.setScalar(13.8*U/.15);const sk=sph(.15,skinM,40,28);sk.scale.set(1,1.08,1.02);head.add(sk);
   const faceArt=!!(a.arts&&a.arts.face);
+  if(faceArt)head.add(at(sph(.02,skinM,12,10),0,-.016,.158));
   if(faceArt){sk.geometry.scale(1,1.08,1.02);sk.scale.set(1,1,1);planarUV(sk.geometry,[20,20,80,80]);sk.material=phys('#fff',{map:svgTex(a.arts.face,640,640,skin),roughness:.55,sheen:.4,sheenColor:C(skin).lerp(C('#ff9a80'),.5),sheenRoughness:.4})}
   [-1,1].forEach(s=>{const e=sph(.032,skinM,12,10);e.scale.set(.6,1,.8);e.position.set(s*.148,-.005,-.005);head.add(e)});
   if(!faceArt){
@@ -439,11 +441,12 @@ function buildAvatar(a,pal){
   }
   /* hair: a cap tilted so the hairline sits high at the front and the hair covers the back and crown, like the closet art */
   const hairStart=head.children.length;
-  if(a.arts&&a.arts.fringe){
+  const hairShell=()=>{
     const hg=new THREE.SphereGeometry(1,48,32);hg.scale(.205,.26,.19);hg.translate(0,.04,-.01);planarUV(hg,[14,-4,92,96]);
     const hs=new THREE.Mesh(hg,new THREE.MeshStandardMaterial({map:svgTex(a.arts.fringe,736,768),alphaTest:.4,roughness:.7}));hs.castShadow=true;head.add(hs);
     if(a.arts.back){const bp=new THREE.Mesh(new THREE.PlaneGeometry(92*.005,96*.005),new THREE.MeshStandardMaterial({map:svgTex(a.arts.back,736,768),alphaTest:.4,roughness:.7}));bp.position.set(0,.07,-.06);head.add(bp)}
-  }else{
+  };
+  {
   const hm=phys(hairC,{roughness:.7,sheen:.3,sheenColor:C(hairC).lerp(C('#fff'),.25)}),st=a.style||'waves';
   const capT=(r,th,tilt,sc,mat)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,44,30,0,Math.PI*2,0,th),mat||hm);m.scale.set(sc[0],sc[1],sc[2]);m.rotation.x=-tilt;m.castShadow=true;return m};
   if(st==='afro'){const m=sph(.215,hm,36,24);m.position.set(0,.05,-.03);head.add(m)}
@@ -453,6 +456,7 @@ function buildAvatar(a,pal){
   else if(st==='fade'){head.add(at(capT(.166,1.3,.45,[1.03,1.18,1.08]),0,.004,-.01));head.add(at(capT(.157,1.52,.38,[1,1.085,1.03],phys('#'+C(hairC).lerp(C(skin),.55).getHexString(),{roughness:.8})),0,0,-.004))}
   else{head.add(at(capT(.168,1.46,.46,[1.04,1.2,1.1]),0,.0,-.014));[-.07,0,.07].forEach(x=>{const w=sph(.048,hm,12,10);w.scale.set(1.1,.7,.8);w.position.set(x,.15-Math.abs(x)*.25,.085);head.add(w)})}
   }
+  if(a.arts&&a.arts.fringe&&['waves','fade','buzz','twists'].includes(a.style||'waves'))hairShell();
   const hairBits=head.children.slice(hairStart);
   /* hats and extras. Common ones are modelled; every other hat, shirt and extra is laid on from its closet artwork. */
   const H=a.head,hatM=(c,o={})=>phys(c,Object.assign({roughness:.55},o)),bc=accent;
@@ -470,12 +474,17 @@ function buildAvatar(a,pal){
   else if(H==='paleo'){const b=cyl(.24,.24,.012,hatM('#B89A5C'),32);b.position.y=.1;head.add(b);const c2=cyl(.11,.14,.1,hatM('#B89A5C'),24);c2.position.y=.15;head.add(c2)}
   else if(H==='wizard'||H==='bdayhat'){const c2=new THREE.Mesh(new THREE.ConeGeometry(.11,.3,28),hatM(H==='wizard'?'#5B2A86':'#FF5FA2'));c2.position.y=.27;c2.castShadow=true;head.add(c2);if(H==='wizard'){const b=cyl(.2,.2,.01,hatM('#3C1A63'),32);b.position.y=.12;head.add(b)}}
   else if(H==='headset'){const r=new THREE.Mesh(new THREE.TorusGeometry(.16,.012,8,32,Math.PI),std('#1A1F24',{roughness:.4}));r.position.y=.01;head.add(r);[-1,1].forEach(x=>{const e=cyl(.045,.045,.04,std('#262C33',{roughness:.4}),20);e.rotation.z=Math.PI/2;e.position.set(x*.165,0,0);head.add(e)})}
-  else if(a.arts&&a.arts.hd){const hd=new THREE.Mesh(new THREE.PlaneGeometry(.6,.56),new THREE.MeshStandardMaterial({map:svgTex(a.arts.hd,720,672),transparent:true,alphaTest:.04,roughness:.6}));hd.position.set(0,.07,.168);head.add(hd)}
+  else if(H==='champ'){head.add(band('#D9A920',.06));const bd=cyl(.04,.04,.012,std('#101820',{roughness:.4}),24);bd.rotation.x=Math.PI/2;bd.position.set(0,.065,.168);head.add(bd);head.add(at(sph(.018,phys('#FFE9A0',{metalness:1,roughness:.2}),10,8),0,.065,.178))}
+  else if(H==='crown'){const r=new THREE.Mesh(new THREE.TorusGeometry(.158,.014,8,40),phys('#3C9A4A',{roughness:.6}));r.rotation.x=Math.PI/2;r.position.y=.06;head.add(r);for(let k=0;k<14;k++){const an=k/14*Math.PI*2,lf=sph(.02,phys('#4FB85F',{roughness:.5}),8,6);lf.scale.set(1,.5,1.8);lf.position.set(Math.sin(an)*.162,.07,Math.cos(an)*.162);lf.rotation.y=an;head.add(lf)}}
+  else if(a.arts&&a.arts.hd){const hg2=new THREE.SphereGeometry(1,48,32);hg2.scale(.31,.3,.2);hg2.translate(0,.03,-.005);planarUV(hg2,[0,-12,120,112]);const hd=new THREE.Mesh(hg2,new THREE.MeshStandardMaterial({map:svgTex(a.arts.hd,720,672),alphaTest:.4,roughness:.6}));hd.castShadow=true;head.add(hd)}
   const X=a.extra||[];
   if(X.includes('shades')){const g=std('#101820',{roughness:.15,metalness:.3});[-1,1].forEach(x=>{const l=box(.075,.045,.012,g,.012,3);l.position.set(x*.058,.012,.163);head.add(l)});head.add(at(box(.04,.008,.01,g,.003,2),0,.022,.165))}
   if(X.includes('belt')){const b=box(40*U,3.4*U,24*U,phys(bc,{roughness:.5}),1*U,2);b.position.set(0,57.5*U,0);body.add(b);body.add(at(box(11*U,8*U,2*U,phys('#'+shade(bc,.78).getHexString(),{roughness:.5}),1*U,2),0,57.5*U,12*U+.003))}
+  if(X.includes('football')){const fb=football(.2);fb.position.set(-19*U,63*U,.19);fb.rotation.z=.5;fb.rotation.y=.3;body.add(fb)}
+  if(X.includes('dino')){const dm=phys('#3CB878',{roughness:.5}),dg=new THREE.Group();dg.add(at(sph(.055,dm,16,12),0,.045,0),at(sph(.03,dm,14,10),.055,.1,0),at(new THREE.Mesh(new THREE.ConeGeometry(.02,.09,10),dm),-.07,.04,0),at(sph(.032,phys('#BDEFC8',{roughness:.6}),10,8),.01,.03,.04));dg.children[2].rotation.z=Math.PI/2+.3;[.02,-.02].forEach(z=>dg.add(at(sph(.006,std('#0B2233'),6,6),.075,.11,z*1.3)));[-.02,.02].forEach(x=>dg.add(at(cyl(.012,.01,.04,dm,8),x,-.005,0)));dg.position.set(17.5*U,66*U,.15);dg.scale.setScalar(1.1);body.add(dg)}
   /* medal, chain and the rest of the extras come from the closet artwork, laid over the chest */
-  if(a.arts&&a.arts.ex){const ex=new THREE.Mesh(new THREE.PlaneGeometry(120*.46*U,140*.46*U),new THREE.MeshStandardMaterial({map:svgTex(a.arts.ex,720,840),transparent:true,alphaTest:.04,roughness:.55}));ex.position.set(0,82.8*U,.215);body.add(ex)}
+  if(a.arts&&a.arts.ex){const eg=new THREE.SphereGeometry(1,48,32);eg.scale(.45,.62,.2);eg.translate(0,1.2,0);bodyUV(eg,[0,0,120,140],U);body.add(new THREE.Mesh(eg,new THREE.MeshStandardMaterial({map:svgTex(a.arts.ex,720,840),alphaTest:.04,roughness:.55})))}
+  if(a.arts&&a.arts.eb){const bg=new THREE.SphereGeometry(.15,40,28);bg.scale(1.012,1.093,1.032);planarUV(bg,[0,0,120,140]);head.add(new THREE.Mesh(bg,new THREE.MeshStandardMaterial({map:svgTex(a.arts.eb,640,640),alphaTest:.04,roughness:.6})))}
   if(a.arts&&a.arts.cape){const cp=new THREE.Mesh(new THREE.PlaneGeometry(120*.46*U,140*.46*U),new THREE.MeshStandardMaterial({map:svgTex(a.arts.cape,720,840),transparent:true,alphaTest:.04,roughness:.8,side:THREE.DoubleSide}));cp.position.set(0,82.8*U,-.18);body.add(cp)}
   G.userData={head,armL:arms[0],armR:arms[1],body,torso};
   return G;
