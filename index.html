@@ -2623,11 +2623,31 @@ const RR=(x,y,w,h,f,rx,x2)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" 
 const EL=(cx,cy,rx,ry,f,x2)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}" ${x2||''}/>`;
 const PP=(d,f,x2)=>`<path d="${d}" fill="${f}" ${x2||''}/>`;
 const WALLC={cloud:'#E4ECF2',sky:'#BFE3F7',teal:'#9ED4D8',sand:'#F2E2B0',green:'#B5DDB0',night:'#3A4F7A'};
+
+/* a T. rex in profile (drawn on a 100 by 62 grid, facing right), placed in a box */
+function rexArt(x,y,w,h,uid){
+  const k=Math.min(w/100,h/62),ox=x+(w-100*k)/2,oy=y+(h-62*k)/2,id='rx'+(uid||'');
+  const body='M1 27C14 28 27 30 37 30C39 22 46 17 54 16C58 15 62 12 64 8C66 3 73 1 81 1C91 1 99 4 99.5 9.5C100 13 97 15 93 15.5L80 16C78 19 75 21 71 22C67 25 64 29 62 33C62 41 59 47 55 50L58 58L47 58L47 52C43 50 41 45 41 41C37 39 33 38 29 37C19 35 7 31 1 27Z';
+  return`<g transform="translate(${ox.toFixed(2)} ${oy.toFixed(2)}) scale(${k.toFixed(4)})"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5BA55F"/><stop offset=".55" stop-color="#7BC37C"/><stop offset="1" stop-color="#B9DFA2"/></linearGradient></defs>
+  <ellipse cx="50" cy="59" rx="46" ry="3" fill="rgba(0,0,0,.28)"/>
+  <path d="M33 41C31 47 33 53 36 55L38 58L28 58L30 52C28 48 28 44 30 40Z" fill="#437F49"/>
+  <path d="${body}" fill="url(#${id})" stroke="#2F6B38" stroke-width="1"/>
+  <path d="M38 31C46 36 56 38 64 34C62 40 60 45 56 49L47 51C43 48 42 44 41 41C39 38 38 34 38 31Z" fill="#CBE8B0" opacity=".55"/>
+  <path d="M40 24L44 20L48 25L52 19L56 24L60 17M26 27L30 24L33 28M12 26L16 24L19 27" fill="none" stroke="#3E8446" stroke-width="1.3" stroke-linecap="round"/>
+  <path d="M58 26L65 29L63 33L60 32" fill="#5BA55F" stroke="#2F6B38" stroke-width=".9" stroke-linejoin="round"/><path d="M63 33L64.5 35M61 33.5L62 35.5" stroke="#F4F7FA" stroke-width=".9" stroke-linecap="round"/>
+  <path d="M47 58L47 55L50 56L52 55L54 56L58 58Z" fill="#E8E0C8"/><path d="M48 58L48.5 61M52 58L52.5 61M56 58L57 61" stroke="#F4F7FA" stroke-width="1.3" stroke-linecap="round"/>
+  <path d="M74 16.5L96 16C95 20 91 23 85 23C80 23 76 20 74 16.5Z" fill="#5BA55F" stroke="#2F6B38" stroke-width=".9" stroke-linejoin="round"/>
+  <path d="M80 16.5L81 20L83 16.5L85 21L87 16.5L89 21L91 16.5L93 20L95 16.2" fill="#F4F7FA"/>
+  <path d="M82 15.4L83.2 12.6L84.4 15.4L86 12.8L87 15.4L89 13L90 15.4L92 13.4L93 15.4" fill="#F4F7FA"/>
+  <path d="M70 7Q75 5 78 7" stroke="#2F6B38" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+  <circle cx="74.5" cy="8.6" r="2.1" fill="#F2C84B"/><circle cx="75" cy="8.6" r=".9" fill="#101820"/>
+  <circle cx="96" cy="7.4" r=".9" fill="#2F6B38"/></g>`;
+}
 function posterArt(id){
   if(POSTER_NEW[id])return POSTER_NEW[id]();
   const T=(t,c)=>`<text x="22" y="53" text-anchor="middle" style="fill:${c||'#fff'};font:800 6.5px Inter,system-ui,sans-serif">${t}</text>`;
   switch(id){
-    case'rex':return RR(0,0,44,56,'#0F8F8B')+RR(0,43,44,13,'#0A5E5C')+PP('M8 34Q-1 38 3 43L11 38Z','#7BD389')+EL(20,33,11,7,'#7BD389')+PP('M26 31L28 21H38L39 29L33 31Z','#7BD389')+RR(28,17,12,9,'#7BD389',3)+RR(15,38,4,7,'#5DB36B')+RR(23,38,4,7,'#5DB36B')+`<circle cx="36" cy="21" r="1.4" fill="#0B2233"/><path d="M31 26l1.5 2 1.5-2 1.5 2 1.5-2" stroke="#fff" fill="none" stroke-width=".9"/>`+T('T. REX');
+    case'rex':return RR(0,0,44,56,'#0F8F8B')+RR(0,45,44,11,'#0A5E5C')+rexArt(1,12,42,30,'s')+T('T. REX');
     case'solar':return RR(0,0,44,56,'#101A3C')+`<circle cx="3" cy="26" r="11" fill="#FFB400"/><circle cx="19" cy="26" r="2" fill="#C9A27B"/><circle cx="25" cy="26" r="3" fill="#4DA3FF"/><circle cx="32" cy="26" r="2.6" fill="#E5674A"/><circle cx="39" cy="26" r="3.6" fill="#E8CB86"/><ellipse cx="39" cy="26" rx="5.6" ry="1.4" fill="none" stroke="#fff" stroke-width=".7"/>`+[[8,6],[30,8],[14,44],[36,40],[26,14]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".8" fill="#fff"/>`).join('')+T('SPACE');
     case'rocket':return RR(0,0,44,56,'#1B2A55')+[[6,8],[36,10],[10,40],[34,36],[28,6]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".9" fill="#fff"/>`).join('')+PP('M22 6C28 12 29 22 28 32H16C15 22 16 12 22 6Z','#F4F7FA')+`<circle cx="22" cy="19" r="3.2" fill="#4DA3FF"/>`+PP('M16 28L10 36L16 34ZM28 28L34 36L28 34Z','#E5674A')+PP('M18 33H26L22 46Z','#FFB400')+T('LAUNCH');
     case'goal':return RR(0,0,44,56,'#2E8B4E')+`<path d="M0 30H44M0 40H44" stroke="#fff" stroke-width=".8" opacity=".6"/><path d="M22 44V26M13 8V26H31V8" fill="none" stroke="#FFD84D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="22" cy="14" rx="4" ry="2.6" transform="rotate(-25 22 14)" fill="#9A5B33"/>`+T('GOAL');
@@ -4266,7 +4286,7 @@ function bigPosterArt(id){
     case'bigflorida':return g+RR(x,y,w,h,'#7CC4F0',2)+`<circle cx="${x+60}" cy="${y+18}" r="11" fill="#FFE08A"/>`+PP(`M${x+16} ${y+30}H${x+50}L${x+54} ${y+38}H${x+34}Q${x+34} ${y+44} ${x+40} ${y+48}Q${x+56} ${y+62} ${x+60} ${y+82}Q${x+62} ${y+98} ${x+52} ${y+100}Q${x+46} ${y+90} ${x+44} ${y+76}Q${x+36} ${y+58} ${x+28} ${y+48}L${x+16} ${y+42}Z`,'#F2E2B0','stroke="#8A5A33" stroke-width="1.2"')+`<circle cx="${x+50}" cy="${y+80}" r="3" fill="#D62839"/>`+T('SUNSHINE STATE',y+h-6,'#1B2A55',6.6);
     case'bigjungle':return g+RR(x,y,w,h,'#2F7D4F',2)+RR(x,y,w,38,'#F5C06A',0)+`<circle cx="${x+54}" cy="${y+20}" r="12" fill="#FFE08A"/>`+PP(`M${x} ${y+38}L${x+14} ${y+28}L${x+26} ${y+38}L${x+40} ${y+24}L${x+60} ${y+38}L${x+w} ${y+30}V${y+h}H${x}Z`,'#1E5A38')+`<path d="M${x+12} ${y+h-4}Q${x+6} ${y+60} ${x+18} ${y+44}Q${x+14} ${y+66} ${x+24} ${y+h-4}Z" fill="#164A2C"/><g transform="translate(${x+44} ${y+88}) scale(1.3)">${CRIT.brachio.s().replace(/#7C9A4A/g,'#0E2A18').replace(/#5F7A38/g,'#0E2A18')}</g>`+T('JURASSIC WORLD',y+h-6,'#fff',6.4);
     case'bigspanish':return g+RR(x,y,w,h,'#F4F7FA',2)+RR(x,y,w,26,'#D62839',2)+T('¡BIENVENIDOS!',y+17,'#fff',8)+[['#2E9E5B','#fff','#D62839',0,0],['#F2B705','#D62839','#F2B705',1,0],['#7CC4F0','#fff','#7CC4F0',0,1],['#D62839','#fff','#D62839',1,1]].map(([a,b,c,i,j])=>`<g transform="translate(${x+8+i*34} ${y+34+j*30})"><rect width="28" height="21" fill="${b}"/><rect width="9.4" height="21" fill="${a}"/><rect x="18.6" width="9.4" height="21" fill="${c}"/><rect width="28" height="21" fill="none" stroke="rgba(0,0,0,.25)" stroke-width=".8"/></g>`).join('')+T('ESPAÑOL',y+h-6,'#7A1F2B',7);
-    default:return g+RR(x,y,w,h,'#0F8F8B',2)+RR(x,y+84,w,28,'#0A5E5C',0)+PP(`M${x+14} ${y+66}Q${x-2} ${y+72} ${x+4} ${y+84}L${x+20} ${y+74}Z`,'#7BD389')+EL(x+34,y+66,22,14,'#7BD389')+PP(`M${x+48} ${y+60}L${x+52} ${y+36}H${x+70}L${x+72} ${y+54}L${x+60} ${y+60}Z`,'#7BD389')+RR(x+50,y+30,24,18,'#7BD389',5)+`<circle cx="${x+66}" cy="${y+38}" r="2.6" fill="#0B2233"/><path d="M${x+55} ${y+48}l3 4 3-4 3 4 3-4 3 4" stroke="#fff" fill="none" stroke-width="1.6"/>`+RR(x+26,y+76,8,14,'#5DB36B',2)+RR(x+42,y+76,8,14,'#5DB36B',2)+T('T. REX',y+h-5,'#fff',8);
+    default:return g+RR(x,y,w,h,'#0F8F8B',2)+RR(x,y+84,w,28,'#0A5E5C',0)+rexArt(x+2,y+30,w-4,52,'b')+T('T. REX',y+h-5,'#fff',8);
   }
 }
 /* birthday decorations for the room */
@@ -4730,6 +4750,9 @@ function room3dSprites(c,av){
   /* things that sit in front of the bed and window: sill, bed topper, chair */
   const front=`<g transform="translate(${SH} 0)">${FRONT_ART(c)}</g>`;
   if(front.length>60)add(front,0,0,780,330,{x:0,y:.59,z:0,kind:'front'},{sc:2.6});
+  /* critters on the bookcase (the flat room draws them on its shelves) */
+  const slots=[[-.15,1.17],[0,1.17],[.15,1.17],[-.15,1.55],[0,1.55],[.15,1.55],[-.15,.03],[0,.03],[.15,.03]];
+  all.slice(0,9).forEach((id,i)=>{const q=slots[i];if(CRIT[id])add(critSvg(id,0,0,1),-26,-34,52,40,{x:-2.45+q[0],y:q[1]+.02,z:-1.98,face:1},{sc:6,w:.2,h:.155})});
   return out;
 }
 const R3_HATS=['band','ninja','cap','visor','beanie','fbhelmet','helmet','paleo','wizard','bdayhat','headset','champ','crown'];
@@ -4759,7 +4782,7 @@ function mountRoom3d(){
   if(!card||!store.get('bl.room3d',true)||R3.fail){if(R3.inst){R3.inst.stop();if(R3.inst.canvas.parentNode)R3.inst.canvas.remove()}if(card)card.classList.remove('is3d');return}
   if(!R3.inst){
     if(R3.loading)return;R3.loading=true;
-    import('./room3d.js?v=r6-3').then(m=>{R3.inst=m.createRoom3D(card,{onTap:v=>{S.from='room';S.view='closet';render()}});if(!R3.inst)R3.fail=true;R3.loading=false;render()}).catch(e=>{R3.fail=true;R3.loading=false;render()});
+    import('./room3d.js?v=r6-5').then(m=>{R3.inst=m.createRoom3D(card,{onTap:v=>{S.from='room';S.view='closet';render()}});if(!R3.inst)R3.fail=true;R3.loading=false;render()}).catch(e=>{R3.fail=true;R3.loading=false;render()});
     return;
   }
   R3.inst.setHost(card);card.classList.add('is3d');card.appendChild(R3.inst.canvas);

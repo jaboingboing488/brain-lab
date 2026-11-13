@@ -30,7 +30,7 @@ post = ('<script>setTimeout(async function(){try{window.RESULT={};' + test +
         '(window.parent!==window?window.parent:window).document.body.setAttribute("data-zzres",JSON.stringify({r:window.RESULT,err:window.__ERR}))},%d)</script>' % a.wait)
 i = html.index('<script>')
 html = html[:i] + '<script>' + ''.join(pre) + '</script>' + html[i:]
-html = html.replace('</head>', '<script type="module">import("./room3d.js?v=r6-3").then(m=>{window.__r3m=m}).catch(e=>{window.__r3err=String(e)})</script></head>', 1)  # warm the 3D module during page load (virtual time cannot wait for late imports)
+html = html.replace('</head>', '<script type="module">import("./room3d.js?v=r6-5").then(m=>{window.__r3m=m}).catch(e=>{window.__r3err=String(e)})</script></head>', 1)  # warm the 3D module during page load (virtual time cannot wait for late imports)
 j = html.rindex('</body>')
 html = html[:j] + post + html[j:]
 d = tempfile.mkdtemp(prefix='blt')
