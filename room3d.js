@@ -68,7 +68,7 @@ function at(o,x,y,z){o.position.set(x,y,z);return o}
 function grp(...kids){const g=new THREE.Group();kids.forEach(k=>g.add(k));return g}
 
 /* ================= the room ================= */
-const RW=7.8,RD=4.4,RH=2.6,BZ=-RD/2;/* width, depth, wall height, z of the back wall */
+const RW=7.8,RD=4.4,RH=2.6,BZ=-RD/2,CAM={x:.2,y:1.45,z:5.7};/* width, depth, wall height, z of the back wall */
 
 function buildRoom(d,mats){
   const R=d.room,S=new THREE.Group(),clickables=[];
@@ -176,7 +176,16 @@ function buildRoom(d,mats){
   else if(dB==='tee'){const f=sph(.06,phys('#9A5B33',{roughness:.5}),24,16);f.scale.set(1.5,1,1);f.position.set(bx,.82,BZ+.3);S.add(f)}
   else if(dB==='trophy'){S.add(at(cyl(.055,.04,.1,phys('#E8B923',{metalness:1,roughness:.18}),24),bx,.81,BZ+.3),at(cyl(.02,.02,.06,phys('#E8B923',{metalness:1,roughness:.18}),12),bx,.74,BZ+.3),at(box(.1,.03,.1,std('#2A3138'),.005),bx,.73,BZ+.3))}
   else if(dB==='cube'){S.add(at(box(.1,.1,.1,phys('#2F7FD0',{roughness:.3,clearcoat:.8}),.012),bx,.775,BZ+.3))}
-  if(d.shelf){S.add(at(box(.9,.03,.18,wood(d.rack,30)),2.82,1.5,BZ+.09));[-.25,.0,.25].forEach((x,i)=>S.add(at(cyl(.035,.04,.14,phys('#E8B923',{metalness:1,roughness:.2}),20),2.82+x,1.595,BZ+.1)))}
+  if(d.shelf){
+    S.add(at(box(.9,.03,.18,wood(d.rack,30)),2.82,1.5,BZ+.09));
+    const sx=i=>2.82+[-.3,-.1,.1,.3][i],gold=()=>phys('#E8B923',{metalness:1,roughness:.2}),sid=d.shelf,pal=['#C8102E','#2F7FD0','#F2B500','#3CB878'];
+    for(let i=0;i<4;i++){let o;
+      if(sid==='books'||sid==='comics'){o=box(sid==='books'?.05:.1,sid==='books'?.2:.015+i*.003,.14,std(pal[i],{roughness:.6}),.004,2);o.position.set(sx(i),1.515+(sid==='books'?.1:.01),BZ+.1)}
+      else if(sid==='builds'){o=box(.13,.1+i*.02,.13,phys(pal[i],{roughness:.35,clearcoat:.5}),.012);o.position.set(sx(i),1.515+.05+i*.01,BZ+.1)}
+      else if(sid==='belts'){o=new THREE.Mesh(new THREE.TorusGeometry(.05,.015,8,20),std(['#fff','#F2B500','#3CB878','#101820'][i],{roughness:.7}));o.position.set(sx(i),1.57,BZ+.1);o.castShadow=true}
+      else if(sid==='fossils'){o=sph(.045,phys('#EFE6D2',{roughness:.7}),14,10);o.scale.set(1,1.3,.8);o.position.set(sx(i),1.56,BZ+.1)}
+      else{o=cyl(.035,.04,.14,gold(),20);o.position.set(sx(i),1.595,BZ+.1)}
+      S.add(o)}}
 
   /* laundry bin, backpack, bean bag, telescope, hoop, string lights, hook rack */
   const lb=cyl(.22,.19,.5,std(d.laundry,{roughness:.8,map:weaveTex(d.laundry)}),32);lb.position.set(-2.2,.25,BZ+.4);S.add(lb);
@@ -189,6 +198,17 @@ function buildRoom(d,mats){
   if(d.hoop){const hc=d.hoop==='blue'?'#2F7FD0':'#C8102E';const hg=grp(at(box(.5,.34,.02,phys('#fff',{roughness:.3}),.01),0,0,0),at(new THREE.Mesh(new THREE.TorusGeometry(.12,.01,8,28),std(hc,{roughness:.4})),0,-.2,.12));hg.children[1].rotation.x=Math.PI/2;hg.rotation.y=Math.PI/2;hg.position.set(-RW/2+.02,1.65,-.5);S.add(hg)}
   if(d.lights){const pal=d.lights==='warm'?['#FFF3B0','#FFE08A']:d.lights==='tealgold'?['#2FD0C5','#E8B923']:['#FFD84D','#FF7A00','#2FD0C5','#FFF3B0'];
     for(let i=0;i<19;i++){const x=-3.7+i*.41,y=2.42-Math.sin(i%3/3*Math.PI)*.08;const b=sph(.035,new THREE.MeshBasicMaterial({color:pal[i%pal.length]}),10,8);b.position.set(x,y,BZ+.04);S.add(b);if(i%3===0){const l=new THREE.PointLight(pal[i%pal.length],.35,1.6,2);l.position.set(x,y-.05,BZ+.3);S.add(l)}}}
+
+  /* cards drawn from the flat artwork: tv, arcade, floor items, wall art, bed topper, chair */
+  (d.sprites||[]).forEach(sp=>{
+    const px=sp.kind?260:420,tex=svgTex(sp.svg,Math.max(64,Math.round(sp.w*px)),Math.max(64,Math.round(sp.h*px)));
+    const mat=new THREE.MeshStandardMaterial({map:tex,transparent:true,alphaTest:.03,roughness:.7,side:THREE.DoubleSide,emissive:C('#ffffff'),emissiveMap:sp.glow?tex:null,emissiveIntensity:sp.glow?.55:0});
+    if(!sp.glow)mat.emissive=C('#000000');
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(sp.w,sp.h),mat);m.receiveShadow=true;
+    if(sp.kind==='wall'){m.position.set(0,sp.y,BZ+.04)}
+    else if(sp.kind==='front'){const k=(CAM.z-(BZ+2.35))/(CAM.z-BZ);m.scale.set(k,k,1);m.position.set(CAM.x+(0-CAM.x)*k,CAM.y+(sp.y-CAM.y)*k,BZ+2.35)}
+    else{m.position.set(sp.x,sp.y+sp.h/2,sp.ry||sp.face?sp.z:BZ+(sp.z||0)+.06);if(sp.ry)m.rotation.y=sp.ry}
+    S.add(m)});
   return{group:S,clickables,lamp:lampLight,night};
 }
 
@@ -217,6 +237,7 @@ function buildAvatar(a,pal){
   [-1,1].forEach(s=>{const ch=sph(.022,std('#E88A7A',{roughness:.8,transparent:true,opacity:.35}),10,8);ch.scale.set(1,.7,.3);ch.position.set(s*.085,-.04,.14);face.add(ch)});
   head.add(face);
   /* hair */
+  const hairStart=head.children.length;
   const hm=phys(hairC,{roughness:.7,sheen:.25,sheenColor:C(hairC).lerp(C('#fff'),.15)}),st=a.style||'waves';
   const cap=(r,sc,ph)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,36,24,0,Math.PI*2,0,ph),hm);m.scale.set(sc[0],sc[1],sc[2]);m.castShadow=true;return m};
   if(st==='afro'){const m=sph(.21,hm,36,24);m.position.set(0,.045,-.025);head.add(m)}
@@ -224,6 +245,29 @@ function buildAvatar(a,pal){
   else if(st==='twists'){const r=rnd(8);for(let i=0;i<22;i++){const ph=r()*Math.PI*2,th=.25+r()*.9;const t=cyl(.017,.012,.1+r()*.05,hm,8);t.position.set(.16*Math.sin(th)*Math.cos(ph),.16*Math.cos(th)+.03,.16*Math.sin(th)*Math.sin(ph));if(t.position.z>.08&&t.position.y<.12)continue;t.lookAt(t.position.x*3,t.position.y*3+.2,t.position.z*3);t.rotateX(Math.PI/2);head.add(t)}head.add(at(cap(.162,[1,1.06,1.03],1.25),0,.005,-.002))}
   else if(st==='buzz'||st==='fade'){head.add(at(cap(.1565,[1,1.085,1.03],st==='buzz'?1.02:1.1),0,0,-.004))}
   else{const h1=cap(.162,[1,1.1,1.05],1.28);h1.position.set(0,.01,-.012);head.add(h1);[-.07,0,.07].forEach((x,i)=>{const w=sph(.05,hm,12,10);w.scale.set(1.1,.7,.8);w.position.set(x,.13-Math.abs(x)*.3,.075);head.add(w)})}
+
+  const hairBits=head.children.slice(hairStart);
+  /* hats and extras, built from simple shapes */
+  const H=a.head,hatM=(c,o={})=>phys(c,Object.assign({roughness:.55},o));
+  if(['fbhelmet','helmet','beanie','paleo','cap','wizard','bdayhat','champ'].includes(H))hairBits.forEach(o=>{o.visible=false});
+  const dome=(r,c,ph,o)=>{const m=new THREE.Mesh(new THREE.SphereGeometry(r,32,20,0,Math.PI*2,0,ph||Math.PI/2),hatM(c,o||{}));m.castShadow=true;return m};
+  const band=(c,y)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(.152,.014,10,40),hatM(c));m.rotation.x=Math.PI/2;m.position.y=y;m.scale.set(1,1.04,1);return m};
+  if(H==='band')head.add(band('#FFFFFF',.06));
+  else if(H==='ninja'){head.add(band('#101820',.065));const t=box(.04,.12,.012,hatM('#101820'),.004,2);t.position.set(-.12,.0,-.1);t.rotation.z=.4;head.add(t)}
+  else if(H==='cap'){const d=dome(.165,'#C8102E');d.position.y=.01;head.add(d);const b=box(.2,.012,.12,hatM('#C8102E'),.005,2);b.position.set(0,.045,.17);b.rotation.x=.12;head.add(b)}
+  else if(H==='visor'){const b=box(.2,.012,.12,hatM('#FFD84D'),.005,2);b.position.set(0,.07,.16);head.add(b);head.add(band('#FFD84D',.075))}
+  else if(H==='beanie'){const d=dome(.168,'#3A4F7A',1.55);d.position.y=.012;head.add(d);const p=sph(.032,hatM('#F4F7FA'),12,10);p.position.y=.18;head.add(p);head.add(band('#2B3B5E',.04))}
+  else if(H==='fbhelmet'){const d=dome(.185,'#0076B6',1.9,{clearcoat:1,roughness:.2,metalness:.2});d.position.y=-.01;head.add(d);const m=new THREE.Mesh(new THREE.TorusGeometry(.1,.008,8,24,Math.PI),std('#C9D1D6',{metalness:.8,roughness:.3}));m.position.set(0,-.06,.15);m.rotation.z=Math.PI;head.add(m)}
+  else if(H==='helmet'){const g=sph(.215,new THREE.MeshPhysicalMaterial({color:'#CFE8FF',transparent:true,opacity:.22,roughness:0,clearcoat:1,envMapIntensity:1.6}),32,20);g.position.y=.01;head.add(g);const r=new THREE.Mesh(new THREE.TorusGeometry(.185,.02,10,32),std('#E9EEF3',{roughness:.3,metalness:.6}));r.rotation.x=Math.PI/2;r.position.y=-.12;head.add(r)}
+  else if(H==='crown'||H==='champ'){const r=new THREE.Mesh(new THREE.TorusGeometry(.155,.012,8,40,Math.PI*1.5),phys('#C9A227',{metalness:1,roughness:.2}));r.rotation.x=Math.PI/2;r.position.y=.07;r.rotation.z=Math.PI*.75;head.add(r)}
+  else if(H==='paleo'){const b=cyl(.24,.24,.012,hatM('#B89A5C'),32);b.position.y=.1;head.add(b);const c2=cyl(.11,.14,.1,hatM('#B89A5C'),24);c2.position.y=.15;head.add(c2)}
+  else if(H==='wizard'||H==='bdayhat'){const c2=new THREE.Mesh(new THREE.ConeGeometry(.11,.3,28),hatM(H==='wizard'?'#5B3FA0':'#FF5FA2'));c2.position.y=.27;c2.castShadow=true;head.add(c2);if(H==='wizard'){const b=cyl(.2,.2,.01,hatM('#5B3FA0'),32);b.position.y=.12;head.add(b)}}
+  else if(H==='headset'){const r=new THREE.Mesh(new THREE.TorusGeometry(.16,.012,8,32,Math.PI),std('#1A1F24',{roughness:.4}));r.position.y=.01;head.add(r);[-1,1].forEach(x=>{const e=cyl(.045,.045,.04,std('#1A1F24',{roughness:.4}),20);e.rotation.z=Math.PI/2;e.position.set(x*.165,0,0);head.add(e)})}
+  const X=a.extra||[];
+  if(X.includes('shades')){const g=std('#101820',{roughness:.15,metalness:.3});[-1,1].forEach(x=>{const l=box(.07,.04,.01,g,.01,3);l.position.set(x*.055,.014,.165);head.add(l)});head.add(at(box(.04,.008,.01,g,.003,2),0,.02,.165))}
+  if(X.includes('medal')){const m=new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.008,20),phys('#E8B923',{metalness:1,roughness:.2}));m.rotation.x=Math.PI/2;m.position.set(.02,.98,.1);body.add(m)}
+  if(X.includes('chain')){const r=new THREE.Mesh(new THREE.TorusGeometry(.09,.008,8,24,Math.PI),phys('#E8B923',{metalness:1,roughness:.2}));r.rotation.z=Math.PI;r.position.set(0,1.2,.07);r.scale.set(1,1.2,1);body.add(r)}
+  if(X.includes('belt')){const b=box(.3,.035,.2,hatM('#101820'),.01,3);b.position.y=.82;body.add(b)}
   G.userData={head,armL,armR,body,torso};
   return G;
 }
@@ -258,8 +302,8 @@ export function createRoom3D(host0,opts){
   function frame(){
     const t=(performance.now()-t0)/1000;
     orbit.yaw+=(orbit.ty-orbit.yaw)*.08;orbit.pitch+=(orbit.tp-orbit.pitch)*.08;
-    const sway=Math.sin(t*.3)*.012+orbit.yaw,dist=5.7;
-    cam.position.set(Math.sin(sway*3)*dist*.9+.2,1.45+orbit.pitch*2.2,Math.cos(sway*3)*dist);
+    const sway=Math.sin(t*.3)*.012+orbit.yaw,dist=CAM.z;
+    cam.position.set(Math.sin(sway*3)*dist*.9+CAM.x,CAM.y+orbit.pitch*2.2,Math.cos(sway*3)*dist);
     cam.lookAt(-.1,.95+orbit.pitch*.4,-.3);
     if(av){const u=av.userData;u.torso.scale.y=1+Math.sin(t*1.9)*.012;u.head.rotation.y=Math.sin(t*.55)*.22;u.head.rotation.x=Math.sin(t*.4)*.03;u.armL.rotation.z=.12+Math.sin(t*1.9)*.015;u.armR.rotation.z=-.12-Math.sin(t*1.9)*.015}
     composer.render();
@@ -281,7 +325,7 @@ export function createRoom3D(host0,opts){
     frame();
   }
   function resize(){size();frame()}
-  canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,moved:false};canvas.setPointerCapture(e.pointerId)});
+  canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,moved:false};try{canvas.setPointerCapture(e.pointerId)}catch(_){}});
   canvas.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>6)drag.moved=true;if(drag.moved){orbit.ty=Math.max(-.2,Math.min(.2,orbit.ty+dx/1400));orbit.tp=Math.max(-.08,Math.min(.14,orbit.tp-dy/2400));drag.x=e.clientX;drag.y=e.clientY}});
   canvas.addEventListener('pointerup',e=>{
     const was=drag;drag=null;if(!was||was.moved){orbit.ty*=1;return}

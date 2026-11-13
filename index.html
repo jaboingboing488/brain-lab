@@ -4714,6 +4714,30 @@ function decorate(){
 
 /* ----- 3D room: loaded on demand from room3d.js; if the browser cannot do 3D, the flat room simply stays ----- */
 const R3={inst:null,loading:false,fail:false};
+/* anything the 3D room has no hand-built model for is drawn from its existing artwork as a lit card standing in the scene */
+function room3dSprites(c,av){
+  const defs=(roomSvg(c).match(/<defs>[\s\S]*?<\/defs>/g)||[]).join('');
+  const clean=x=>x.replace(/ filter="url\(#f-sh\)"/g,'');
+  const snip=(inner,x,y,w,h,sc)=>`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${Math.round(w*sc)}" height="${Math.round(h*sc)}">${defs}${clean(inner)}</svg>`;
+  const SH=178,out=[];
+  const add=(inner,x,y,w,h,pos,o={})=>{if(inner)out.push(Object.assign({svg:snip(inner,x,y,w,h,o.sc||4),w:w/100,h:h/100},pos,o))};
+  const all=(c.critters||[]).slice(-12);
+  /* whole back wall: big poster, headwall, banner, board, ceiling, calendar, wall shelf */
+  const wall=`<g transform="translate(${SH} 0)">${(c.headwall&&c.headwall!=='none'?`<g transform="translate(90.6 17) scale(.72)">${headwallArt(c.headwall)}</g>`:'')+bigPosterArt(c.bigposter||'bigrex')+shelfDraw(c,all.slice(9))+WALL_ART(c)}</g>`;
+  add(wall,0,0,780,330,{x:0,y:.59,z:0,kind:'wall'},{sc:2.6});
+  /* things that sit in front of the bed and window: sill, bed topper, chair */
+  const front=`<g transform="translate(${SH} 0)">${FRONT_ART(c)}</g>`;
+  if(front.length>60)add(front,0,0,780,330,{x:0,y:.59,z:0,kind:'front'},{sc:2.6});
+  if(c.tv&&c.tv!=='none')add(`<g transform="translate(${SH+8} 0)">${tvArt(c.tv)}</g>`,708,28,80,54,{x:3.5,y:1.42,z:.06},{glow:1});
+  if(c.arcade&&c.arcade!=='none')add(`<g transform="translate(${SH+8} 0)">${arcadeArt(c.arcade)}</g>`,708,96,80,134,{x:3.5,y:0,z:.5},{glow:1,sc:5});
+  if(c.floorA&&c.floorA!=='none')add(`<g transform="translate(${SH} 0)">${floorArt(c.floorA)}</g>`,508,258,178,70,{x:2.1,y:0,z:1.5,face:1});
+  if(c.rack2&&c.rack2!=='none')add(`<g transform="translate(0 -14)">${rackArt(c.rack2)}</g>`,4,4,74,50,{x:-3.88,y:1.78,z:-.2,ry:Math.PI/2});
+  const T=158,mineA=['books','pencils','helmet','clock','plant'],mineB=['dino','rocket','tee','trophy','cube'];
+  if(c.deskA&&!mineA.includes(c.deskA)&&c.deskA!=='none')add(`<g transform="translate(${SH} 0)"><g transform="translate(-4 ${T-178})">${''}</g><g transform="translate(-2 ${T-178})">${deskAArt(c.deskA)}</g></g>`,612,88,60,78,{x:2.52,y:.58,z:-1.76},{sc:5});
+  if(c.deskB&&!mineB.includes(c.deskB)&&c.deskB!=='none')add(`<g transform="translate(${SH} 0)"><g transform="translate(8 ${T-178})">${deskBArt(c.deskB)}</g></g>`,652,88,60,78,{x:3.12,y:.58,z:-1.76},{sc:5});
+  return out;
+}
+const TOPCOL={jersey:'#C8102E',dinotee:'#3CB878',runner:'#FF7A00',gi:'#F4F7FA',pixel:'#5DAA3A',hoodie:'#8A949C',jacket:'#6B4F2A',galaxy:'#1B2A55',sunshine:'#FF9A3C',camo:'#5B7B3A',fbjersey:'#0076B6'};
 function room3dData(){
   const av=getAv(),c=av.room,col=s=>{const x=roomOpt(s,c[s]);return x&&x.c};
   const on=k=>c[k]&&c[k]!=='none'?c[k]:'';
@@ -4721,8 +4745,9 @@ function room3dData(){
   const d={view:c.window||'day',wall:WALLC[c.wall]||WALLC.cloud,floor:c.floor||'wood',floorC:FLOORC[c.floor]||FLOORC.wood,door:DOORC[c.door]||DOORC.wood,bedframe:FRAMEC[c.bedframe]||FRAMEC.wood,desk:DESKC[c.desk]||DESKC.wood,rack:RACKC[c.rack]||RACKC.wood,
     sheets:col('sheets')||'#0A7E8C',pillow:col('pillow')||'#F4F7FA',rug:col('rug')||'#0A7E8C',laundry:col('laundry')||'#9AA3AB',dresser:col('dresser')||'#B9854F',curtains:col('curtains')||'#3A7BD5',lamp:col('lamp')||'#0A7E8C',
     pack:on('pack')?col('pack'):'',deskA:on('deskA'),deskB:on('deskB'),globe:on('globe'),telescope:on('telescope'),beanbag:on('beanbag')?(BEANC[c.beanbag]||'#0A7E8C'):'',shelf:on('shelf'),lights:on('lights'),hoop:on('hoop'),posters,
-    avatar:{skin:av.skin,hair:av.hair,style:av.style,outfit:av.outfit,bandc:av.bandc},pal:{SKIN,HAIR,OUTFIT}};
-  d.keyData=Object.assign({},d,{posters:posters.map(p=>p.svg?1:0),pal:0});
+    avatar:{skin:av.skin,hair:av.hair,style:av.style,outfit:av.outfit,bandc:av.bandc,head:isBday()&&!av.head?'bdayhat':av.head,top:av.top,extra:av.extra,topColor:TOPCOL[av.top]||''},pal:{SKIN,HAIR,OUTFIT}};
+  d.sprites=room3dSprites(c,av);
+  d.keyData=JSON.stringify([av,d.sprites.length,d.sprites.map(x=>x.svg.length)]);
   return d;
 }
 function mountRoom3d(){
@@ -4734,7 +4759,7 @@ function mountRoom3d(){
     return;
   }
   R3.inst.setHost(card);card.classList.add('is3d');card.appendChild(R3.inst.canvas);
-  try{R3.inst.update(room3dData());R3.inst.resize();R3.inst.start()}catch(e){R3.fail=true;card.classList.remove('is3d');R3.inst.stop()}
+  try{const k=JSON.stringify([getAv(),isBday()]);if(k!==R3.key){R3.key=k;R3.data=room3dData()}R3.inst.update(R3.data);R3.inst.resize();R3.inst.start()}catch(e){R3.fail=true;card.classList.remove('is3d');R3.inst.stop()}
 }
 DECOR.push(mountRoom3d);
 
