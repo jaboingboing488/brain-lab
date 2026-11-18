@@ -7,7 +7,6 @@ self.addEventListener('fetch',e=>{
   const r=e.request;
   if(r.method!=='GET')return;
   if(new URL(r.url).origin!==location.origin)return;/* the cloud and the fonts go straight to the network */
-  if(new URL(r.url).pathname.indexOf('/focus/')!==-1)return;/* a separate app lives in /focus/; never cache it as Brain Lab */
   if(r.mode==='navigate'){
     e.respondWith(fetch(r).then(res=>{const c=res.clone();caches.open(CACHE).then(x=>x.put('index.html',c));return res}).catch(()=>caches.match('index.html')));
     return;
