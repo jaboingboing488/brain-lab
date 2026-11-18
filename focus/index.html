@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Focus"><meta name="theme-color" content="#0f1115"><meta name="robots" content="noindex">
+<title>Focus</title>
+<style>
+:root{--bg:#0f1115;--card:#181b22;--ink:#e8eaee;--mut:#8a90a0;--acc:#4f8cff;--ok:#3ecf8e;--bad:#ef5b5b;--line:#262a34}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,system-ui,sans-serif;padding-bottom:84px}
+main{max-width:560px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 12px}h2{font-size:15px;margin:0 0 8px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.bar{height:12px;background:var(--line);border-radius:8px;overflow:hidden;margin:6px 0 2px}
+.bar>i{display:block;height:100%;background:var(--acc);transition:width .4s}
+.row{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.mut{color:var(--mut);font-size:13px}
+button{background:var(--acc);color:#fff;border:0;border-radius:12px;padding:12px 16px;font-size:16px;font-weight:600;min-height:44px}
+button.g{background:var(--line);color:var(--ink)}button.ok{background:var(--ok);color:#06210f}button.bad{background:var(--bad)}
+.opt{display:block;width:100%;text-align:left;margin:8px 0;background:var(--line);color:var(--ink);font-weight:500}
+.opt.right{background:var(--ok);color:#06210f}.opt.wrong{background:var(--bad)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#12151b;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border-radius:0;background:none;color:var(--mut);font-size:12px;padding:10px 2px}nav button.on{color:var(--acc)}
+.t{font-size:54px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;margin:8px 0}
+label.ck{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+input[type=checkbox]{width:22px;height:22px;flex:none}
+input[type=number],select,textarea{background:var(--line);color:var(--ink);border:0;border-radius:10px;padding:10px;font-size:16px;width:100%}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;background:var(--line);font-size:12px;color:var(--mut)}
+.note{border-left:3px solid var(--acc);padding-left:10px;margin:8px 0}
+</style></head><body><main id="app"></main>
+<nav id="nav"></nav>
+<script>
+"use strict";
+var mem={};var KEY="focus.v1";
+function load(){try{var r=localStorage.getItem(KEY);if(r)return JSON.parse(r)}catch(e){}return mem[KEY]?JSON.parse(mem[KEY]):null}
+function save(){var s=JSON.stringify(S);mem[KEY]=s;try{localStorage.setItem(KEY,s)}catch(e){}}
+var S=load()||{ms:{},terms:{},gate:[],log:[],err:[],sessions:[],qstat:{}};
+var MILESTONES=[
+ {id:"M0",t:"Cold baseline quiz",d:"Wed 11/18"},
+ {id:"M1",t:"Key terms + Value System, 85%+ twice",d:"Sun 11/29"},
+ {id:"M2",t:"Four Dimensions + Lifecycle",d:"Sun 12/6"},
+ {id:"M3",t:"Value streams, AI, frameworks + first full simulation",d:"Sun 12/6"},
+ {id:"M4",t:"Two full timed simulations",d:"Sun 12/13"},
+ {id:"M5",t:"Readiness gate: 3 straight timed sims at 32/40+",d:"proj. 12/14-12/20"},
+ {id:"M6",t:"Book and sit the exam",d:"after gate"}];
+var TERMS=["Guiding principles (7)","Four dimensions","PESTLE","Value system components","Value chain / 8 activities","Continual improvement model","Governance","Management practices","Relationship types","Sponsor / customer / user","Core vs enabling value streams","Value stream mapping","AI maturity","Generative AI","Agentic AI","AI governance","ITIL AI Capability Model","ITIL and DevOps","ITIL and PRINCE2"];
+var CATS={KT:"Key terms",FD:"Four dimensions",LC:"Lifecycle",VS:"Value system",VM:"Value streams",AI:"AI",FW:"Frameworks",EX:"Exam facts"};
+var Q=[
+ ["EX","How many questions are on the ITIL Foundation (V5) exam?",["40","30","50","60"],0],
+ ["EX","How long is the standard exam?",["60 minutes","90 minutes","45 minutes","120 minutes"],0],
+ ["EX","What score is needed to pass?",["65% (26/40)","70% (28/40)","50% (20/40)","80% (32/40)"],0],
+ ["EX","Is the exam open book?",["No, closed book","Yes, open book","Only the syllabus is allowed","Only a glossary is allowed"],0],
+ ["EX","Is there negative marking?",["No","Yes, -1 per wrong answer","Yes, -0.5 per wrong answer","Only on list questions"],0],
+ ["EX","Extra time for non-native-language candidates?",["25% (75 minutes)","50% (90 minutes)","10% (66 minutes)","None"],0],
+ ["EX","Which Bloom levels does the exam assess?",["Levels 1 and 2","Levels 3 and 4","Levels 4 and 5","Level 6 only"],0],
+ ["EX","Which is NOT a question type on the exam?",["Essay","Standard","Missing word(s)","List (select two)"],0],
+ ["EX","Which syllabus area carries the highest weighting?",["ITIL Value System (40%)","Key terms (30%)","Four dimensions (10%)","Lifecycle (10%)"],0],
+ ["EX","What weighting does Key terms carry?",["30%","40%","10%","5%"],0],
+ ["EX","What weighting does Four Dimensions carry?",["10%","30%","40%","2.5%"],0],
+ ["EX","What weighting does ITIL and AI carry?",["2.5%","10%","5%","30%"],0],
+ ["EX","What weighting does value stream identification, mapping and management carry?",["5%","10%","2.5%","30%"],0],
+ ["FD","Which is one of the four dimensions?",["Information and technology","Governance and risk","Strategy and finance","Incidents and problems"],0],
+ ["FD","Which is one of the four dimensions?",["Partners and suppliers","Customers and users","Budget and cost","Tools and scripts"],0],
+ ["FD","Which is one of the four dimensions?",["Value streams and processes","Change and release","Service and support","Plan and build"],0],
+ ["FD","Which is one of the four dimensions?",["Organizations and people","Teams and managers","Skills and training","Roles and rules"],0],
+ ["FD","What does PESTLE describe?",["External factors affecting the four dimensions","The seven guiding principles","The eight lifecycle activities","Relationship types"],0],
+ ["VS","Which is a component of the ITIL value system?",["Continual improvement","Incident management only","Service desk","Change freeze"],0],
+ ["VS","Which is a component of the ITIL value system?",["Governance","Escalation","Handover","Backlog"],0],
+ ["VS","Which is a component of the ITIL value system?",["Guiding principles","Service catalog only","Release calendar","Risk register"],0],
+ ["VS","Which is a component of the ITIL value system?",["Management practices","Operating procedures only","Vendor contracts","Compliance audits"],0],
+ ["VS","Which is a component of the ITIL value system?",["Value chain","Value ledger","Value matrix","Value index"],0],
+ ["VS","The value system describes how components work together to enable what?",["Value creation","Cost cutting","Ticket closure","Tool consolidation"],0],
+ ["LC","How many activities are in the service value lifecycle?",["Eight","Six","Five","Seven"],0],
+ ["LC","Which is NOT one of the eight lifecycle activities?",["Retire","Discover","Acquire","Deliver"],0],
+ ["LC","Which is one of the eight lifecycle activities?",["Transition","Escalate","Archive","Approve"],0],
+ ["LC","Which is one of the eight lifecycle activities?",["Operate","Audit","Budget","Close"],0],
+ ["LC","The lifecycle activities are...",["Non-linear and iterative","Strictly sequential","Run once per product","Only for new services"],0],
+ ["LC","Which is one of the eight lifecycle activities?",["Support","Report","Review","Plan"],0],
+ ["KT","How many guiding principles are in ITIL?",["Seven","Five","Nine","Four"],0],
+ ["KT","Which is a guiding principle?",["Start where you are","Fix it fast","Escalate early","Document everything"],0],
+ ["KT","Which is a guiding principle?",["Keep it simple and practical","Automate everything","Centralize decisions","Minimize change"],0],
+ ["KT","Which is a guiding principle?",["Collaborate and promote visibility","Work independently","Limit reporting","Delegate upward"],0],
+ ["KT","Which is a guiding principle?",["Think and work holistically","Think locally","Work in silos","Focus on cost"],0],
+ ["KT","Which is a guiding principle?",["Optimize and automate","Standardize and freeze","Measure and punish","Plan and wait"],0],
+ ["KT","Which is a guiding principle?",["Progress iteratively with feedback","Deliver in one release","Plan fully first","Avoid feedback"],0],
+ ["KT","Which is a guiding principle?",["Focus on value","Focus on tickets","Focus on tools","Focus on speed only"],0],
+ ["KT","Which is a relationship type?",["Collaborative","Contractual only","Hostile","Informal"],0],
+ ["KT","Which is a relationship type?",["Cooperative","Adversarial","Silent","Hierarchical"],0],
+ ["KT","Which is a relationship type?",["Basic","Premium","Strategic only","Legacy"],0],
+ ["KT","Which is a service relationship role?",["Sponsor","Auditor","Operator","Architect"],0],
+ ["KT","Which is a service relationship role?",["Customer","Vendor","Approver","Owner"],0],
+ ["KT","Which is a service relationship role?",["User","Admin","Tester","Reviewer"],0],
+ ["VM","Which are the two types of value stream in the syllabus?",["Core and enabling","Primary and backup","Internal and external","Fast and slow"],0],
+ ["AI","Which topic is in the ITIL and AI syllabus area?",["AI governance","AI procurement","AI hardware","AI marketing"],0],
+ ["AI","Which topic is in the ITIL and AI syllabus area?",["Agentic AI","Quantum AI","Edge AI","Analog AI"],0],
+ ["AI","Which topic is in the ITIL and AI syllabus area?",["ITIL AI Capability Model","ITIL Robotics Model","ITIL Cloud Model","ITIL Data Lake Model"],0],
+ ["FW","Which framework or approach does the syllabus cover alongside ITIL?",["DevOps","ISO 9000 only","Six Sigma only","COBIT only"],0],
+ ["FW","Which framework does the syllabus cover alongside ITIL?",["PRINCE2","Scrum Master Guide","PMBOK only","TOGAF only"],0]
+];
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function bar(p){return '<div class="bar"><i style="width:'+Math.max(0,Math.min(100,p))+'%"></i></div>'}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function today(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2)}
+function gateStreak(){var n=0;for(var i=S.gate.length-1;i>=0;i--){if(S.gate[i].score>=32)n++;else break}return n}
+var tab="today";var timer=null,sess=null,quiz=null,cards=null;
+var TABS=[["today","Today"],["session","Session"],["quiz","Quiz"],["cards","Cards"],["gate","Gate"],["export","Export"]];
+function nav(){$("#nav").innerHTML=TABS.map(function(t){return '<button class="'+(t[0]===tab?"on":"")+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join("");
+ Array.prototype.forEach.call(document.querySelectorAll("#nav button"),function(b){b.onclick=function(){tab=b.dataset.t;render()}})}
+function vToday(){
+ var done=MILESTONES.filter(function(m){return S.ms[m.id]}).length;
+ var terms=TERMS.filter(function(t,i){return S.terms[i]}).length;
+ var g=gateStreak();
+ var h='<h1>Today</h1>';
+ h+='<div class="card"><h2>Milestones</h2><div class="row"><b>'+done+' / '+MILESTONES.length+'</b><span class="mut">'+Math.round(done/MILESTONES.length*100)+'%</span></div>'+bar(done/MILESTONES.length*100)+'</div>';
+ h+='<div class="card"><h2>Syllabus terms</h2><div class="row"><b>'+terms+' / '+TERMS.length+'</b><span class="mut">'+Math.round(terms/TERMS.length*100)+'%</span></div>'+bar(terms/TERMS.length*100)+'</div>';
+ h+='<div class="card"><h2>Readiness gate</h2><div class="row"><b>'+Math.min(g,3)+' / 3 in a row</b><span class="mut">32/40+ timed</span></div>'+bar(Math.min(g,3)/3*100)+'<div class="mut">'+(g>=3?"Gate met. Book the exam.":(3-g)+" more to go.")+'</div></div>';
+ h+='<div class="card"><h2>Next</h2><button id="go" style="width:100%">Start 30-min session</button></div>';
+ h+='<div class="card"><h2>Milestones</h2>'+MILESTONES.map(function(m){return '<label class="ck"><input type="checkbox" data-m="'+m.id+'" '+(S.ms[m.id]?"checked":"")+'><span><b>'+m.id+'</b> '+esc(m.t)+'<br><span class="mut">'+esc(m.d)+'</span></span></label>'}).join("")+'</div>';
+ h+='<div class="card"><h2>Terms I can explain without notes</h2>'+TERMS.map(function(t,i){return '<label class="ck"><input type="checkbox" data-term="'+i+'" '+(S.terms[i]?"checked":"")+'><span>'+esc(t)+'</span></label>'}).join("")+'</div>';
+ h+='<div class="note mut">Hard means it is working. When you want to quit, stay 10 more minutes.</div>';
+ return h}
+function bindToday(){
+ $("#go").onclick=function(){tab="session";render()};
+ Array.prototype.forEach.call(document.querySelectorAll("[data-m]"),function(c){c.onchange=function(){S.ms[c.dataset.m]=c.checked;save();render()}});
+ Array.prototype.forEach.call(document.querySelectorAll("[data-term]"),function(c){c.onchange=function(){S.terms[c.dataset.term]=c.checked;save();render()}})}
+var PH=[[0,300,"Cold quiz","Answer from memory before reading anything."],[300,1200,"Learn","One topic only. Read or listen."],[1200,1620,"Translate","Write one Homeward example for it."],[1620,1800,"Log the win","One line: what you can now explain."]];
+function fmt(s){s=Math.max(0,s);return ("0"+Math.floor(s/60)).slice(-2)+":"+("0"+(s%60)).slice(-2)}
+function vSession(){
+ var h='<h1>Session</h1>';
+ if(!sess){h+='<div class="card"><div class="mut">30 minutes. Phone face down except this screen.</div><button id="st" style="width:100%;margin-top:10px">Start</button></div>';
+  h+='<div class="card"><h2>Phases</h2>'+PH.map(function(p){return '<div class="row"><span>'+p[2]+'</span><span class="mut">'+fmt(p[0])+'-'+fmt(p[1])+'</span></div>'}).join("")+'</div>';
+  var recent=S.sessions.slice(-5).reverse();if(recent.length)h+='<div class="card"><h2>Recent</h2>'+recent.map(function(s){return '<div class="mut">'+esc(s.date)+' · '+Math.round(s.sec/60)+' min</div>'}).join("")+'</div>';return h}
+ var el=Math.floor((Date.now()-sess.t0)/1000);var ph=PH[PH.length-1];for(var i=0;i<PH.length;i++)if(el<PH[i][1]){ph=PH[i];break}
+ var over=el>=1800;
+ h+='<div class="card"><div class="t" id="clk">'+(over?"+"+fmt(el-1800):fmt(1800-el))+'</div>'+bar(Math.min(100,el/1800*100))+'<div style="text-align:center;margin-top:8px"><b id="phn">'+(over?"Bonus time":ph[2])+'</b><div class="mut" id="phd">'+(over?"You stayed. That is the habit.":ph[3])+'</div></div></div>';
+ h+='<div class="card"><h2>Win (one line)</h2><textarea id="win" rows="2" placeholder="I can now explain..."></textarea></div>';
+ h+='<div class="row"><button class="g" id="mt" style="flex:1">+10 min</button><button class="ok" id="fin" style="flex:1">Finish</button></div>';
+ return h}
+function bindSession(){
+ if(!sess){$("#st").onclick=function(){sess={t0:Date.now()};render()};return}
+ if(timer)clearInterval(timer);
+ timer=setInterval(function(){if(tab!=="session"||!sess){clearInterval(timer);return}
+  var el=Math.floor((Date.now()-sess.t0)/1000);var c=$("#clk");if(!c)return;
+  var over=el>=1800;c.textContent=over?"+"+fmt(el-1800):fmt(1800-el);
+  var ph=PH[PH.length-1];for(var i=0;i<PH.length;i++)if(el<PH[i][1]){ph=PH[i];break}
+  $("#phn").textContent=over?"Bonus time":ph[2];$("#phd").textContent=over?"You stayed. That is the habit.":ph[3];
+  c.parentNode.querySelector(".bar>i").style.width=Math.min(100,el/1800*100)+"%"},1000);
+ $("#mt").onclick=function(){var n=document.createElement("div");n.className="mut";n.style.textAlign="center";n.textContent="Stay. 10 more minutes. Keep going until the timer reads +10:00.";$("#mt").parentNode.parentNode.insertBefore(n,$("#mt").parentNode)};
+ $("#fin").onclick=function(){var w=$("#win").value.trim();var sec=Math.floor((Date.now()-sess.t0)/1000);
+  S.sessions.push({date:today(),sec:sec,win:w});if(w)S.log.push({date:today(),text:w});save();sess=null;clearInterval(timer);tab="today";render()}}
+function vQuiz(){
+ var h='<h1>Quiz</h1>';
+ if(!quiz){
+  h+='<div class="card"><h2>Pick a set</h2><select id="qc"><option value="ALL">All topics ('+Q.length+')</option>'+Object.keys(CATS).map(function(k){var n=Q.filter(function(q){return q[0]===k}).length;return '<option value="'+k+'">'+CATS[k]+' ('+n+')</option>'}).join("")+'</select><button id="qs" style="width:100%;margin-top:10px">Start</button></div>';
+  h+='<div class="card"><div class="mut">Questions cover only what the official syllabus lists (names, structures, exam facts). Definitions are added after you have the official book. Misses go to the error log.</div></div>';
+  if(S.err.length)h+='<div class="card"><h2>Error log ('+S.err.length+')</h2>'+S.err.slice(-8).reverse().map(function(e){return '<div class="mut" style="margin:6px 0">'+esc(e.q)+'<br><b style="color:var(--ink)">'+esc(e.a)+'</b></div>'}).join("")+'</div>';
+  return h}
+ if(quiz.i>=quiz.items.length){var pct=Math.round(quiz.score/quiz.items.length*100);
+  h+='<div class="card"><div class="t">'+quiz.score+' / '+quiz.items.length+'</div><div style="text-align:center" class="mut">'+pct+'%</div></div><button id="qd" style="width:100%">Done</button>';return h}
+ var it=quiz.items[quiz.i];
+ h+='<div class="card"><div class="row"><span class="pill">'+CATS[it.q[0]]+'</span><span class="mut">'+(quiz.i+1)+' / '+quiz.items.length+'</span></div>'+bar(quiz.i/quiz.items.length*100)+'<p><b>'+esc(it.q[1])+'</b></p>'+
+  it.opts.map(function(o,i){var cls="opt";if(quiz.pick!=null){if(i===it.ans)cls+=" right";else if(i===quiz.pick)cls+=" wrong"}return '<button class="'+cls+'" data-o="'+i+'">'+esc(o)+'</button>'}).join("")+
+  (quiz.pick!=null?'<button id="qn" style="width:100%;margin-top:8px">'+(quiz.i+1>=quiz.items.length?"Finish":"Next")+'</button>':"")+'</div>';
+ return h}
+function bindQuiz(){
+ if(!quiz){$("#qs").onclick=function(){var c=$("#qc").value;var pool=c==="ALL"?Q:Q.filter(function(q){return q[0]===c});
+   var items=shuffle(pool).slice(0,20).map(function(q){var o=shuffle(q[2].map(function(t,i){return{t:t,c:i===q[3]}}));return{q:q,opts:o.map(function(x){return x.t}),ans:o.findIndex(function(x){return x.c})}});
+   quiz={items:items,i:0,score:0,pick:null};render()};return}
+ if($("#qd")){$("#qd").onclick=function(){quiz=null;render()};return}
+ Array.prototype.forEach.call(document.querySelectorAll("[data-o]"),function(b){b.onclick=function(){if(quiz.pick!=null)return;
+   var it=quiz.items[quiz.i];quiz.pick=+b.dataset.o;if(quiz.pick===it.ans)quiz.score++;else S.err.push({q:it.q[1],a:it.opts[it.ans],date:today()});save();render()}});
+ if($("#qn"))$("#qn").onclick=function(){quiz.i++;quiz.pick=null;render()}}
+function vCards(){
+ if(!cards)cards={deck:shuffle(Q),i:0,show:false};
+ var c=cards.deck[cards.i%cards.deck.length];
+ return '<h1>Cards</h1><div class="card"><div class="row"><span class="pill">'+CATS[c[0]]+'</span><span class="mut">'+(cards.i+1)+' / '+cards.deck.length+'</span></div><p style="min-height:70px"><b>'+esc(c[1])+'</b></p>'+(cards.show?'<div class="note"><b>'+esc(c[2][c[3]])+'</b></div>':'')+'<div class="row" style="margin-top:10px"><button class="g" id="cf" style="flex:1">'+(cards.show?"Hide":"Reveal")+'</button><button id="cn" style="flex:1">Next</button></div></div><div class="mut">Say the answer out loud first, then reveal.</div>'}
+function bindCards(){$("#cf").onclick=function(){cards.show=!cards.show;render()};$("#cn").onclick=function(){cards.i=(cards.i+1)%cards.deck.length;cards.show=false;render()}}
+function vGate(){
+ var g=gateStreak();
+ var h='<h1>Readiness gate</h1><div class="card"><div class="row"><b>'+Math.min(g,3)+' / 3 in a row</b><span class="mut">32/40 or higher, timed 60 min</span></div>'+bar(Math.min(g,3)/3*100)+'<div class="mut" style="margin-top:6px">The 32/40 bar is a self-set safety margin above the official 26/40 pass mark. Use 2+ different question sources.</div></div>';
+ h+='<div class="card"><h2>Log a practice test</h2><div class="row"><input id="gs" type="number" min="0" max="40" placeholder="Score /40"><input id="gsrc" placeholder="Source" style="background:var(--line);color:var(--ink);border:0;border-radius:10px;padding:10px;font-size:16px;width:100%"></div><button id="ga" style="width:100%;margin-top:10px">Add</button></div>';
+ if(S.gate.length)h+='<div class="card"><h2>History</h2>'+S.gate.slice().reverse().map(function(x){return '<div class="row" style="padding:6px 0;border-bottom:1px solid var(--line)"><span>'+esc(x.date)+' · '+esc(x.src||"-")+'</span><b style="color:'+(x.score>=32?"var(--ok)":(x.score>=26?"var(--ink)":"var(--bad)"))+'">'+x.score+'/40</b></div>'}).join("")+'</div>';
+ return h}
+function bindGate(){$("#ga").onclick=function(){var v=parseInt($("#gs").value,10);if(isNaN(v)||v<0||v>40)return;S.gate.push({date:today(),score:v,src:$("#gsrc").value.trim()});save();render()}}
+function exportMd(){
+ var L=["## ITIL 5 Foundation - app export "+today(),"","### Progress",
+  "- Milestones: "+MILESTONES.filter(function(m){return S.ms[m.id]}).map(function(m){return m.id}).join(", ")+" done",
+  "- Terms: "+TERMS.filter(function(t,i){return S.terms[i]}).length+"/"+TERMS.length,
+  "- Gate streak: "+gateStreak()+"/3","","### Practice tests"];
+ S.gate.forEach(function(x){L.push("- "+x.date+" "+x.score+"/40 ("+(x.src||"-")+")")});
+ L.push("","### Sessions");S.sessions.forEach(function(s){L.push("- "+s.date+" "+Math.round(s.sec/60)+" min"+(s.win?": "+s.win:""))});
+ L.push("","### Error log");S.err.forEach(function(e){L.push("- "+e.date+" | "+e.q+" -> "+e.a)});
+ return L.join("\n")}
+function vExport(){return '<h1>Export</h1><div class="card"><div class="mut">Copy this and paste it into your Obsidian daily note or the Error Log.</div><textarea id="ex" rows="12" readonly>'+esc(exportMd())+'</textarea><button id="cp" style="width:100%;margin-top:10px">Copy</button><div id="cpm" class="mut"></div></div>'}
+function bindExport(){$("#cp").onclick=function(){var t=$("#ex");t.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}
+ try{if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).then(function(){$("#cpm").textContent="Copied."});else $("#cpm").textContent=ok?"Copied.":"Select the text and copy it manually."}catch(e){$("#cpm").textContent="Select the text and copy it manually."}}}
+function render(){nav();var v={today:[vToday,bindToday],session:[vSession,bindSession],quiz:[vQuiz,bindQuiz],cards:[vCards,bindCards],gate:[vGate,bindGate],"export":[vExport,bindExport]}[tab];
+ $("#app").innerHTML=v[0]();v[1]()}
+render();
+</script></body></html>
